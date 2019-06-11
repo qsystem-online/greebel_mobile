@@ -1,11 +1,12 @@
 <?php
     if (!function_exists('dateFormat')){
         function dateFormat($strDate,$inputFormat,$outputFormat = 'Y-m-d H:i:s'){
-            $date = DateTime::createFromFormat($inputFormat, $strDate);
+
+            $date = DateTime::createFromFormat($inputFormat, $strDate);            
             if($date){
                 return $date->format($outputFormat);
             }else{
-                return date($outputFormat,0);
+                return date($outputFormat,$date);
             }
         }
     }
@@ -64,4 +65,28 @@
             return null;
         }
     }
-    
+
+    if (!function_exists('distance')){
+        function distance($lat1, $lon1, $lat2, $lon2, $unit="M") {
+            if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+                return 0;
+            }else{
+                $theta = $lon1 - $lon2;
+                $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+                $dist = acos($dist);
+                $dist = rad2deg($dist);
+                $miles = $dist * 60 * 1.1515;
+                $unit = strtoupper($unit);
+            
+                if ($unit == "K") { //Kilo meter
+                    return ($miles * 1.609344);
+                } else if ($unit == "N") { //Nautical Miles<
+                    return ($miles * 0.8684);
+                } else if ($unit == "M") { //Meters
+                    return ($miles * 1.609344 * 1000);
+                } else { //Miles<
+                    return $miles;
+                }
+            }
+        }
+    }

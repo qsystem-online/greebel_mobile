@@ -16,6 +16,9 @@ class MY_Model extends CI_Model {
 
 		if (!isset($data["fdt_insert_datetime"])){
 			$data["fdt_insert_datetime"] = date("Y-m-d H:i:s");
+		}
+		
+		if (!isset($data["fin_insert_id"])){
 			$data["fin_insert_id"] = $this->aauth->get_user_id();
 		}
 		
