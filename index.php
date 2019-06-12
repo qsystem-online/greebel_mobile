@@ -100,7 +100,7 @@ switch (ENVIRONMENT)
  */
 	//$system_path = 'E:\codeigniter\CI3.1.10\system';
 
-	$system_path = 'E:\codeigniter\CI3.1.10\system';
+	$system_path = 'D:\CI3.1.10\system';
 
 /*
  *---------------------------------------------------------------

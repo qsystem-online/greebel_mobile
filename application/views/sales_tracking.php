@@ -84,6 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
     var map;
     var arrMarker = [];
+    var arrWaypoint =[];
     //var directionsService;
     var directionsDisplay;
 
@@ -121,6 +122,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 fdt_date : $("#fdt_date").val(),
                 "<?=$this->security->get_csrf_token_name()?>" : "<?=$this->security->get_csrf_hash()?>"
             }
+
             $.ajax({
                 url:"<?=base_url()?>sales/data_tracking/",
                 data: data,
@@ -131,24 +133,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         arrMarker[i].setMap(null);
                     }
                     arrMarker = [];
+                    arrWaypoint =[];
+                    arrPart = [];
 
-                    directionsDisplay.setMap(null);
 
+                    //directionsDisplay.setMap(null);
 
+                    var iPart = 1;
                     $.each(resp,function(i,v){
-                        var directionsService = new google.maps.DirectionsService;
-
-                        directionsDisplay = new google.maps.DirectionsRenderer({
-                            suppressInfoWindows: true,
-                            suppressMarkers: true
-                        });
-
-                        directionsDisplay.setMap(map);
+                        
 
                         
                         myLatLng = {lat: parseFloat(v.fst_lat), lng: parseFloat(v.fst_log)};
-                        console.log(myLatLng);
-
                         var marker = new google.maps.Marker({
                             position: myLatLng,
                             map: map,
@@ -165,44 +161,65 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         });    
 
                         arrMarker.push(marker);
+                       
+                        arrWaypoint.push({
+                            location: myLatLng,
+                            stopover: true
+                        });
+                        
+                        
+                        if (iPart == 25 || i == resp.length - 1){
+                            arrPart.push(arrWaypoint);
+                            arrWaypoint = [];
+                            iPart = 1;
+                        }
+                        console.log(i + " vs " + resp.length)
+                        iPart++;
+                    });
+                    
 
-                        if (i > 0 ){
-                            prevV = resp[i - 1];
+                    var directionsService = new google.maps.DirectionsService;
+                    
+                    console.log(arrPart);
+                    $.each(arrPart,function(i,v){
+                        //lastPos = resp.length - 1;
+                        //locOrigin = {lat: parseFloat(resp[0].fst_lat), lng: parseFloat(resp[0].fst_log)};
+                        //locDest = {lat: parseFloat(resp[lastPos].fst_lat), lng: parseFloat(resp[lastPos].fst_log)};
+                        if (i == 0){
+                            //return true;
+                        }
+                        console.log(v);
 
-                            locOrigin = {lat: parseFloat(prevV.fst_lat), lng: parseFloat(prevV.fst_log)};
-                            locDest = myLatLng;
-                            _request = {
-                                origin: locOrigin,
-                                destination: locDest,
-                                travelMode: google.maps.DirectionsTravelMode.DRIVING
-                            };    
+                        lastPos = v.length - 1;
+                        locOrigin = v[0].location;
+                        locDest = v[lastPos].location;
 
-                            directionsService.route(_request, function(_response, _status) {
-                                if (_status == google.maps.DirectionsStatus.OK) {
-                                    directionsDisplay.setDirections(_response);
-                                }
-
-                            });
-                        };
-
-
-                        /*
-                        //draw route
                         _request = {
-                            origin: myLatLng,
-                            destination: myLatLng2,
+                            origin: locOrigin,
+                            destination: locDest,                            
+                            waypoints: v,
+                            optimizeWaypoints: true,
                             travelMode: google.maps.DirectionsTravelMode.DRIVING
                         };
-
-                        
+                        console.log(_request);
                         directionsService.route(_request, function(_response, _status) {
                             if (_status == google.maps.DirectionsStatus.OK) {
+                                var directionsDisplay = new google.maps.DirectionsRenderer({
+                                    suppressInfoWindows: true,
+                                    suppressMarkers: true,
+                                    preserveViewport: true 
+                                });
+                                directionsDisplay.setMap(map);
                                 directionsDisplay.setDirections(_response);
                             }
 
                         });
-                        */
+
                     });
+
+                    
+                       
+                    
                 }
 
             });
