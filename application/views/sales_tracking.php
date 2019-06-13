@@ -260,6 +260,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             center: myLatLng
         });
 
+        
         directionsDisplay = new google.maps.DirectionsRenderer({
             suppressInfoWindows: true,
             suppressMarkers: true
@@ -279,13 +280,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             title: 'Hello World!'
         });
         */
-
+        /*
         google.maps.event.addListener(map, "dblclick", function(event) {
             var _currentPoints = event.latLng;
             alert(_currentPoints);
             console.log(_currentPoints);
         });
-
+        */
     }
 
     //AIzaSyDg_tzNYxrn-u0L5RVIl1C5QiwhQIrWBXI

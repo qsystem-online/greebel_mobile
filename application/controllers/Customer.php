@@ -188,4 +188,95 @@ class Customer extends MY_Controller {
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }
+
+	public function listLocation(){
+		$this->load->library('menus');
+        $this->list['page_name']="Customer";
+        $this->list['list_name']="Customer Location";
+        $this->list['pKey']="id";
+		$this->list['fetch_list_data_ajax_url']=site_url().'customer/fetch_list_location_data';
+        $this->list['arrSearch']=[
+            'a.fst_cust_code' => 'Code',
+            'a.fst_cust_name' => 'Name'
+		];
+
+        $this->list['breadcrumbs']=[
+			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
+			['title'=>'Customer','link'=>'#','icon'=>''],
+			['title'=>'Location','link'=> NULL ,'icon'=>''],
+		];
+
+		$this->list['columns']=[
+			['title' => 'Code', 'width'=>'10%', 'data'=>'fst_cust_code'],
+			['title' => 'Name', 'width'=>'25%', 'data'=>'fst_cust_name'],
+			['title' => 'Location', 'width' =>'10%', 'data'=>'fst_cust_location'],
+			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'text-center']
+		];
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+    	$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('customerLocationList',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+        $this->parser->parse('template/main',$this->data);
+	}
+
+	public function fetch_list_location_data(){
+		$this->load->library("datatables");
+		$this->load->model("customer_model");
+		
+		/*
+		$datelog = $this->input->get("dateLog");
+		$arrDateLog = explode("-",$datelog);
+		$dateStart = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateLog[1]),"j/m/Y","Y-m-d");
+		*/
+
+		$this->datatables->setTableName("
+			(Select a.*,b.fst_cust_location from tbcustomers a inner join tblocation b on a.fst_cust_code = b.fst_cust_code) as tbcustloc
+		");
+		
+		$selectFields = "*";
+		$this->datatables->setSelectFields($selectFields);
+	
+		//$searchFields = ["fst_sales", "fst_customer"];
+		$searchFields = [$this->input->get("optionSearch")];
+
+		$this->datatables->setSearchFields($searchFields);
+	
+		// Format Data
+		$datasources = $this->datatables->getData();		
+		$arrData = $datasources["data"];		
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			//action
+			
+			//$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_date"]);
+			$data["action"]	= "<div style='font-size:16px'>				
+				<a class='btn-delete' href='#' data-toggle='confirmation' data-original-title='' title=''><i class='fa fa-trash'></i></a>	
+				<a style='display:none' class='btn-map' href='#'  data-original-title='' title=''><i class='fa fa-map-marker' aria-hidden='true'></i></a>			
+			</div>";
+	
+			$arrDataFormated[] = $data;
+			}
+
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
+	
+	public function delete_location($fst_cust_code){
+		$this->db->where('fst_customer_code', $fst_cust_code);
+		$this->db->delete("tblocation");
+		$result =[
+			"status"=>"SUCCESS"
+		];
+		header('Content-Type: application/json');
+		echo json_encode($result);
+
+	}
 }

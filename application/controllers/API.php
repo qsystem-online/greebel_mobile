@@ -26,8 +26,7 @@ class API extends CI_Controller {
     public function feed_customers(){
 		$this->load->model("customer_model");
 		$appid = $this->input->post("app_id");	
-		$appid = "1234567890";
-
+		
 		$customers = $this->customer_model->getDataByAppId($appid);
 		header("Content-Type: application/json");	
         $result = [
@@ -230,7 +229,10 @@ class API extends CI_Controller {
 			"fst_cust_address" =>$this->input->post("fst_cust_address"),
 			"fst_cust_phone" =>$this->input->post("fst_cust_phone"),
 			"fst_cust_location" => $this->input->post("fst_cust_location"),
-			"fst_sales_code" => $sales->fst_sales_code
+			"fst_sales_code" => $sales->fst_sales_code,
+			"fst_active" => "A",
+			"fin_insert_id" => 1,
+			"fdt_insert_datetime" => date("Y-m-d H:i:s")
 		];
 
 		$this->db->insert("tbnewcustomers",$data);
