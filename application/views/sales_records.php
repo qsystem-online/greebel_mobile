@@ -166,7 +166,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	});
 
-	function format ( d ) {
+	function old_format ( d ) {
 		// `d` is the original data object for the row
 		console.log(d);
 		data = {
@@ -200,6 +200,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		return result;						
 	}
+
+
+	function format ( d ) {
+		// `d` is the original data object for the row
+		console.log(d);
+		data = {
+			"fst_sales_code": d.fst_sales_code,
+			"fst_cust_code":d.fst_cust_code,
+			"fdt_date":d.fdt_checkin_date,
+			"<?=$this->security->get_csrf_token_name()?>" : "<?=$this->security->get_csrf_hash()?>"
+		};
+
+		$.ajax({
+			url: "<?= base_url() ?>/sales/get_log_pics/" + d.fin_id,
+			method: "GET",
+			//data: data,
+			async:false,
+			success:function(resp){
+				result = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%">';
+				//result += '<tr><td>ID</td><td>Date Time</td><td>Location</td><td>Distance</td></tr>';
+
+				$.each(resp.files,function(index,value){
+					
+					if (index % 3 == 0){
+						result += "<tr>";
+					} 
+					result += "<td><img src='<?=base_url();?>uploads/checkinlog/"+ value + "' style='width:80%'/>" + index +"</td>"
+					if (index % 3 == 2){
+						result += "</tr>";
+					}
+					/*
+					result += "<tr>" +
+						"<td>" + value.fin_id + "</td>" +
+						"<td>" + value.fdt_checkin_datetime + "</td>" +
+						"<td>" + value.fst_checkin_location + "</td>" +
+						"<td>" + value.fin_distance_meters + "</td>" +
+						"<td><a class='btn-show-picture btn btn-sm btn-primary' data-id='"+value.fin_id+"'>Show Picture</a></td>" +
+					"</tr>";
+					*/
+				});
+
+				result += '</table>';
+				
+			}
+		});
+		return result;						
+	}
+
 </script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>

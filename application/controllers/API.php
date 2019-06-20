@@ -25,16 +25,27 @@ class API extends CI_Controller {
 	
     public function feed_customers(){
 		$this->load->model("customer_model");
+		$this->load->model("trlogs_model");
+		
 		$appid = $this->input->post("app_id");	
 		
-		$customers = $this->customer_model->getDataByAppId($appid);
+		//cek last sync data from server
+		if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
+			$customers = $this->customer_model->getDataByAppId($appid);
+			$result = [
+				"post" => $_POST,
+				"status"=>"OK",
+				"message"=>"OK",
+				"data"=>$customers
+			];
+		}else{
+			$result = [
+				"post" => $_POST,
+				"status"=>"NOK",
+				"message"=>"Data per tgl " . date("Y-m-d") . " not ready yet !"
+			];
+		}
 		header("Content-Type: application/json");	
-        $result = [
-            "post" => $_POST,
-            "status"=>"OK",
-            "message"=>"OK",
-            "data"=>$customers
-		];	
         echo json_encode($result);
 	}
 
@@ -145,49 +156,77 @@ class API extends CI_Controller {
 			$loc_lat = $loc[0];
 			$loc_log = $loc[1];
 			
-			$custLoc = $this->customer_model->getLocation($this->input->post("fst_cust_code"));
-			
+			$custLoc = $this->customer_model->getLocation($this->input->post("fst_cust_code"));			
 			if ($custLoc == "0,0"){
 				$loc2 =  explode(",",$this->input->post("fst_checkin_location"));
 				$this->customer_model->setLocation($this->input->post("fst_cust_code"),$this->input->post("fst_checkin_location"));
 			}else{
 				$loc2 =  explode(",",$custLoc);			
-			}
-			
+			}			
 			$loc2_lat = $loc2[0];
 			$loc2_log = $loc2[1];
 
-			/*
-			echo $loc_lat ."<br>";
-			echo $loc_log ."<br>";
-			echo $loc2_lat ."<br>";
-			echo $loc2_log ."<br>";
-			die();
-			*/
+			//cek if record exist
+			$distance = distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M");
+			$time = strtotime($this->input->post("fdt_checkin_datetime"));
+			$checkinDate = date('Y-m-d',$time);
 
+			$rw = $this->trcheckinlog_model->getDataByDate($salesCode,$this->input->post("fst_cust_code"),$checkinDate);
+			$mode = "insert";
+			if($rw){
+				//Data Sudah ada sebelumnya
+				$id = $rw->fin_id;
+				if ($rw->fin_distance_meters > $distance){
+					//Update data dengan jarak yg lebih dekat
+					$mode = "update";
+					$data = [
+						"fin_id"=>$id,
+						"fst_checkin_location" => $this->input->post("fst_checkin_location"),
+						"fin_distance_meters" => $distance,
+						"fdt_update_datetime" => date("Y-m-d H:i:s"),
+						"fin_update_id" => 1
+					];
 
-			$data = [
-				"fst_sales_code"=>$salesCode,
-				"fst_cust_code" => $this->input->post("fst_cust_code"),
-				"fdt_checkin_datetime" => $this->input->post("fdt_checkin_datetime"),
-				"fst_checkin_location" => $this->input->post("fst_checkin_location"),
-				"fin_distance_meters" => distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M"),
-				"fst_active" => 'A',
-				"fdt_insert_datetime" => date("Y-m-d H:i:s"),
-				"fin_insert_id" => 1
-			];
+				}else{
+					// Distance yg baru lebih jauh, hiraukan
+					$mode ="ignore";
+				}
+
+			}else{
+				//Data belum ada - Insert
+				$mode = "insert";
+				$checkout = $this->input->post("fdt_checkout_datetime");
+				if ($checkout == null){
+					$checkout = $this->input->post("fdt_checkin_datetime");
+				}
+				$data = [
+					"fst_sales_code"=>$salesCode,
+					"fst_cust_code" => $this->input->post("fst_cust_code"),
+					"fdt_checkin_datetime" => $this->input->post("fdt_checkin_datetime"),
+					"fdt_checkout_datetime" => $checkout,
+					"fst_checkin_location" => $this->input->post("fst_checkin_location"),
+					"fin_distance_meters" => distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M"),
+					"fst_active" => 'A',
+					"fdt_insert_datetime" => date("Y-m-d H:i:s"),
+					"fin_insert_id" => 1
+				];
+			}
 
 			$result = [];
-
 			$this->db->trans_start();
 			try{
-				$id = $this->trcheckinlog_model->insert($data);
+				if ($mode == "insert"){
+					$id = $this->trcheckinlog_model->insert($data);
+				}else if($mode=="update"){
+					$id = $data["fin_id"]; 
+					$this->trcheckinlog_model->update($data);
+				}
 
 
 				if(!empty($_FILES['photoloc']['tmp_name'])) {
 					//$config['upload_path']          = FCPATH . "uploads\\checkinlog\\";
 					$config['upload_path']          =  APPPATH . "../uploads/checkinlog/";
-					$config['file_name']			=  md5('doc_'. $id);  //'doc_'. $insertId .'_0'. '.pdf' ;
+					$config['file_name']			=  md5('doc_'. $id) . "_" . time();  //'doc_'. $insertId .'_0'. '.pdf' ;
 					$config['overwrite']			= TRUE;
 					$config['file_ext_tolower']		= TRUE;
 					$config['allowed_types']        = 'jpg|png'; //'gif|jpg|png';

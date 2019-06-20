@@ -59,4 +59,11 @@ class trcheckinlog_model extends MY_Model {
 		
 		return $datas;
 	}
+
+	public function getDataByDate($fst_sales_code,$fst_cust_code,$fdt_date){
+		$ssql = "select * from trcheckinlog where fst_sales_code = ? and fst_cust_code = ? and date(fdt_checkin_datetime) = ? order by fin_distance_meters limit 1";
+		$qr = $this->db->query($ssql,[$fst_sales_code,$fst_cust_code,$fdt_date]);
+		$rw = $qr->row();
+		return $rw;
+	}
 }

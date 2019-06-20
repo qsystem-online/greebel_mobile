@@ -275,10 +275,11 @@ class Sales extends MY_Controller {
 		];
 
 		$this->list['columns']=[
+			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_id'],
 			['title' => 'Sales', 'width'=>'10%', 'data'=>'fst_sales'],
 			['title' => 'Customer', 'width'=>'25%', 'data'=>'fst_customer'],
-			['title' => 'Date', 'width' =>'10%', 'data'=>'fdt_checkin_date'],
-			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance'],
+			['title' => 'Date', 'width' =>'10%', 'data'=>'fdt_checkin_datetime'],
+			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance_meters'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
 
@@ -304,9 +305,7 @@ class Sales extends MY_Controller {
 		$dateStart = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
 		$dateEnd = dateFormat(trim($arrDateLog[1]),"j/m/Y","Y-m-d");
 	
-
-
-
+		/*
 		$this->datatables->setTableName("
 			(SELECT CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
@@ -317,6 +316,18 @@ class Sales extends MY_Controller {
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd' 
 			GROUP BY a.fst_sales_code,a.fst_cust_code,DATE(fdt_checkin_datetime) 		
+			) as trcheckinlog
+		");
+		*/
+		$this->datatables->setTableName("
+			(SELECT a.fin_id,
+			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
+			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
+			fdt_checkin_datetime,fin_distance_meters,a.fst_active
+			FROM trcheckinlog a 
+			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
+			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd' 
 			) as trcheckinlog
 		");
 		
@@ -335,7 +346,7 @@ class Sales extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			
-			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_date"]);
+			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
 			$data["action"]	= "<div style='font-size:16px'>
 				<a class='btn-detail' href='#' data-id=''>Detail</a>				
 			</div>";
@@ -362,6 +373,28 @@ class Sales extends MY_Controller {
 		redirect(base_url() ."uploads/checkinlog/" . $pic, 'auto', $code = NULL);
 	}
 
+	public function get_log_pics($id){
+		//$pic = md5("doc_" . $id) . ".jpg";
+		$pic = md5("doc_" . $id) . "*";
+		
+		//$pic ="*.*";
+
+		//$dir = APPPATH . '..\\uploads\\checkinlog\\' . $pic;
+		//$dir = APPPATH . '..\\uploads\\checkinlog\\';
+		$dir = APPPATH . '../uploads/checkinlog/';
+		chdir($dir);
+
+		//$dir = APPPATH . '../uploads/checkinlog/' . $pic;
+		//echo $dir;
+		//$arrfiles = glob(base_url()."uploads/checkinlog/". $pic . "*");
+		$arrFiles = glob($pic);
+		
+		$result =[
+			"files"=>$arrFiles
+		];
+		//var_dump($arrfiles);
+		$this->json_output($result);
+	}
 
     public function tracking(){
 		$this->load->library("menus");

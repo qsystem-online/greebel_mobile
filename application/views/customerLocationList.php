@@ -3,7 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <!-- <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
-
+<style>
+#map {
+	height: 500px;
+}
+</style>
 <section class="content-header">
 	<h1><?=$page_name?><small>List</small></h1>
 	<ol class="breadcrumb">
@@ -37,15 +41,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<span>Search on:</span>
 					<span>
                         <select id="selectSearch" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">                            
-                            <?php
-                                foreach($arrSearch as $key => $value){ ?>
-                                    <option value=<?=$key?>><?=$value?></option>
-                                <?php
-                                }
-							// <option value="a.fin_id">No.Transaksi</option>
-							// <option value="a.fst_customer_name">Customer</option>
-                            // <option value="c.fst_salesname">Sales Name</option>
-                            ?>
+                            <?php foreach($arrSearch as $key => $value){ ?>
+								<option value=<?=$key?>><?=$value?></option>
+                            <?php } ?>
 						</select>
 					</span>
 				</div>
@@ -68,15 +66,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </button>
       </div>
       <div class="modal-body">
-        
+	  	<div id="map"> </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="map">test </div>
+
 
 <script type="text/javascript">
+	var map;
+	var marker;
 	$(function(){	
 		
 
@@ -137,20 +137,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$(".btn-map").click(function(event){
 				event.preventDefault();
+				var trRow = $(this).parents('tr');
+				table = $('#tblList').DataTable();	
+				var row = table.row( trRow );
+				data = row.data();
+
+				arrLocation = data.fst_cust_location.split(',');
+				markerLocation = {lat: parseFloat(arrLocation[0]), lng: parseFloat(arrLocation[1])};
+				console.log(markerLocation);
+				addMarker(markerLocation);
 				$('#mapModal').modal('show');
 			});
 		});
 	});
 
+	function addMarker(location){
+		//myLatLng = {lat: parseFloat(v.fst_lat), lng: parseFloat(v.fst_log)};
+		try{
+			//marker.setMap(null);
+		}catch(err){
+
+		}
+		marker.setPosition(location);
+		
+		map.setCenter(location);    
+	}
+
 	function initMap() {
-	
         var myLatLng = {lat: -6.1842827, lng: 106.6746338};
-        var myLatLng2 = {lat: -6.1825369, lng: 106.7749226};
+		
 
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 10,
             center: myLatLng
         });
+
+		marker = new google.maps.Marker({
+			position: myLatLng,
+			map: map,
+			label: 'A',
+			title: 'customer'
+		});
+
 	}
 	
 </script>
