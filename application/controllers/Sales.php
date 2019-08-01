@@ -278,8 +278,9 @@ class Sales extends MY_Controller {
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_id'],
 			['title' => 'Sales', 'width'=>'10%', 'data'=>'fst_sales'],
 			['title' => 'Customer', 'width'=>'25%', 'data'=>'fst_customer'],
-			['title' => 'Date', 'width' =>'10%', 'data'=>'fdt_checkin_datetime'],
+			['title' => 'Date', 'width' =>'15%', 'data'=>'fdt_checkin_datetime'],
 			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance_meters'],
+			['title' => 'Duration', 'width' =>'15%', 'data'=>'fin_visit_duration','className'=>'dt-body-right text-right'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
 
@@ -323,7 +324,8 @@ class Sales extends MY_Controller {
 			(SELECT a.fin_id,
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
-			fdt_checkin_datetime,fin_distance_meters,a.fst_active
+			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
@@ -347,6 +349,11 @@ class Sales extends MY_Controller {
 			//action
 			
 			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
+			$diff = strtotime($data["fdt_checkout_datetime"]) - strtotime($data["fdt_checkin_datetime"]);
+			$days = floor($diff/86400);
+			$diff = $diff % 86400;
+			$days = $days == 0 ? "": $days .' days ';
+			$data["fin_visit_duration"] = $days . gmdate("H:i:s", $diff);
 			$data["action"]	= "<div style='font-size:16px'>
 				<a class='btn-detail' href='#' data-id=''>Detail</a>				
 			</div>";
@@ -461,4 +468,66 @@ class Sales extends MY_Controller {
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }
+
+	public function record2Excel(){
+		
+		$datelog = $this->input->get("dateLog");
+		//selectSearch
+		
+		$arrDateLog = explode("-",$datelog);
+		$dateStart = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateLog[1]),"j/m/Y","Y-m-d");
+		
+		$ssql = "SELECT a.fin_id,
+			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
+			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
+			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
+			FROM trcheckinlog a 
+			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
+			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd'";
+	
+		$query = $this->db->query($ssql,[]);
+		$rs = $query->result();
+		
+		/**
+		print_r($rs[0]);
+		stdClass Object ( [fin_id] => 1583 [fst_sales] => JB3 - JB3 [fst_sales_code] => JB3 [fst_customer] => AA003 - AA JAYA [fst_cust_code] => AA003 [fdt_checkin_datetime] => 2019-07-04 11:47:08 [fdt_checkout_datetime] => 2019-07-04 11:47:11 [fin_distance_meters] => 4 [fst_active] => A [fin_visit_duration] => 00:00:03 )
+		**/
+		
+		$this->load->library('phpspreadsheet');
+		
+		
+		//echo FCPATH . "assets\\templates\\". "template_sales_log.xlsx";		 
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");		
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		
+		//$sheet->setTitle('Coba Aja');
+		$iRow = 4;
+		$sheet->setCellValue("B2", $datelog); 
+		foreach($rs as $rw){
+			$sheet->setCellValue("A$iRow", $rw->fin_id); 
+			$sheet->setCellValue("B$iRow", $rw->fst_sales);
+			$sheet->setCellValue("C$iRow", $rw->fst_customer);
+			$sheet->setCellValue("D$iRow", $rw->fdt_checkin_datetime);
+			$sheet->setCellValue("E$iRow", $rw->fin_distance_meters);
+			$sheet->setCellValue("F$iRow", $rw->fin_visit_duration);
+			$iRow++;
+		}
+		
+		//var_dump($spreadsheet);
+		$this->phpspreadsheet->save("test",$spreadsheet);
+		//$this->phpspreadsheet->save("test-coba");
+		
+		
+	}
+	
+		
 }

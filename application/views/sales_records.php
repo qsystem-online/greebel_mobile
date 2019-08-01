@@ -7,6 +7,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	.additional-schedule{
 		background-color: #f5bebe !important;
 	}
+	/* Style buttons */
+.btn {
+  background-color: DodgerBlue; /* Blue background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 12px 16px; /* Some padding */
+  font-size: 16px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
+}
 </style>
 <section class="content-header">
 	<h1><?=$page_name?><small>List</small></h1>
@@ -58,6 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</span>
 				</div>
 				<table id="tblList" class="table table-bordered table-hover table-striped"></table>
+				<button id="btnExport2Excel" class="btn"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
 			</div>
 			<!-- /.box-body -->
 			<div class="box-footer">
@@ -122,16 +137,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					$(nRow).addClass("additional-schedule");
 				}
-				
-
-				console.log("nRow :");
-				console.log(nRow);
-				console.log("aData :");
-				console.log(aData);
-				console.log("iDisplayIndex");
-				console.log(iDisplayIndex);
-
-            	
         	},
 		}).on('draw',function(){	
 			$(".btn-detail").click(function(event){
@@ -161,7 +166,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			window.open("<?= base_url() ?>sales/show_log_pic/" + id,"blank","",true);
 
 		});
-		
+		$("#btnExport2Excel").click(function(e){
+			e.preventDefault();
+			window.location = "<?= base_url() ?>sales/record2Excel/?dateLog=" + $("#date-log").val();
+			//window.open("<?= base_url() ?>sales/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
+		});
 
 
 	});

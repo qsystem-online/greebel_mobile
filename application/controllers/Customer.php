@@ -196,8 +196,8 @@ class Customer extends MY_Controller {
         $this->list['pKey']="id";
 		$this->list['fetch_list_data_ajax_url']=site_url().'customer/fetch_list_location_data';
         $this->list['arrSearch']=[
-            'a.fst_cust_code' => 'Code',
-            'a.fst_cust_name' => 'Name'
+            'fst_cust_code' => 'Code',
+            'fst_cust_name' => 'Name'
 		];
 
         $this->list['breadcrumbs']=[

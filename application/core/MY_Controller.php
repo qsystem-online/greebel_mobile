@@ -9,14 +9,16 @@ class MY_Controller extends CI_Controller {
 
 	public function __construct(){
 		parent::__construct();
-
+		
 		$this->lang->load("general","english");
 
+		
 		// Check User Login and Session expired
 		if(!$this->aauth->user()){
 			redirect(site_url().'login', 'refresh');	
 		}
-
+		
+		
 		if($this->aauth->is_session_timeout()){
 			if ($this->input->is_ajax_request()){
 				$this->ajxResp["status"] = AJAX_STATUS_SESSION_EXPIRED;
