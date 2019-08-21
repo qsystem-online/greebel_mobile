@@ -90,3 +90,30 @@
             }
         }
     }
+
+    function visit_day_name($day){
+        switch ($day) {
+            case 1:
+                return lang("Senin");
+                break;
+            case 2:
+                return lang("Selasa");
+                break;
+            case 3:
+                return lang("Rabu");
+                break;
+            case 4:
+                return lang("Kamis");
+                break;
+            case 5:
+                return lang("Jumat");
+                break;
+            case 6:
+                return lang("Sabtu");
+                break;
+            case 7:
+                return lang("Minggu");
+                break;
+        }
+
+    }

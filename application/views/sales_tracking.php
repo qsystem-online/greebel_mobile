@@ -141,14 +141,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     var iPart = 1;
                     $.each(resp,function(i,v){
-                        
+                        if (v.isOnSchedule){
+                            icon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+                        }else{
+                            icon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
+                        }
 
-                        
                         myLatLng = {lat: parseFloat(v.fst_lat), lng: parseFloat(v.fst_log)};
                         var marker = new google.maps.Marker({
                             position: myLatLng,
                             map: map,
                             label: arrLabel[i],
+                            icon: {                             
+                                url: icon
+                            },
                             /*
                             label:{
                                 text:v.fst_cust_name,

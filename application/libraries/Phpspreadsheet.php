@@ -14,15 +14,25 @@ class Phpspreadsheet extends Spreadsheet {
 		
 		$spreadsheet =  $spreadsheet == null ? $this : $spreadsheet;
 		
-		//$writer = new Xlsx($spreadsheet);
 		$writer = new Xlsx($spreadsheet);
+		//$writer = new Xlsx($spreadsheet);
 		
 		//$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
 		//$writer->save($filename.'.xlsx');
 		
+		/*
+		$class = \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class;
+		\PhpOffice\PhpSpreadsheet\IOFactory::registerWriter('Pdf', $class);
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Pdf');
 		
+		$writer->save("06featuredemo.pdf");
+
+		die();
+		*/
+
 		header('Content-Type: application/vnd.ms-excel'); // generate excel file
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		//header('Content-Disposition: inline;filename="'. $filename .'.xlsm"'); 
         header('Cache-Control: max-age=0');        
         $writer->save('php://output');	// download file 		
 	}

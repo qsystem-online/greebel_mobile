@@ -278,7 +278,8 @@ class Sales extends MY_Controller {
 			['title' => 'ID', 'width'=>'10%', 'data'=>'fin_id'],
 			['title' => 'Sales', 'width'=>'10%', 'data'=>'fst_sales'],
 			['title' => 'Customer', 'width'=>'25%', 'data'=>'fst_customer'],
-			['title' => 'Date', 'width' =>'15%', 'data'=>'fdt_checkin_datetime'],
+			['title' => 'Date IN', 'width' =>'15%', 'data'=>'fdt_checkin_datetime'],
+			['title' => 'Date Out', 'width' =>'15%', 'data'=>'fdt_checkout_datetime'],
 			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance_meters'],
 			['title' => 'Duration', 'width' =>'15%', 'data'=>'fin_visit_duration','className'=>'dt-body-right text-right'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
@@ -324,7 +325,7 @@ class Sales extends MY_Controller {
 			(SELECT a.fin_id,
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
-			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
+			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,c.fin_visit_day,			
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
@@ -394,13 +395,29 @@ class Sales extends MY_Controller {
 		//$dir = APPPATH . '../uploads/checkinlog/' . $pic;
 		//echo $dir;
 		//$arrfiles = glob(base_url()."uploads/checkinlog/". $pic . "*");
-		$arrFiles = glob($pic);
-		
+		$arrFiles = glob($pic);		
 		$result =[
 			"files"=>$arrFiles
 		];
 		//var_dump($arrfiles);
 		$this->json_output($result);
+	}
+
+	public function show_link_pics($id)	{
+		$pic = md5("doc_" . $id) . "*";		
+		$dir = APPPATH . '../uploads/checkinlog/';
+		chdir($dir);
+		$arrFiles = glob($pic);	
+		
+		
+
+		
+
+       	$this->data["arrFiles"] = $arrFiles;
+		$this->parser->parse('pages/checkin_pic',$this->data);
+		
+
+		
 	}
 
     public function tracking(){
@@ -471,7 +488,9 @@ class Sales extends MY_Controller {
 
 	public function record2Excel(){
 		
+		$this->load->model("customer_model");
 		$datelog = $this->input->get("dateLog");
+
 		//selectSearch
 		
 		$arrDateLog = explode("-",$datelog);
@@ -482,7 +501,8 @@ class Sales extends MY_Controller {
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
-			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
+			c.fin_visit_day 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
@@ -491,16 +511,11 @@ class Sales extends MY_Controller {
 		$query = $this->db->query($ssql,[]);
 		$rs = $query->result();
 		
-		/**
-		print_r($rs[0]);
-		stdClass Object ( [fin_id] => 1583 [fst_sales] => JB3 - JB3 [fst_sales_code] => JB3 [fst_customer] => AA003 - AA JAYA [fst_cust_code] => AA003 [fdt_checkin_datetime] => 2019-07-04 11:47:08 [fdt_checkout_datetime] => 2019-07-04 11:47:11 [fin_distance_meters] => 4 [fst_active] => A [fin_visit_duration] => 00:00:03 )
-		**/
-		
 		$this->load->library('phpspreadsheet');
 		
-		
 		//echo FCPATH . "assets\\templates\\". "template_sales_log.xlsx";		 
-		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");		
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");		
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xlsx");		
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->getPageSetup()->setFitToWidth(1);
 		$sheet->getPageSetup()->setFitToHeight(0);
@@ -509,25 +524,53 @@ class Sales extends MY_Controller {
 		$sheet->getPageMargins()->setLeft(0.5);
 		$sheet->getPageMargins()->setBottom(1);
 		
+		
 		//$sheet->setTitle('Coba Aja');
 		$iRow = 4;
 		$sheet->setCellValue("B2", $datelog); 
+		
+		$inScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE,
+				'color' => array('rgb' => 'FFFFFF')
+			)
+		];
+
+		$outOfScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+				'color' => array('rgb' => 'F5BEBE')
+			)
+		];
+		
 		foreach($rs as $rw){
+			if ($this->customer_model->inSchedule($rw->fst_cust_code,$rw->fdt_checkin_datetime)){
+				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
+			}else{
+				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
+			}
+
 			$sheet->setCellValue("A$iRow", $rw->fin_id); 
 			$sheet->setCellValue("B$iRow", $rw->fst_sales);
 			$sheet->setCellValue("C$iRow", $rw->fst_customer);
 			$sheet->setCellValue("D$iRow", $rw->fdt_checkin_datetime);
-			$sheet->setCellValue("E$iRow", $rw->fin_distance_meters);
+			$sheet->setCellValue("E$iRow", $rw->fdt_checkout_datetime);
 			$sheet->setCellValue("F$iRow", $rw->fin_visit_duration);
+			$sheet->setCellValue("G$iRow", $rw->fin_distance_meters);
+			$sheet->setCellValue("H$iRow", visit_day_name($rw->fin_visit_day));
+			$sheet->setCellValue("I$iRow", 'Photo');
+			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
+			
+			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);
+
 			$iRow++;
 		}
 		
 		//var_dump($spreadsheet);
-		$this->phpspreadsheet->save("test",$spreadsheet);
-		//$this->phpspreadsheet->save("test-coba");
-		
-		
+		$this->phpspreadsheet->save("sales_report_" . date("Ymd") ,$spreadsheet);
+		//$this->phpspreadsheet->save("test-coba");		
 	}
 	
-		
+	
 }

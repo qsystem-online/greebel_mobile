@@ -26,17 +26,15 @@ class trcheckinlog_model extends MY_Model {
 	}
 
 	public function getDataTracking($fst_sales_code,$fdt_date){
-		$ssql = "select a.*,b.fst_cust_name from trcheckinlog a
+		$this->load->model("customer_model");
+		$ssql = "select a.*,b.fst_cust_name,b.fin_visit_day from trcheckinlog a
 			inner join tbcustomers b on a.fst_cust_code = b.fst_cust_code
 			where a.fst_sales_code = ?  and fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ? order by fin_id";
 
 		
 		$qr = $this->db->query($ssql,[$fst_sales_code,$fdt_date,$fdt_date . " 23:59:59"]);
-		//echo $this->db->last_query();
-		$rs = $qr->result();
-		//var_dump($rs);
-		//die();
-
+		
+		$rs = $qr->result();		
 		$datas = [];
 		$i = 0;
 		foreach($rs as $rw){
@@ -52,6 +50,7 @@ class trcheckinlog_model extends MY_Model {
 				"fst_lat" => $locLat,
 				"fst_log" => $locLog,
 				"fdt_checkin_datetime" => $rw->fdt_checkin_datetime,
+				"isOnSchedule" => $this->customer_model->inSchedule($rw->fst_cust_code,$rw->fdt_checkin_datetime)
 			];
 			$datas[] = $data;
 			$i++;
