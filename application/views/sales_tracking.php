@@ -142,12 +142,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     var iPart = 1;
                     $.each(resp,function(i,v){
                         if (v.isOnSchedule){
-                            icon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+                            icon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
                         }else{
                             icon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
                         }
 
                         myLatLng = {lat: parseFloat(v.fst_lat), lng: parseFloat(v.fst_log)};
+                        
+                        if(i == 1){
+                            map.setCenter({lat:myLatLng.lat, lng:myLatLng.lng});
+                        }
+
                         var marker = new google.maps.Marker({
                             position: myLatLng,
                             map: map,
@@ -163,7 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 fontWeight:"bold",
                             },
                             */
-                            title: v.fst_cust_name
+                            title: "(" + v.fin_id + ")" + v.fst_cust_name,
                         });    
 
                         arrMarker.push(marker);
@@ -262,7 +267,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         var myLatLng2 = {lat: -6.1825369, lng: 106.7749226};
 
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 10,
+            zoom: 15,
             center: myLatLng
         });
 

@@ -14,8 +14,9 @@ class Phpspreadsheet extends Spreadsheet {
 		
 		$spreadsheet =  $spreadsheet == null ? $this : $spreadsheet;
 		
-		$writer = new Xlsx($spreadsheet);
 		//$writer = new Xlsx($spreadsheet);
+		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+
 		
 		//$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
 		//$writer->save($filename.'.xlsx');
@@ -31,17 +32,21 @@ class Phpspreadsheet extends Spreadsheet {
 		*/
 
 		header('Content-Type: application/vnd.ms-excel'); // generate excel file
-		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Content-Disposition: attachment;filename="'. $filename .'.xls"'); 
 		//header('Content-Disposition: inline;filename="'. $filename .'.xlsm"'); 
         header('Cache-Control: max-age=0');        
         $writer->save('php://output');	// download file 		
 	}
 
-	public function load($filename){
+	public function load($filename = null){
 		//$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('template.xlsx');
 		//$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filename);
-		$spreadsheet = IOFactory::load($filename);
+		if($filename == null){
+			//return new Spreadsheet();
+			$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+		}
 		
+		$spreadsheet = IOFactory::load($filename);		
 		return $spreadsheet;
 		/*
 		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('template.xlsx');
