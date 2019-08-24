@@ -23,14 +23,14 @@ class API extends CI_Controller {
     }
 	
 	
-    public function feed_customers(){
+    public function feed_customers($returnJson = 1){
 		$this->load->model("customer_model");
 		$this->load->model("trlogs_model");
 		
 		$appid = $this->input->post("app_id");	
-		
 		//cek last sync data from server
-		if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
+		//if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
+		if (true){
 			$customers = $this->customer_model->getDataByAppId($appid);
 			$result = [
 				"post" => $_POST,
@@ -45,52 +45,136 @@ class API extends CI_Controller {
 				"message"=>"Data per tgl " . date("Y-m-d") . " not ready yet !"
 			];
 		}
+
+		if($returnJson === 0){
+			return $result;
+		}
+
 		header("Content-Type: application/json");	
         echo json_encode($result);
 	}
 
-	public function feed_items(){
+	public function feed_items($returnJson = 1){
 		$this->load->model("item_model");
 		$appid = $this->input->post("app_id");	
 		$items = $this->item_model->getData();
-		header("Content-Type: application/json");	
-        $result = [
+
+		$result = [
             "post" => $_POST,
             "status"=>"OK",
             "message"=>"OK",
             "data"=>$items
 		];	
+		
+		
+		if($returnJson === 0){
+			return $result;
+		}
+
+		header("Content-Type: application/json");	
         echo json_encode($result);
 	}
 
-	public function feed_promo_free_item(){
+	public function feed_company($returnJson = 1){
+		$this->load->model("company_model");
+		$appId = $this->input->post("app_id");	
+		$company = $this->company_model->getDataByAppId($appId);
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$company
+		];	
+        
+		if($returnJson === 0){
+			return $result;
+		}
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+
+	public function feed_promo_free_item($returnJson = 1){
 		$this->load->model("promo_free_item_model");
 		$appid = $this->input->post("app_id");	
 		$items = $this->promo_free_item_model->getData();
-		header("Content-Type: application/json");	
-        $result = [
+		$result = [
             "post" => $_POST,
             "status"=>"OK",
             "message"=>"OK",
             "data"=>$items
-		];		
+		];
+		if($returnJson === 0){
+			return $result;
+		}
+		header("Content-Type: application/json");	
         echo json_encode($result);
 	}
 	
-	public function feed_target(){
+	public function feed_target($returnJson = 1){
 		$this->load->model("target_model");
 		$appid = $this->input->post("app_id");	
 		$items = $this->target_model->getData();
-		header("Content-Type: application/json");	
-        $result = [
+		$result = [
             "post" => $_POST,
             "status"=>"OK",
             "message"=>"OK",
             "data"=>$items
-		];	
+		];
+		if($returnJson === 0){
+			return $result;
+		}
+		header("Content-Type: application/json");	
         echo json_encode($result);
 	}
+
+	public function feed_all_data(){
+		$tmpResult =  $this->feed_customers(0);
+		$appid = $this->input->post("app_id");
+
+		if ($tmpResult["status"] == "OK"){
+			$arrCustomer  = $tmpResult["data"];
+
+			$tmpResult =  $this->feed_items(0);
+			$arrItems = $tmpResult["data"];
+
+			$tmpResult =  $this->feed_company(0);
+			$arrCompany = $tmpResult["data"];
+
+			$tmpResult =  $this->feed_promo_free_item(0);
+			$arrPromo = $tmpResult["data"];
+
+			$tmpResult =  $this->feed_target(0);
+			$arrTarget = $tmpResult["data"];
+
+			$data = [
+				"arrCustomer" => $arrCustomer,
+				"arrItems" => $arrItems,
+				"arrCompany" => $arrCompany,
+				"arrPromo" => $arrPromo,
+				"arrTarget" => $arrTarget
+			];
+
+			$result = [
+				"post" => $_POST,
+				"status"=>"OK",
+				"message"=>"OK",
+				"data"=>$data
+			];
+
+
+		}else{
+			$result = $tmpResult;
+		}
+		header("Content-Type: application/json");	
+		echo json_encode($result);
+		
+
+	} 
 	
+
+
+
+
 
 	public function generate_dummy_customer(){
 		$this->load->model("customer_model");
