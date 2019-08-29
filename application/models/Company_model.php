@@ -25,7 +25,7 @@ class Company_model extends MY_Model {
 
     public function getDataByAppId($appId){
 
-        $ssql = "select b.fst_code,b.fst_name from tbappid a inner join tbcompany b on a.fst_company_code = b.fst_code
+        $ssql = "select b.fst_code,b.fst_name,b.fin_price_group_id from tbappid a inner join tbcompany b on a.fst_company_code = b.fst_code
             where a.fst_appid = ?";
 
         $query = $this->db->query($ssql,[$appId]);
