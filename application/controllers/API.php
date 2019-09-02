@@ -366,4 +366,9 @@ class API extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($result);
 	}
+
+	public function neworder(){
+		var_dump($_POST);
+		
+	}
 }
