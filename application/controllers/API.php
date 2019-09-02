@@ -371,7 +371,11 @@ class API extends CI_Controller {
 		var_dump($_POST);
 		echo "<br><br><br><br><br>";
 		
-		$detail =$_POST["detail"];
+		$details =$_POST["details"];
+
+		//$detail = $details["detail"];
+
+
 		var_dump($detail);
 		
 	}
