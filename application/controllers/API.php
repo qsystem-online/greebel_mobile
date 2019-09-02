@@ -369,6 +369,10 @@ class API extends CI_Controller {
 
 	public function neworder(){
 		var_dump($_POST);
+		echo "<br><br><br><br><br>";
+		
+		$detail =$_POST["detail"];
+		var_dump($detail);
 		
 	}
 }
