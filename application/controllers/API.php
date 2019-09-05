@@ -368,6 +368,7 @@ class API extends CI_Controller {
 	}
 
 	public function neworder(){
+		$this->load->model("trorder_model");
 		/*
 		array(6) {
 			["fdt_order_datetime"]=>
@@ -384,13 +385,62 @@ class API extends CI_Controller {
 			string(6) "ABE001"
 			}
 		  */
-
-		var_dump($_POST);
-		echo "\r\n";		
-		$details =$_POST["details"];
-		$objDetails =  json_decode($details);
-		//$detail = $details["detail"];
-		var_dump($objDetails);
 		
+		$ssql ="select b.fst_sales_code from tbcustomers a 
+			inner join  tbappid b on a.fst_sales_code = b.fst_sales_code 
+			where fst_cust_code = ? and b.fst_appid = ?";
+		
+		$qr = $this->db->query($ssql,[$this->input->post("fst_cust_code"),$this->input->post("app_id")]);
+		$rw = $qr->row();
+		$result =[
+			"status"=>"NOK",
+			"order_id"=>$this->input->post("fst_order_id"),
+			"message"=>"",
+		];
+
+		if(!rw){
+			$result["message"] = "Invalid sales";
+		}else{
+
+			$dataH = [
+				"fst_order_id" => $this->input->post("fst_order_id"),
+				"fst_cust_code"=> $this->input->post("fst_cust_code"),
+				"fst_sales_code" => $rw->fst_sales_code,
+				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
+				"fst_notes" => $this->input->post("fst_notes"),
+				"fst_appid" => $this->input->post("app_id"),
+				"fst_status" => $this->input->post("fst_status"),
+				"fst_active" => 'A',
+			];
+			
+			$this->db->trans_start();
+			$this->db->insert("tr_order",$dataH);
+			$details =$_POST["details"];
+			$objDetails =  json_decode($details);
+			foreach($objDetails as $detail){
+				//{"fst_item_code":"CCLT 320 COMPL","fst_satuan":"Ctn","fin_qty":2,"fin_price":72727.3},
+				$dataD = [
+					"fin_order_id"=>$dataH["fst_order_id"],
+					"fst_item_code"=>$detail->fst_item_code,
+					"fst_satuan"=>$detail->fst_satuan,
+					"fin_qty"=>$detail->fin_qty,
+					"fin_price"=>$detail->fin_price					
+				];
+				$this->db->insert("tr_order_details",$dataD);
+
+			}
+			var_dump($this->db->error());
+
+			if ($this->db->error() ){
+				$this->db->trans_complete();
+			}
+			$result =[
+				"status"=>"OK",
+				"order_id"=>$this->input->post("fst_order_id"),
+				"message"=>"",
+			];
+		}
+		header('Content-Type: application/json');
+		echo json_encode($result);
 	}
 }
