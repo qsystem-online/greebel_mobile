@@ -376,7 +376,7 @@ class API extends CI_Controller {
 		//$detail = $details["detail"];
 
 
-		var_dump($detail);
+		var_dump($details);
 		
 	}
 }
