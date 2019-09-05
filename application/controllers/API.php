@@ -398,7 +398,7 @@ class API extends CI_Controller {
 			"message"=>"",
 		];
 
-		if(!rw){
+		if(!$rw){
 			$result["message"] = "Invalid sales";
 		}else{
 
