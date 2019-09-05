@@ -415,8 +415,15 @@ class API extends CI_Controller {
 			
 			$this->db->trans_start();
 			$this->db->insert("tr_order",$dataH);
+			if ($this->db->error()["code"] != 0 ){
+				
+				var_dump($this->db->error());
+				die();
+			}
+
 			$details =$_POST["details"];
 			$objDetails =  json_decode($details);
+
 			foreach($objDetails as $detail){
 				//{"fst_item_code":"CCLT 320 COMPL","fst_satuan":"Ctn","fin_qty":2,"fin_price":72727.3},
 				$dataD = [
@@ -431,9 +438,12 @@ class API extends CI_Controller {
 			}
 			var_dump($this->db->error());
 
-			if ($this->db->error() ){
-				$this->db->trans_complete();
+			if ($this->db->error()["code"] == 0 ){
+				//$this->db->trans_complete();
+			}else{
+
 			}
+
 			$result =[
 				"status"=>"OK",
 				"order_id"=>$this->input->post("fst_order_id"),
