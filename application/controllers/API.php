@@ -231,8 +231,9 @@ class API extends CI_Controller {
 
 		$appid = $this->input->post("app_id");
 		$fin_id = $this->input->post("fin_id");
+		$fst_cust_code = $this->input->post("fst_cust_code");
 
-		$sales =  $this->appid_model->getSales($appid);
+		$sales =  $this->appid_model->getSales($appid,$fst_cust_code);
 		if($sales){
 			$salesCode = $sales->fst_sales_code;
 			
@@ -385,27 +386,22 @@ class API extends CI_Controller {
 			string(6) "ABE001"
 			}
 		  */
-		
-		$ssql ="select b.fst_sales_code from tbcustomers a 
-			inner join  tbappid b on a.fst_sales_code = b.fst_sales_code 
-			where fst_cust_code = ? and b.fst_appid = ?";
-		
-		$qr = $this->db->query($ssql,[$this->input->post("fst_cust_code"),$this->input->post("app_id")]);
-		$rw = $qr->row();
+
+		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),$this->input->post("fst_cust_code"));		
 		$result =[
 			"status"=>"NOK",
 			"order_id"=>$this->input->post("fst_order_id"),
 			"message"=>"",
 		];
 
-		if(!$rw){
+		if(!$rwSales){
 			$result["message"] = "Invalid sales";
 		}else{
 
 			$dataH = [
 				"fst_order_id" => $this->input->post("fst_order_id"),
 				"fst_cust_code"=> $this->input->post("fst_cust_code"),
-				"fst_sales_code" => $rw->fst_sales_code,
+				"fst_sales_code" => $rwSales->fst_sales_code,
 				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
 				"fst_notes" => $this->input->post("fst_notes"),
 				"fst_appid" => $this->input->post("app_id"),
