@@ -369,7 +369,9 @@ class API extends CI_Controller {
 	}
 
 	public function neworder(){
-		$this->load->model("trorder_model");
+		//$this->load->model("trorder_model");
+		$this->load->model("appid_model");
+
 		/*
 		array(6) {
 			["fdt_order_datetime"]=>
