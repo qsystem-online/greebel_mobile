@@ -368,15 +368,29 @@ class API extends CI_Controller {
 	}
 
 	public function neworder(){
+		/*
+		array(6) {
+			["fdt_order_datetime"]=>
+			string(19) "2019-09-04 16:55:12"
+			["fst_notes"]=>
+			string(14) "testing note 2"
+			["fst_order_id"]=>
+			string(13) "2019090416150"
+			["details"]=>
+			string(165) "[{"fst_item_code":"CCLT 320 COMPL","fst_satuan":"Ctn","fin_qty":2,"fin_price":72727.3},{"fst_item_code":"LP GC S","fst_satuan":"Ctn","fin_qty":1,"fin_price":145455}]"
+			["app_id"]=>
+			string(6) "JBTEST"
+			["fst_cust_code"]=>
+			string(6) "ABE001"
+			}
+		  */
+
 		var_dump($_POST);
-		echo "<br><br><br><br><br>";
-		
+		echo "\r\n";		
 		$details =$_POST["details"];
-
+		$objDetails =  json_decode($details);
 		//$detail = $details["detail"];
-
-
-		var_dump($details);
+		var_dump($objDetails);
 		
 	}
 }
