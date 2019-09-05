@@ -417,7 +417,9 @@ class API extends CI_Controller {
 			$this->db->insert("tr_order",$dataH);
 			if ($this->db->error()["code"] != 0 ){
 				
-				var_dump($this->db->error());
+				header('Content-Type: application/json');
+				$result["message"] = $this->db->error()["message"];
+				echo json_encode($result);				
 				die();
 			}
 
