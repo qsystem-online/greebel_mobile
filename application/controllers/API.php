@@ -436,8 +436,7 @@ class API extends CI_Controller {
 				$this->db->insert("tr_order_details",$dataD);
 
 			}
-			var_dump($this->db->error());
-
+			//var_dump($this->db->error());
 			if ($this->db->error()["code"] == 0 ){
 				//$this->db->trans_complete();
 			}else{
