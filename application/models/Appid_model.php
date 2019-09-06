@@ -25,7 +25,7 @@ class Appid_model extends MY_Model {
 			$query = $this->db->query($ssql,[$appid]);
 			return $query->row();
 		}else{
-			
+
 			$ssql = "select c.* from " . $this->tableName . " a
 				inner join tbcustomers b on a.fst_sales_code = b.fst_sales_code
 				inner join tbsales c on a.fst_sales_code = c.fst_sales_code
@@ -47,6 +47,14 @@ class Appid_model extends MY_Model {
 		}
 		return false;
 
-    }
+	}
+	
+	public function updateFCMToken($appid,$tokenFCM){
+		$data =[
+			"fst_fcm_token"=>"$tokenFCM"
+		];
+		$this->db->where($this->pkey,$appid);
+		$this->db->update($this->tableName,$data);
+	}
 
 }

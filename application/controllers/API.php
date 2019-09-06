@@ -187,15 +187,14 @@ class API extends CI_Controller {
 			$result = $tmpResult;
 		}
 		header("Content-Type: application/json");	
-		echo json_encode($result);
-		
-
+		echo json_encode($result);		
 	} 
-	
-
-
-
-
+	public function update_fcm_token(){
+		$this->load->model("appid_model");
+		$appid = $this->input->post("app_id");
+		$token  = $this->input->post("fcm_token");
+		$this->appid_model->updateFCMToken($appid,$token);
+	}
 
 	public function generate_dummy_customer(){
 		$this->load->model("customer_model");
