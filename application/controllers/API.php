@@ -127,6 +127,23 @@ class API extends CI_Controller {
         echo json_encode($result);
 	}
 
+	public function feed_order($returnJson = 1){
+		$this->load->model("trorder_model");
+		$appid = $this->input->post("app_id");	
+		$orderStatus = $this->trorder_model->getData();
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$orderStatus
+		];
+		if($returnJson === 0){
+			return $result;
+		}
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+
 	public function feed_all_data(){
 		$tmpResult =  $this->feed_customers(0);
 		$appid = $this->input->post("app_id");
@@ -146,12 +163,16 @@ class API extends CI_Controller {
 			$tmpResult =  $this->feed_target(0);
 			$arrTarget = $tmpResult["data"];
 
+			$tmpResult =  $this->feed_order(0);
+			$arrOrderStatus = $tmpResult["data"];
+
 			$data = [
 				"arrCustomer" => $arrCustomer,
 				"arrItems" => $arrItems,
 				"arrCompany" => $arrCompany,
 				"arrPromo" => $arrPromo,
-				"arrTarget" => $arrTarget
+				"arrTarget" => $arrTarget,
+				"arrOrderStatus" => $arrOrderStatus
 			];
 
 			$result = [
@@ -407,7 +428,7 @@ class API extends CI_Controller {
 				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
 				"fst_notes" => $this->input->post("fst_notes"),
 				"fst_appid" => $this->input->post("app_id"),
-				"fst_status" => $this->input->post("fst_status"),
+				"fst_status" => "UPLOADED",//$this->input->post("fst_status"),
 				"fst_active" => 'A',
 			];
 			
