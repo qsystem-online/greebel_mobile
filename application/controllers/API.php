@@ -130,7 +130,7 @@ class API extends CI_Controller {
 	public function feed_order($returnJson = 1){
 		$this->load->model("trorder_model");
 		$appid = $this->input->post("app_id");	
-		$orderStatus = $this->trorder_model->getData();
+		$orderStatus = $this->trorder_model->getDataStatusByAppid($appid);
 		$result = [
             "post" => $_POST,
             "status"=>"OK",
