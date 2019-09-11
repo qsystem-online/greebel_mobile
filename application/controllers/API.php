@@ -447,7 +447,7 @@ class API extends CI_Controller {
 			foreach($objDetails as $detail){
 				//{"fst_item_code":"CCLT 320 COMPL","fst_satuan":"Ctn","fin_qty":2,"fin_price":72727.3},
 				$dataD = [
-					"fin_order_id"=>$dataH["fst_order_id"],
+					"fst_order_id"=>$dataH["fst_order_id"],
 					"fst_item_code"=>$detail->fst_item_code,
 					"fst_satuan"=>$detail->fst_satuan,
 					"fin_qty"=>$detail->fin_qty,
