@@ -367,13 +367,14 @@ class API extends CI_Controller {
 
 	public function newcust(){
 		$this->load->model("appid_model");
-		$sales = $this->appid_model->getSales($this->input->post("app_id"));
+		$sales = $this->appid_model->getSales($this->input->post("app_id"),$this->input->post("fst_company_code"));
 		$data = [
 			"fst_cust_name" => $this->input->post("fst_cust_name"),
 			"fst_cust_address" =>$this->input->post("fst_cust_address"),
 			"fst_cust_phone" =>$this->input->post("fst_cust_phone"),
 			"fst_cust_location" => $this->input->post("fst_cust_location"),			
-			"fst_company_code" => $this->input->post("fst_company_code"),			
+			"fst_company_code" => $this->input->post("fst_company_code"),		
+			"fst_appid" => $this->input->post("app_id"),						
 			"fst_sales_code" => $sales->fst_sales_code,
 			"fst_active" => "A",
 			"fin_insert_id" => 1,
