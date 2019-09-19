@@ -374,7 +374,8 @@ class API extends CI_Controller {
 			"fst_cust_phone" =>$this->input->post("fst_cust_phone"),
 			"fst_cust_location" => $this->input->post("fst_cust_location"),			
 			"fst_appid" => $this->input->post("app_id"),
-			"fst_company_code" => $this->input->post("fst_company_code"),					
+			"fst_company_code" => $this->input->post("fst_company_code"),	
+			"fst_status" => "UPLOADED",
 			"fst_active" => "A",
 			"fin_insert_id" => 1,
 			"fdt_insert_datetime" => date("Y-m-d H:i:s")
