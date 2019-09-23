@@ -19,9 +19,11 @@ class Appid_model extends MY_Model {
 
 	public function getSales($appid,$companyCode,$custCode = ""){
 		if ($custCode == ""){
+
 			$ssql = "select b.* from " . $this->tableName . " a
 				inner join tbsales b on a.fst_sales_code = b.fst_sales_code
-				where a.fst_appid = ? and fst_company_code = ?";
+				where a.fst_appid = ? and a.fst_company_code = ?";
+
 			$query = $this->db->query($ssql,[$appid,$companyCode]);
 			return $query->row();
 		}else{
@@ -29,7 +31,7 @@ class Appid_model extends MY_Model {
 			$ssql = "select c.* from " . $this->tableName . " a
 				inner join tbcustomers b on a.fst_sales_code = b.fst_sales_code
 				inner join tbsales c on a.fst_sales_code = c.fst_sales_code
-				where a.fst_appid = ? and b.fst_cust_code = ?";
+				where b.fst_cust_code = ?";
 			$query = $this->db->query($ssql,[$appid,$custCode]);
 			return $query->row();
 
