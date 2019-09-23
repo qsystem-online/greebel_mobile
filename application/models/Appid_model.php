@@ -32,7 +32,7 @@ class Appid_model extends MY_Model {
 				inner join tbcustomers b on a.fst_sales_code = b.fst_sales_code
 				inner join tbsales c on a.fst_sales_code = c.fst_sales_code
 				where b.fst_cust_code = ?";
-			$query = $this->db->query($ssql,[$appid,$custCode]);
+			$query = $this->db->query($ssql,[$custCode]);
 			return $query->row();
 
 		}
