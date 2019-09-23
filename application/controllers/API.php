@@ -430,7 +430,7 @@ class API extends CI_Controller {
 			}
 		  */
 
-		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),$this->input->post("fst_cust_code"));		
+		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),null,$this->input->post("fst_cust_code"));		
 		$result =[
 			"status"=>"NOK",
 			"order_id"=>$this->input->post("fst_order_id"),
