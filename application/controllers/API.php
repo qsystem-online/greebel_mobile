@@ -253,7 +253,7 @@ class API extends CI_Controller {
 		$fin_id = $this->input->post("fin_id");
 		$fst_cust_code = $this->input->post("fst_cust_code");
 
-		$sales =  $this->appid_model->getSales($appid,$fst_cust_code);
+		$sales =  $this->appid_model->getSales($appid,null,$fst_cust_code);
 		if($sales){
 			$salesCode = $sales->fst_sales_code;
 			
