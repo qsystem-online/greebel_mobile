@@ -146,7 +146,7 @@ class API extends CI_Controller {
 
 	public function feed_newcustomer($returnJson = 1){
 		$this->load->model("newcustomer_model");
-		$appid = $this->input->post("app_id");	
+		$appId = $this->input->post("app_id");	
 		$newCustomers = $this->newcustomer_model->getDataByAppId($appId);
 		$result = [
             "post" => $_POST,
