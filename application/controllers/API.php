@@ -144,6 +144,24 @@ class API extends CI_Controller {
         echo json_encode($result);
 	}
 
+	public function feed_newcustomer($returnJson = 1){
+		$this->load->model("newcustomer_model");
+		$appid = $this->input->post("app_id");	
+		$newCustomers = $this->newcustomer_model->getDataByAppId($appId);
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$newCustomers
+		];
+		if($returnJson === 0){
+			return $result;
+		}
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+
+
 	public function feed_all_data(){
 		$tmpResult =  $this->feed_customers(0);
 		$appid = $this->input->post("app_id");
@@ -166,13 +184,18 @@ class API extends CI_Controller {
 			$tmpResult =  $this->feed_order(0);
 			$arrOrderStatus = $tmpResult["data"];
 
+			$tmpResult =  $this->feed_newcustomer(0);
+			$arrNewCustomer = $tmpResult["data"];
+
+
 			$data = [
 				"arrCustomer" => $arrCustomer,
 				"arrItems" => $arrItems,
 				"arrCompany" => $arrCompany,
 				"arrPromo" => $arrPromo,
 				"arrTarget" => $arrTarget,
-				"arrOrderStatus" => $arrOrderStatus
+				"arrOrderStatus" => $arrOrderStatus,
+				"arrNewCustomer" => $arrNewCustomer,
 			];
 
 			$result = [
@@ -189,6 +212,8 @@ class API extends CI_Controller {
 		header("Content-Type: application/json");	
 		echo json_encode($result);		
 	} 
+
+
 	public function update_fcm_token(){
 		$this->load->model("appid_model");
 		$appid = $this->input->post("app_id");
@@ -450,6 +475,8 @@ class API extends CI_Controller {
 				"fst_appid" => $this->input->post("app_id"),
 				"fst_status" => "UPLOADED",//$this->input->post("fst_status"),
 				"fst_active" => 'A',
+				"fin_insert_id" => 1,
+				"fdt_insert_datetime" => date("Y-m-d H:i:s"),
 			];
 			
 			$this->db->trans_start();

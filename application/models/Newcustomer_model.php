@@ -48,11 +48,7 @@ class Newcustomer_model extends MY_Model {
     }
     
     public function getDataByAppId($appId){
-        $ssql = "select a.*,c.fst_cust_location from ". $this->tableName ." a 
-            inner join tbappid b on a.fst_sales_code = b.fst_sales_code
-            left join tblocation c on a.fst_cust_code = c.fst_cust_code 
-            where b.fst_appid = ?";
-
+        $ssql = "select * from ". $this->tableName ." where b.fst_appid = ?";
         $query = $this->db->query($ssql,[$appId]);
         $result = $query->result();
         return $result;
@@ -96,5 +92,5 @@ class Newcustomer_model extends MY_Model {
         
         
     }
-    
+
 }

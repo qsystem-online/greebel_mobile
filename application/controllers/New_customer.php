@@ -18,8 +18,8 @@ class New_customer extends MY_Controller {
         $this->list['list_name']="New Customer List";
         $this->list['fetch_list_data_ajax_url']=site_url().'new_customer/fetch_list_data';
         $this->list['arrSearch']=[
-            'a.fin_user_id' => 'User ID',
-            'a.fst_username' => 'User Name'
+            'a.fst_cust_name' => 'Customer',
+            'a.fst_status' => 'Status'
 		];
 
         $this->list['breadcrumbs']=[
@@ -29,16 +29,25 @@ class New_customer extends MY_Controller {
 		];
 
 		$this->list['columns']=[
-			['title' => 'User ID', 'width'=>'10%', 'data'=>'fin_id'],
-			['title' => 'Full Name', 'width'=>'25%', 'data'=>'fst_cust_name'],
+			['title' => 'User ID', 'width'=>'5%', 'data'=>'fin_id'],
+			['title' => 'Full Name', 'width'=>'20%', 'data'=>'fst_cust_name'],
 			['title' => 'Address', 'width' =>'10%', 'data'=>'fst_cust_address'],
 			['title' => 'Company', 'width' =>'15%', 'data'=>'fst_company_code'],
             ['title' => 'Sales', 'width' =>'15%', 'data'=>'',
                 'render'=>"function(data,type,row){
-                    return row.fst_cust_name;
+                    return row.fst_sales_name.replace(/\\r/g,'<br>');
                 }"
             ],
-			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
+            ['title' => 'Status', 'width' =>'15%', 'data'=>'fst_status'],
+            ['title' => 'Request Date', 'width' =>'10%', 'data'=>'fdt_insert_datetime'],            
+            ['title' => 'Action', 'width'=>'10%', 'data'=>'','sortable'=>false, 'className'=>'dt-center',
+                'render'=>"function(data,type,row){
+                    action = '<a class=\"btn-approve\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px\" class=\"fa fa-check-circle-o\"></i></a>';
+                    action += '<a class=\"btn-map\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;color:green\" class=\"fa fa-map-marker\"></i></a>';                    
+                    return action;
+                        
+                }"
+            ]
 		];
 
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -58,14 +67,22 @@ class New_customer extends MY_Controller {
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->load->model("newcustomer_model");
-		$this->datatables->setTableName("tbnewcustomers");
+        $this->load->model("newcustomer_model");
+        $isAllStatus = $this->input->get("optionIsAllStatus");
+
+
+        if($isAllStatus == 0){
+            $this->datatables->setTableName(" (select * from tbnewcustomers where fst_status ='NEED APPROVAL') a ");
+        }else{
+            $this->datatables->setTableName(" (select * from tbnewcustomers ) a ");
+        }
 		
-		$selectFields = "*";
+		$selectFields = "a.*";
 		$this->datatables->setSelectFields($selectFields);
 	
 		//$searchFields = ["fst_sales", "fst_customer"];
-		$searchFields = [$this->input->get("optionSearch")];
+        $searchFields = [$this->input->get("optionSearch")];
+        
 
 		$this->datatables->setSearchFields($searchFields);
 	
@@ -85,6 +102,26 @@ class New_customer extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
     }
+
+
+    public function do_approval(){
+        $this->load->model("newcustomer_model");
+
+        $data =[
+            "fin_id" => $this->input->post("fin_id"),
+            "fst_status" => ($this->input->post("isApproved") == "true") ? "APPROVED" : "REJECTED",
+            "fst_approval_notes" =>$this->input->post("fst_approval_notes"),
+        ];
+        $this->newcustomer_model->update($data);
+        $result = [
+            "status"=>"SUCCESS",
+            "message"=>"",
+            "data"=>$this->input->post()
+        ];
+        $this->json_output($result);
+    }
+
+
 
 	public function fetch_detail_log(){
 		$this->load->model('trcheckinlog_model');
