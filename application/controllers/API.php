@@ -392,6 +392,9 @@ class API extends CI_Controller {
 
 	public function newcust(){
 		$this->load->model("appid_model");
+		
+		log_message('info', print_r($this->input->post(),true));
+
 		//$sales = $this->appid_model->getSales($this->input->post("app_id"),$this->input->post("fst_company_code"));
 		if ($this->input->post("fbl_is_new") == "3" ){
 			//delete data
