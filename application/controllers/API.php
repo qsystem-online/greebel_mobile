@@ -490,6 +490,7 @@ class API extends CI_Controller {
 				"fst_notes" => $this->input->post("fst_notes"),
 				"fst_appid" => $this->input->post("app_id"),
 				"fst_status" => "UPLOADED",//$this->input->post("fst_status"),
+				"fst_company_code"=>$rwSales->fst_company_code,
 				"fst_active" => 'A',
 				"fin_insert_id" => 1,
 				"fdt_insert_datetime" => date("Y-m-d H:i:s"),
