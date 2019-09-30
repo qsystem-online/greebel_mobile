@@ -59,7 +59,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<div class="col-lg-6 text-right">
 						<label>Order Datetime :</label>
-						<label>10 September 2019 11:09</label>
+						<label><?= $order["fdt_order_datetime"]?></label>
 					</div>					
 				</div>			
 				<div class="row">
