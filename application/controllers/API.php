@@ -4,6 +4,14 @@ use Dompdf\Exception;
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class API extends CI_Controller {
+
+	public function __construct(){
+		parent::__construct();
+		log_message("info", print_r($_POST,true));
+		log_message("info", print_r($_SERVER,true));
+	}
+
+
 	public function index(){
 		$this->load->library("menus");
 		$main_header = $this->parser->parse('inc/main_header',[],true);
