@@ -28,11 +28,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
-                            <table id="tblNeedApproval" style="width:100%"></table>                            
+                            <table id="tblNeedApproval" class="table table-bordered table-hover table-striped nowarp row-border" style="width:100%"></table>                            
                         </div> <!-- /.tab-pane -->            
                         <div class="tab-pane" id="tab_2">
                             <Label>History</Label>
-                            <table id="tblHistApproval" style="width:100%"></table>
+                            <table id="tblHistApproval" class="table table-bordered table-hover table-striped nowarp row-border" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             
                     </div> <!-- /.tab-content -->                    
