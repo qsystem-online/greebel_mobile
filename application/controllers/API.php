@@ -471,9 +471,7 @@ class API extends CI_Controller {
 			}
 		  */
 
-		log_message("info", print_r($_POST,true));
-		
-
+	
 		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),null,$this->input->post("fst_cust_code"));		
 		$result =[
 			"status"=>"NOK",
