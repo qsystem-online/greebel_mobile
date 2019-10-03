@@ -462,6 +462,28 @@ class API extends CI_Controller {
 		//$this->load->model("trorder_model");
 		$this->load->model("appid_model");
 
+		if ($this->input->post("fst_status") == "DELETE"){
+			$fstOrderId = $this->input->post("fst_order_id");
+
+			$this->db->where("fst_order_id",$fstOrderId);
+			$this->db->where("fst_appid",$this->input->post("app_id"));
+			$data=[
+				"fst_active"=>"D",
+			];
+			$this->db->update("tr_order",$data);
+
+
+			$result =[
+				"status"=>"OK",
+				"order_id"=>$this->input->post("fst_order_id"),
+				"message"=>"",
+			];
+			header('Content-Type: application/json');
+			echo json_encode($result);
+			die();
+		}
+
+
 	
 		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),null,$this->input->post("fst_cust_code"));		
 		$result =[
@@ -474,21 +496,7 @@ class API extends CI_Controller {
 			$result["message"] = "Invalid sales";
 		}else{
 
-			if ($this->input->post("fst_status") == "DELETE"){
-				$fstOrderId = $this->input->post("fst_order_id");
-
-				$this->db->where("fst_order_id",$fstOrderId);
-				$tables =["tr_order","tr_order_details"];
-				$this->db->delete("tr_order");
-				$result =[
-					"status"=>"OK",
-					"order_id"=>$this->input->post("fst_order_id"),
-					"message"=>"",
-				];
-				header('Content-Type: application/json');
-				echo json_encode($result);
-				die();
-			}
+			
 
 			$dataH = [
 				"fst_order_id" => $this->input->post("fst_order_id"),
