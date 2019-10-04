@@ -78,7 +78,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         return data;
 					}
 				},
-                {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true},
+                {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true,
+                    render:function(data,type,row){
+                        data = data.replace(/(?:\r\n|\r|\n)/g, '<br>');
+                        return data;                        
+                    }
+                },
                 {"title" : "Insert time","width": "20%",sortable:false,data:"fdt_insert_datetime",visible:true},
                 {"title" : "Action","width": "10%",sortable:false,className:'dt-body-center text-center',
                     render: function(data,type,row){
@@ -142,7 +147,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         return data;
 					}
 				},
-                {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true},
+                {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true,
+                    render:function(data,type,row){
+                        data = data.replace(/(?:\r\n|\r|\n)/g, '<br>');
+                        return data;                        
+                    }
+                },
                 {"title" : "Insert time","width": "20%",sortable:false,data:"fdt_insert_datetime",visible:true},                
                 {"title" : "Status","width": "10%",sortable:false,visible:true,className:"text-right",
                     render:function(data,type,row){
