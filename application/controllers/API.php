@@ -436,8 +436,12 @@ class API extends CI_Controller {
 
 		$data = [
 			"fst_cust_name" => $this->input->post("fst_cust_name"),
-			"fst_cust_address" =>$this->input->post("fst_cust_address"),
+			"fst_contact" => $this->input->post("fst_contact"),
 			"fst_cust_phone" =>$this->input->post("fst_cust_phone"),
+			"fst_kelurahan" =>$this->input->post("fst_kelurahan"),
+			"fst_kecamatan" =>$this->input->post("fst_kecamatan"),
+			"fst_cust_address" =>$this->input->post("fst_cust_address"),
+			"fbl_is_pasar" =>$this->input->post("fbl_is_pasar"),
 			"fst_cust_location" => $this->input->post("fst_cust_location"),			
 			"fst_appid" => $this->input->post("app_id"),
 			"fst_company_code" => $this->input->post("fst_company_code"),	
