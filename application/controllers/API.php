@@ -407,7 +407,7 @@ class API extends CI_Controller {
 		if ($this->input->post("fbl_is_new") == "3" ){
 			//delete data
 			$this->db->where('fin_id', $this->input->post("fin_id_server"));			
-			$this->db->where('fst_appid', $this->input->post("app_id"));
+			//$this->db->where('fst_appid', $this->input->post("app_id"));
 			$this->db->delete("tbnewcustomers");
 			$result = [
 				"status" => "OK",
@@ -454,9 +454,12 @@ class API extends CI_Controller {
 		];
 
 		$this->db->insert("tbnewcustomers",$data);
+		$insertId = $this->db->insert_id();
+
 		$result = [
 			"status" => "OK",
-			"fin_cust_id" => $this->input->post("fin_cust_id")
+			"fin_cust_id" => $this->input->post("fin_cust_id"),
+			"fin_id_server" =>$insertId
 		];
 		header('Content-Type: application/json');
 		echo json_encode($result);
