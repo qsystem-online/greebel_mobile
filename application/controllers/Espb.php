@@ -294,7 +294,7 @@ class Espb extends MY_Controller {
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
 			WHERE DATE(fdt_order_datetime) >= '$dateStart' and DATE(fdt_order_datetime) <= '$dateEnd' 
-			) as trcheckinlog
+			) as a
 		");
 		
 		$selectFields = "*";

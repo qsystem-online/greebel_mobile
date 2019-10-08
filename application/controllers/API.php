@@ -171,52 +171,64 @@ class API extends CI_Controller {
 
 
 	public function feed_all_data(){
-		$tmpResult =  $this->feed_customers(0);
 		$appid = $this->input->post("app_id");
-
-		if ($tmpResult["status"] == "OK"){
-			$arrCustomer  = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_items(0);
-			$arrItems = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_company(0);
-			$arrCompany = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_promo_free_item(0);
-			$arrPromo = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_target(0);
-			$arrTarget = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_order(0);
-			$arrOrderStatus = $tmpResult["data"];
-
-			$tmpResult =  $this->feed_newcustomer(0);
-			$arrNewCustomer = $tmpResult["data"];
+		$this->load->model("appid_model");
 
 
-			$data = [
-				"arrCustomer" => $arrCustomer,
-				"arrItems" => $arrItems,
-				"arrCompany" => $arrCompany,
-				"arrPromo" => $arrPromo,
-				"arrTarget" => $arrTarget,
-				"arrOrderStatus" => $arrOrderStatus,
-				"arrNewCustomer" => $arrNewCustomer,
-			];
 
+		if (!$this->appid_model->isValidAppid($appid)){
 			$result = [
 				"post" => $_POST,
-				"status"=>"OK",
-				"message"=>"OK",
-				"data"=>$data
+				"status"=>"NOK",
+				"message"=>"Invalid Application Id"
 			];
-
-
 		}else{
-			$result = $tmpResult;
+			$tmpResult =  $this->feed_customers(0);
+			if ($tmpResult["status"] == "OK"){
+				$arrCustomer  = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_items(0);
+				$arrItems = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_company(0);
+				$arrCompany = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_promo_free_item(0);
+				$arrPromo = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_target(0);
+				$arrTarget = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_order(0);
+				$arrOrderStatus = $tmpResult["data"];
+
+				$tmpResult =  $this->feed_newcustomer(0);
+				$arrNewCustomer = $tmpResult["data"];
+
+
+				$data = [
+					"arrCustomer" => $arrCustomer,
+					"arrItems" => $arrItems,
+					"arrCompany" => $arrCompany,
+					"arrPromo" => $arrPromo,
+					"arrTarget" => $arrTarget,
+					"arrOrderStatus" => $arrOrderStatus,
+					"arrNewCustomer" => $arrNewCustomer,
+				];
+
+				$result = [
+					"post" => $_POST,
+					"status"=>"OK",
+					"message"=>"OK",
+					"data"=>$data
+				];
+
+
+			}else{
+				$result = $tmpResult;
+			}
 		}
+
 		header("Content-Type: application/json");	
 		echo json_encode($result);		
 	} 

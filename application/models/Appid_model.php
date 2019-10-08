@@ -40,14 +40,14 @@ class Appid_model extends MY_Model {
 
 	public function isValidAppid($appid){
         //Delete data
-		$ssql = "select * from " . $this->tableName . " where fst_appid = ?";
+		$ssql = "select * from " . $this->tableName . " where fst_appid = ? and fst_active ='A'";
 		
 		$query =  $this->db->query($ssql,[$appid]);		
 		$rw = $query->row();
-		if($rw){
-			return true;
+		if(!$rw){
+			return false;
 		}
-		return false;
+		return true;
 
 	}
 	

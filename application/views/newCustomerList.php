@@ -109,6 +109,93 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </div>
 
 
+<!-- Modal Detail Info -->
+<div id="myModalDetail" class="modal fade" role="dialog">
+	<div class="modal-dialog" >
+		<!-- Modal content-->
+		<div class="modal-content" >
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Detail Info</h4>
+			</div>
+
+			<div class="modal-body" style="height:220px">
+				
+				<div class="form-group">															
+					<label for="fst_cust_name" class="col-md-2 control-label"><?=lang("Name")?></label>	
+					<div class="col-md-10">	
+						<label class="control-label">:</label>			
+						<label id="fst_cust_name" style="font-weight:unset">Name</label>									
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fst_contact" class="col-md-2 control-label"><?=lang("Contact")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>			
+						<label id="fst_contact" style="font-weight:unset">Contact</label>									
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fst_cust_phone" class="col-md-2 control-label"><?=lang("Phone")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fst_cust_phone" style="font-weight:unset">Phone</label>
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fst_kelurahan" class="col-md-2 control-label"><?=lang("Kelurahan")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fst_kelurahan" style="font-weight:unset">Kelurahan</label>
+					</div>
+				</div>
+				
+				<div class="form-group">															
+					<label for="fst_kecamatan" class="col-md-2 control-label"><?=lang("Kecamatan")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fst_kecamatan" style="font-weight:unset">Kecamatan</label>
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fst_cust_address" class="col-md-2 control-label"><?=lang("Address")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fst_cust_address" style="font-weight:unset"></label>
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fbl_is_pasar" class="col-md-2 control-label"><?=lang("Pasar")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fbl_is_pasar" style="font-weight:unset"></label>
+					</div>
+				</div>
+
+				<div class="form-group">															
+					<label for="fst_company_code" class="col-md-2 control-label"><?=lang("Company")?></label>	
+					<div class="col-md-10">				
+						<label class="control-label">:</label>
+						<label id="fst_company_code" style="font-weight:unset"></label>
+					</div>
+				</div>
+
+
+
+
+			</div>
+
+			<div class="modal-footer">				
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 
@@ -186,6 +273,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			markerLocation = {lat: parseFloat(arrLocation[0]), lng: parseFloat(arrLocation[1])};
 			addMarker(markerLocation);
 			$("#myMapModal").modal("show");
+		});
+
+		$('#tblList').on('click','.btn-detail',function(e){	
+			t = $("#tblList").DataTable();
+			var trRow = $(this).parents('tr');			
+			selectedRecord = trRow;
+			row = t.row(selectedRecord).data();
+			
+			$("#fst_cust_name").text(row.fst_cust_name);
+			$("#fst_contact").text(row.fst_contact);
+			$("#fst_cust_phone").text(row.fst_cust_phone);
+			$("#fst_kecamatan").text(row.fst_kecamatan);
+			$("#fst_kelurahan").text(row.fst_kelurahan);
+			$("#fst_cust_address").text(row.fst_cust_address);
+			$("#fbl_is_pasar").text(row.fbl_is_pasar);
+			$("#fst_company_code").text(row.fst_company_code);
+
+			$("#myModalDetail").modal("show");
+			
+			/*
+					: "1"
+					fin_id: "455"
+					fst_active: "A"
+					fst_appid: "JB1"
+					fst_approval_notes: null
+					fst_company_code: ",_GP,_SS,_FN"
+					: "Devi Bastian"
+					: "perum puri permata ↵blok F no 11 tangerang"
+					fst_cust_location: "-6.1835987,106.6775603"
+					
+					: "0811953296"
+					: "cipondoh makmur"
+					: "cipondoh"
+					fst_request_id: null
+					fst_sales_code: "_GPJB1,_SSSJB1,_FNJB1"
+					fst_sales_name: "JB1
+					↵SJB1
+					↵JB1
+					↵"
+					fst_status: "NEED APPROVAL"
+				*/
+			
+			console.log(row);
 		});
 
 

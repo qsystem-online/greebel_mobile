@@ -28,6 +28,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
+                            <div align="right">
+                                <span>Search on:</span>
+                                <span>
+                                    <select id="selectSearch" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">                            
+                                        <?php
+                                            foreach($arrSearch as $key => $value){ ?>
+                                                <option value=<?=$key?>><?=$value?></option>
+                                            <?php
+                                            }
+                                        ?>
+                                    </select>
+                                </span>
+                            </div>
                             <table id="tblNeedApproval" class="table table-bordered table-hover table-striped nowarp row-border" style="width:100%"></table>                            
                         </div> <!-- /.tab-pane -->            
                         <div class="tab-pane" id="tab_2">
@@ -70,15 +83,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 url:"<?=site_url()?>approval/fetch_need_approval_list",
             },
 			columns:[
-				{"title" : "id","width": "10%",sortable:true,data:"fin_rec_id",visible:true},
+				{"title" : "Order Id","width": "10%",sortable:true,data:"fst_transaction_no",visible:true},
 				{"title" : "Module","width": "10%",sortable:false,data:"fst_controller",visible:true},
-				{"title" : "Transaction #","width": "10%",sortable:false,data:"fin_transaction_id",
+				{"title" : "Customer Code","width": "10%",sortable:false,
 					render: function(data,type,row){
                         //return row.ItemCode + "-" + row.fst_custom_item_name;
-                        return data;
+                        return row.fst_cust_code;
 					}
 				},
-                {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true,
+                {"title" : "Customer Name","width": "10%",sortable:false,
+					render: function(data,type,row){
+                        //return row.ItemCode + "-" + row.fst_custom_item_name;
+                        return row.fst_cust_name;
+					}
+				},
+                {"title" : "Sales","width": "10%",sortable:false,
+					render: function(data,type,row){
+                        //return row.ItemCode + "-" + row.fst_custom_item_name;
+                        return row.fst_sales_code;
+					}
+				},
+                {"title" : "Message","width": "20%",sortable:false,data:"fst_message",visible:true,
                     render:function(data,type,row){
                         data = data.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         return data;                        
@@ -97,6 +122,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             dataSrc:"data",
 			processing: true,
 			serverSide: true,
+        }).on('preXhr.dt', function ( e, settings, data ) {
+            data.optionSearch = $('#selectSearch').val();
+			data.optionIsAllStatus = $('#filterAllStatus').val();
         });
         
         $("#tblNeedApproval").on("click",".btn-approve",function(e){
@@ -139,7 +167,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 url:"<?=site_url()?>approval/fetch_hist_approval_list",
             },
 			columns:[
-				{"title" : "id","width": "10%",sortable:true,data:"fin_rec_id",visible:true},
+				{"title" : "id","width": "10%",sortable:true,data:"fst_transaction_no",visible:true},
 				{"title" : "Module","width": "10%",sortable:false,data:"fst_controller",visible:true},
 				{"title" : "Transaction #","width": "10%",sortable:false,data:"fin_transaction_id",
 					render: function(data,type,row){

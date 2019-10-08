@@ -13,7 +13,11 @@ class Approval extends MY_Controller{
         $main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);		
 		$data["title"] = lang("Approval");
-		
+		$data['arrSearch']=[
+            'a.fst_order_id' => 'ESPB ID',
+            'a.fst_sales_code' => 'Sales Name',
+            'a.fst_cust_name' => 'Customer Name'
+		];
 		$page_content = $this->parser->parse('pages/approval', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 		$control_sidebar = NULL;
@@ -29,15 +33,25 @@ class Approval extends MY_Controller{
         $this->load->library("datatables");
 
         $user = $this->aauth->user();
-
+		/*
         $this->datatables->setTableName(
             "(select * from trverification 
             where fst_verification_status = 'RV' 
             and fin_department_id = ". $user->fin_department_id ." 
             and fin_user_group_id = ". $user->fin_group_id . ") a "
+		);
+		*/
+		
+		$this->datatables->setTableName(
+			"(select a.*,b.fst_order_id,b.fst_cust_code,b.fst_sales_code,c.fst_cust_name from trverification a
+			LEFT JOIN tr_order b on a.fin_transaction_id = b.fin_rec_id and a.fst_controller ='ESPB'
+			LEFT JOIN tbcustomers c on b.fst_cust_code = c.fst_cust_code and b.fst_cust_code IS NOT NULL and a.fst_controller ='ESPB' 
+            where fst_verification_status = 'RV' 
+            and fin_department_id = ". $user->fin_department_id ." 
+            and fin_user_group_id = ". $user->fin_group_id . ") a "
         );
 
-		$selectFields = "a.fin_rec_id,a.fst_controller,a.fin_transaction_id,a.fst_transaction_no,a.fst_message,a.fdt_insert_datetime";
+		$selectFields = "a.fin_rec_id,a.fst_controller,a.fin_transaction_id,a.fst_transaction_no,a.fst_message,a.fdt_insert_datetime,a.fst_cust_code,a.fst_cust_name,a.fst_sales_code";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];

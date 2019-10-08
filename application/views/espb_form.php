@@ -69,11 +69,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label style=""><?= $order["fst_sales_name"]?></label>
 					</div>
 				</div>
+
 				<div class="row">
 					<div class="col-lg-12">
 						<label style="width:100px;">Customer</label>
 						<label>:</label>
 						<label style="text-align:left"> <?= $order["fst_cust_name"] ?></label>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12">
+						<label style="width:100px;">Notes</label>
+						<label>:</label>
+						<label style="text-align:left"> <?= $order["fst_notes"] ?></label>
 					</div>
 				</div>
 
@@ -85,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<div class="row">
 					<div class="col-lg-12 text-right">
-						<label style="font-style: italic;">DPP</label>
+						<label style="font-style: italic;">Sub Total</label>
 						<label>:</label>
 						<label id="lblDPP" class="text-right" style="width:100px;"></label>
 					</div>
@@ -157,12 +166,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			total += v.fin_qty * v.fin_price;
 		});
 		
-		dpp = total / 1.1;
+		//dpp = total / 1.1;
+		dpp = total;
 		ppn = dpp * 10/100;
 
 		$("#lblDPP").html( $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(dpp));
 		$("#lblPPN").html( $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(ppn));
-		$("#lblTotal").html( $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(total));
+		$("#lblTotal").html( $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(dpp + ppn));
 	}
 </script>
 <!-- DataTables -->

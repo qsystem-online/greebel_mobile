@@ -43,8 +43,9 @@ class New_customer extends MY_Controller {
             ['title' => 'Action', 'width'=>'10%', 'data'=>'','sortable'=>false, 'className'=>'dt-center',
                 'render'=>"function(data,type,row){
                     action = '<a class=\"btn-approve\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px\" class=\"fa fa-check-circle-o\"></i></a>';
-                    action += '<a class=\"btn-map\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;color:green\" class=\"fa fa-map-marker\"></i></a>';                    
-                    return action;
+					action += '<a class=\"btn-map\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;color:green\" class=\"fa fa-map-marker\"></i></a>';
+					action += '<a class=\"btn-detail\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;\" class=\"fa fa-info\"></i></a>';
+					return action;
                         
                 }"
             ]
