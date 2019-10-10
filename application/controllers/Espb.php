@@ -43,7 +43,7 @@ class Espb extends MY_Controller {
 			['title' => 'Sales', 'width' =>'10%', 'data'=>'fst_sales'],
 			['title' => 'Customer', 'width' =>'30%', 'data'=>'fst_customer'],
 			['title' => 'Total Qty', 'width' =>'10%', 'data'=>'total_qty', 'className'=>'text-right'],
-			['title' => 'Total Amount', 'width' =>'15%', 'data'=>'total_amount' , 
+			['title' => 'Total Amount', 'width' =>'15%', 'data'=>'total_amount_ppn' , 
 				'className'=>'text-right',
 				'render' => "$.fn.dataTable.render.number( '\,', '.', 2, '' )"
 			],
@@ -321,8 +321,11 @@ class Espb extends MY_Controller {
 
 			$data["total_qty"]	= $summ->total_qty;
 			$data["total_amount"]	= $summ->total_amount;
+			$data["total_ppn"]	= $summ->total_amount * 10 /100;
+			$data["total_amount_ppn"]	= $data["total_amount"] + $data["total_ppn"];
+			
 			$arrDataFormated[] = $data;
-			}
+		}
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
