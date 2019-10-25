@@ -330,6 +330,7 @@ class Sales extends MY_Controller {
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			LEFT JOIN tbjadwalsales d on a.fst_cust_code = d.fst_cust_code and a.fst_sales_code = d.fst_sales_code
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd' 
 			) as trcheckinlog
 		");

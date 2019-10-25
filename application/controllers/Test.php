@@ -222,48 +222,48 @@ class Test extends CI_Controller {
 	public function testExcel(){
 		$this->load->library('phpspreadsheet');
 		
-		//echo FCPATH . "assets\\templates\\". "template_sales_log.xlsx";		 
-		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_macro.xlsm");		
-		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");
-		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xlsx");
-		//$writer = new Xlsx($spreadsheet);
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_macro.xlsm","xlsm");
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx","xlsx");
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xls","xls");
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\devi.xlsx","xlsx");
+		//$spreadsheet->getSecurity()->setLockWindows(true);
+		//$spreadsheet->getSecurity()->setLockStructure(true);
+		$security = $spreadsheet->getSecurity();
+		$security->setLockWindows(true);
+		$security->setLockStructure(true);
+		$security->setWorkbookPassword("bastian");
+		$spreadsheet->setSecurity($security);
 
+		
+		//$spreadsheet->getSecurity()->setRevisionsPassword("bastian");
+		
+
+		
 		$sheet = $spreadsheet->getActiveSheet();
-		$sheet->getPageSetup()->setFitToWidth(1);
-		$sheet->getPageSetup()->setFitToHeight(0);
+
+		$sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+		//$sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);	
+		$sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);	
+		$sheet->getPageMargins()->setLeft(0.1);	
+		$sheet->getPageMargins()->setRight(0.1);
+		$sheet->getPageMargins()->setTop(2);
+		$sheet->getPageMargins()->setBottom(2);
+
+		$sheet->getPageSetup()->setFitToPage(false);
+		$sheet->getPageSetup()->setScale(10);
+		//$sheet->getPageSetup()->setFitToWidth(1);
+		//$sheet->getPageSetup()->setFitToHeight(0);
+
 		$sheet->getPageMargins()->setTop(1);
 		$sheet->getPageMargins()->setRight(0.5);
 		$sheet->getPageMargins()->setLeft(0.5);
 		$sheet->getPageMargins()->setBottom(1);
-		//var_dump($spreadsheet);
-		$filename = 'test';
- 
-        //header('Content-Type: application/vnd.ms-excel');
-        //header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-		//header('Cache-Control: max-age=0');
 		
-		//$writer->save('php://output'); // download file 
-		$this->phpspreadsheet->save("tesss",$spreadsheet);
-		//$this->phpspreadsheet->save("test-coba");
-	}
-	public function testExcel2(){
-		$this->load->library('phpspreadsheet');
+		$this->phpspreadsheet->protectSheet($sheet,"bastian");
 
-		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xlsx");		
-		//$sheet = $spreadsheet->getActiveSheet();
-
-		//$spreadsheet = new Spreadsheet();
-        //$sheet = $spreadsheet->getActiveSheet();
-        //$sheet->setCellValue('A1', 'Hello World !');
-        
-        $writer = new Xlsx($spreadsheet);
- 
-        $filename = 'coba';
- 
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output'); // download file 
+		$filename = 'test';
+		$this->phpspreadsheet->save($filename,$spreadsheet,"xlsx");
+		//$this->phpspreadsheet->saveHTML($filename);
+		//$this->phpspreadsheet->savePDF($filename);
 	}
 }

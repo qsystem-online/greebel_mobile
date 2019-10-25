@@ -227,17 +227,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//data: data,
 			async:false,
 			success:function(resp){
-				result = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%">';
+				//result = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%">';
+				result = '';
 				//result += '<tr><td>ID</td><td>Date Time</td><td>Location</td><td>Distance</td></tr>';
 
 				$.each(resp.files,function(index,value){
 					
 					if (index % 3 == 0){
-						result += "<tr>";
+						//result += "<tr>";
 					} 
-					result += "<td><img src='<?=base_url();?>uploads/checkinlog/"+ value + "' style='width:80%'/>" + index +"</td>"
+					//result += "<td><img src='<?=base_url();?>uploads/checkinlog/"+ value + "' style='width:80%'/>" + index +"</td>"
+					result += "<img src='<?=base_url();?>uploads/checkinlog/"+ value + "' style='margin-right:10px;margin-top:10px' />";
+
 					if (index % 3 == 2){
-						result += "</tr>";
+						//result += "</tr>";
 					}
 					/*
 					result += "<tr>" +
@@ -250,7 +253,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					*/
 				});
 
-				result += '</table>';
+				//result += '</table>';
 				
 			}
 		});

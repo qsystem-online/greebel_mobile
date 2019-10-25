@@ -2,7 +2,7 @@
     <head></head>
     <body>
         <?php foreach($arrFiles as $file){ ?>
-            <div><img src="<?=site_url()?>uploads/checkinlog/<?=$file?>" ></div>
+            <img src="<?=site_url()?>uploads/checkinlog/<?=$file?>" style="margin:10px" > 
         <?php };?>
     </body>
 </html>
