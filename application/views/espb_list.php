@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</span>
 				</div>
 				<table id="tblList" class="table table-bordered table-hover table-striped"></table>
-				<button id="btnExport2Excel" class="btn"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
+				<button id="btnExport2Excel" class="btn" style="display:none"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
 			</div>
 			<!-- /.box-body -->
 			<div class="box-footer">
