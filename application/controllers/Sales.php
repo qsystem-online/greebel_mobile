@@ -545,7 +545,7 @@ class Sales extends MY_Controller {
 		];
 		
 		foreach($rs as $rw){
-			if ($this->customer_model->inSchedule($rw->fst_cust_code,$rw->fdt_checkin_datetime)){
+			if ($this->customer_model->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,$rw->fdt_checkin_datetime)){
 				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
 			}else{
 				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
