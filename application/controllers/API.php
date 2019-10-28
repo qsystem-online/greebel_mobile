@@ -318,6 +318,7 @@ class API extends CI_Controller {
 
 			//cek if record exist
 			$distance = distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M");
+			
 			$time = strtotime($this->input->post("fdt_checkin_datetime"));
 			$checkinDate = date('Y-m-d',$time);
 
