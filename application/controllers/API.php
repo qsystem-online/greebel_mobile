@@ -405,8 +405,14 @@ class API extends CI_Controller {
 			];
 
 			header('Content-Type: application/json');
-
 			echo json_encode($result);
+		}else{
+			header('Content-Type: application/json');
+			echo json_encode([
+				"status"=>"NOK",
+				"fin_id"=> $fin_id,
+				"message"=>"Sales Not Found"
+			]);
 		}
 	}
 
