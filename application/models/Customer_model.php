@@ -134,7 +134,7 @@ class Customer_model extends MY_Model {
 
     }
 
-    public function inSchedule($fst_cust_code,$fdt_date){
+    public function inSchedule($fst_cust_code,$fst_sales_code,$fdt_date){
         //php => 0 = minggu -> 6 = sabtu
         //DB =>  1 = Senin  -> 7 = Minggu
 
@@ -143,8 +143,9 @@ class Customer_model extends MY_Model {
             $dayofweek = 7;
         }
 
-        $ssql = "Select * from tbcustomers where fst_cust_code = ? and fin_visit_day = ?";
-        $qr = $this->db->query($ssql,[$fst_cust_code,$dayofweek]);
+        //$ssql = "Select * from tbcustomers where fst_cust_code = ? and fin_visit_day = ?";
+        $ssql = "Select * from tbjadwalsales where fst_cust_code = ? and fst_sales_code = ? and fin_visit_day = ?";
+        $qr = $this->db->query($ssql,[$fst_cust_code,$fst_sales_code ,$dayofweek]);
         //echo $this->db->last_query();
         //die();
 

@@ -350,7 +350,7 @@ class Sales extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			
-			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
+			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fst_sales_code"],$data["fdt_checkin_datetime"]);
 			$diff = strtotime($data["fdt_checkout_datetime"]) - strtotime($data["fdt_checkin_datetime"]);
 			$days = floor($diff/86400);
 			$diff = $diff % 86400;
