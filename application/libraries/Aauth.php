@@ -59,6 +59,20 @@ class Aauth {
 		if ($permission_name == "dashboard_v2"){
 			return false;	
 		}
+
+		if ($user == null){
+			$user = $this->CI->aauth->user();
+		}
+
+		if ($permission_name == "approval" && $user->fbl_admin == 0){
+			return false;	
+		}
+
+		if ($permission_name == "new_customer" && $user->fbl_admin == 0){
+			return false;	
+		}
+
+
 		return true;		
 	}
 

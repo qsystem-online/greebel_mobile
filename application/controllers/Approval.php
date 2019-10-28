@@ -8,8 +8,14 @@ class Approval extends MY_Controller{
 		
 	}
 	public function index(){
-		$this->load->library("menus");		
-        
+
+		$this->load->library("menus");				
+
+		if ($this->aauth->is_permit("approval",true) == false){
+			show_404();
+			die();
+		}
+
         $main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);		
 		$data["title"] = lang("Approval");
