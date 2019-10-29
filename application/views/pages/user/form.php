@@ -273,7 +273,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 		
-		$("#fdt_birthdate").datepicker('update', dateFormat(user.fdt_birthdate));
+		
 	});
 
 
@@ -306,16 +306,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
     			// Append it to the select
     			$('#select-departmentname').append(newOption).trigger('change');
+				
+				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
 
 				//Image Load 
 				$('#imgAvatar').attr("src",resp.user.avatarURL);
-
-				//populate Group (select2)
-				/*var groups = [];
-				$.each(resp.list_group, function(name, val){
-					groups.push(val.fin_group_id);
-				})
-				$("#fin_group_id").val(groups).trigger("change");*/
 			},
 
 			error: function (e) {

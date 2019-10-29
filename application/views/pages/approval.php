@@ -44,7 +44,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <table id="tblNeedApproval" class="table table-bordered table-hover table-striped nowarp row-border" style="width:100%"></table>                            
                         </div> <!-- /.tab-pane -->            
                         <div class="tab-pane" id="tab_2">
-                            <Label>History</Label>
+                        <div align="right">
+                                <span>Search on:</span>
+                                <span>
+                                    <select id="selectSearchHist" name="selectSearchHist" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">                            
+                                        <?php
+                                            foreach($arrSearch as $key => $value){ ?>
+                                                <option value=<?=$key?>><?=$value?></option>
+                                            <?php
+                                            }
+                                        ?>
+                                    </select>
+                                </span>
+                            </div>
                             <table id="tblHistApproval" class="table table-bordered table-hover table-striped nowarp row-border" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             
@@ -169,10 +181,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[
 				{"title" : "id","width": "10%",sortable:true,data:"fst_transaction_no",visible:true},
 				{"title" : "Module","width": "10%",sortable:false,data:"fst_controller",visible:true},
-				{"title" : "Transaction #","width": "10%",sortable:false,data:"fin_transaction_id",
+				{"title" : "Customer Code","width": "10%",sortable:false,
 					render: function(data,type,row){
                         //return row.ItemCode + "-" + row.fst_custom_item_name;
-                        return data;
+                        return row.fst_cust_code;
+					}
+				},
+                {"title" : "Customer Name","width": "10%",sortable:false,
+					render: function(data,type,row){
+                        //return row.ItemCode + "-" + row.fst_custom_item_name;
+                        return row.fst_cust_name;
+					}
+				},
+                {"title" : "Sales","width": "10%",sortable:false,
+					render: function(data,type,row){
+                        //return row.ItemCode + "-" + row.fst_custom_item_name;
+                        return row.fst_sales_code;
 					}
 				},
                 {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true,
@@ -200,6 +224,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             dataSrc:"data",
 			processing: true,
 			serverSide: true,
+        }).on('preXhr.dt', function ( e, settings, data ) {            
+            data.optionSearch = $('#selectSearchHist').val();
+			//data.optionIsAllStatus = $('#filterAllStatus').val();
         });
     }
 
