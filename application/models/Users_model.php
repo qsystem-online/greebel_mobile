@@ -11,13 +11,13 @@ class Users_model extends MY_Model {
 
 	public function getDataById($fin_user_id){
 		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
-		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level from " . $this->tableName ." a 
+		$ssql = "select a.*,b.fst_department_name from " . $this->tableName ." a 
 			left join departments b on a.fin_department_id = b.fin_department_id 
-			left join master_groups c on a.fin_group_id = c.fin_group_id 
 			where a.fin_user_id = ?";
 
 
 		$qr = $this->db->query($ssql,[$fin_user_id]);		
+		//echo $this->db->last_query();
 		$rwUser = $qr->row();
 		if($rwUser){
 			if (file_exists(FCPATH . 'assets/app/users/avatar/avatar_' . $rwUser->fin_user_id . '.jpg')) {
@@ -98,6 +98,51 @@ class Users_model extends MY_Model {
 
 		return $rules;
 		
+	}
+
+	public function getRulesCp(){
+		$activeUser = $this->aauth->user();
+		$password = $activeUser->fst_password;
+		$CurrentPassword = $this->input->post("current_password");
+
+		$rules = [];
+
+		if (md5($CurrentPassword) != $password) {
+
+			$rules[] =
+				[
+					'field' => 'current_password',
+					'label' => 'Current Password',
+					'rules' => 'matches[' . $password . ']',
+					'errors' => array(
+						'matches' => 'Wrong password'
+					)
+				];
+		} else { }
+
+		$rules[] = [
+			'field' => 'new_password1',
+			'label' => 'New Password',
+			'rules' => 'required|min_length[3]|matches[new_password2]',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				'min_length' => 'Panjang %s paling sedikit 3 character',
+				'matches' => 'not matches with Repeat password'
+			)
+		];
+
+		$rules[] = [
+			'field' => 'new_password2',
+			'label' => 'Repeat Password',
+			'rules' => 'required|min_length[3]',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				'min_length' => 'Panjang %s paling sedikit 3 character'
+			)
+		];
+
+
+		return $rules;
 	}
 
 	public function getAllList(){

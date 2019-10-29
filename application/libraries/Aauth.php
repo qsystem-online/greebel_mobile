@@ -71,6 +71,9 @@ class Aauth {
 		if ($permission_name == "new_customer" && $user->fbl_admin == 0){
 			return false;	
 		}
+		if ($permission_name == "user" && $user->fbl_admin == 0){
+			return false;	
+		}
 
 
 		return true;		
