@@ -325,7 +325,7 @@ class Sales extends MY_Controller {
 			(SELECT a.fin_id,
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
-			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,c.fin_visit_day,			
+			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,d.fin_visit_day,			
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
