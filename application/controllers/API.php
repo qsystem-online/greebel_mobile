@@ -445,7 +445,7 @@ class API extends CI_Controller {
 			return;
 		}
 
-		$strCompanyCode = $this->input->post("fst_company_code");
+		$strCompanyCode = trim($this->input->post("fst_company_code"),",");
 		$arrCompanyCode  = explode ( "," ,$strCompanyCode);
 		$strSalesCode = "";
 		$strSalesName = "";
@@ -458,7 +458,7 @@ class API extends CI_Controller {
 			}
 		}
 		$strSalesCode = rtrim($strSalesCode,",");
-
+		
 
 		$data = [
 			"fst_cust_name" => $this->input->post("fst_cust_name"),
@@ -470,7 +470,7 @@ class API extends CI_Controller {
 			"fbl_is_pasar" =>$this->input->post("fbl_is_pasar"),
 			"fst_cust_location" => $this->input->post("fst_cust_location"),			
 			"fst_appid" => $this->input->post("app_id"),
-			"fst_company_code" => $this->input->post("fst_company_code"),	
+			"fst_company_code" => $strCompanyCode,	
 			"fst_sales_code" => $strSalesCode,
 			"fst_sales_name" => $strSalesName,	
 			"fst_status" => "NEED APPROVAL",
