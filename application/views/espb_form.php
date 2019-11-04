@@ -74,7 +74,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="col-lg-12">
 						<label style="width:100px;">Customer</label>
 						<label>:</label>
-						<label style="text-align:left"> <?= $order["fst_cust_name"] ?></label>
+						<label style="text-align:left"> <?= $order["fst_cust_code"] . " - " . $order["fst_cust_name"] ?></label>
 					</div>
 				</div>
 
