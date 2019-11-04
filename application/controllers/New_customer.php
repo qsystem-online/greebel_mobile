@@ -112,7 +112,8 @@ class New_customer extends MY_Controller {
             "fin_id" => $this->input->post("fin_id"),
             "fst_status" => ($this->input->post("isApproved") == "true") ? "APPROVED" : "REJECTED",
             "fst_approval_notes" =>$this->input->post("fst_approval_notes"),
-        ];
+		];
+		
         $this->newcustomer_model->update($data);
         $result = [
             "status"=>"SUCCESS",

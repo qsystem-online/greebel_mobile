@@ -56,6 +56,15 @@ class Appid_model extends MY_Model {
 
 	}
 	
+	public function updateVersion($appid,$versionName){
+		$data =[
+			"fst_last_version"=>"$versionName"
+		];
+		$this->db->where($this->pkey,$appid);
+		$this->db->update($this->tableName,$data);
+	}
+
+
 	public function updateFCMToken($appid,$tokenFCM){
 		$data =[
 			"fst_fcm_token"=>"$tokenFCM"

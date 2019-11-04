@@ -9,6 +9,7 @@ class API extends CI_Controller {
 		parent::__construct();
 		log_message("info", print_r($_POST,true));
 		log_message("info", print_r($_SERVER,true));
+		$this->load->model("appid_model");
 	}
 
 
@@ -172,7 +173,6 @@ class API extends CI_Controller {
 
 	public function feed_all_data(){
 		$appid = $this->input->post("app_id");
-		$this->load->model("appid_model");
 
 
 
@@ -235,10 +235,20 @@ class API extends CI_Controller {
 
 
 	public function update_fcm_token(){
-		$this->load->model("appid_model");
 		$appid = $this->input->post("app_id");
-		$token  = $this->input->post("fcm_token");
+		$token  = $this->input->post("fcm_token");		
 		$this->appid_model->updateFCMToken($appid,$token);
+		
+	}
+
+	public function update_info(){
+		$appid = $this->input->post("app_id");
+		$token  = $this->input->post("fcm_token");		
+		$this->appid_model->updateFCMToken($appid,$token);
+
+		//update app version
+		$version  = $this->input->post("fst_last_version");
+		$this->appid_model->updateVersion($appid,$version);		
 	}
 
 	public function generate_dummy_customer(){
@@ -252,7 +262,7 @@ class API extends CI_Controller {
 	
 	
 	public function check_appid(){
-		$this->load->model("appid_model");
+		
 		$appId = $this->input->post("app_id"); 
 		$status = "NOK";
 		if($this->appid_model->isValidAppid($appId)){
@@ -291,8 +301,6 @@ class API extends CI_Controller {
 	public function checkinlog(){
 		$this->load->model("trcheckinlog_model");
 		$this->load->model("customer_model");
-		$this->load->model("appid_model");
-
 
 		$appid = $this->input->post("app_id");
 		$fin_id = $this->input->post("fin_id");
@@ -300,8 +308,7 @@ class API extends CI_Controller {
 
 		$sales =  $this->appid_model->getSales($appid,null,$fst_cust_code);
 		if($sales){
-			$salesCode = $sales->fst_sales_code;
-			
+			$salesCode = $sales->fst_sales_code;			
 			$loc =  explode(",",$this->input->post("fst_checkin_location"));			
 			$loc_lat = $loc[0];
 			$loc_log = $loc[1];
@@ -397,9 +404,10 @@ class API extends CI_Controller {
 				print_r($e);
 				$this->db->trans_rollback();
 				return;
-			}
+			}			
 
 			$this->db->trans_complete();
+
 			$result = [
 				"status"=>"OK",
 				"fin_id"=> $fin_id	
@@ -418,7 +426,6 @@ class API extends CI_Controller {
 	}
 
 	public function newcust(){
-		$this->load->model("appid_model");
 		
 		log_message('info', print_r($this->input->post(),true));
 
@@ -486,7 +493,6 @@ class API extends CI_Controller {
 
 	public function neworder(){
 		//$this->load->model("trorder_model");
-		$this->load->model("appid_model");
 
 		if ($this->input->post("fst_status") == "DELETE"){
 			$fstOrderId = $this->input->post("fst_order_id");
