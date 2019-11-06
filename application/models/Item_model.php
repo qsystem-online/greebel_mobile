@@ -23,6 +23,15 @@ class Item_model extends MY_Model {
         return $result;
     }
 
+    public function getDataByAppid($appId){
+        $ssql ="select a.* from tbitems a 
+            inner join tbsales b on FIND_IN_SET(a.fst_group_item_code,b.fst_group_item_code) 
+            inner join tbappid c on c.fst_sales_code = b.fst_sales_code
+            where c.fst_appid = ?";
+        $qr = $this->db->query($ssql,[$appId]);
+        return $qr->result();
+    }
+
     
 	public function createDummy(){
         //Delete data
