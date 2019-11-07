@@ -516,7 +516,9 @@ class Sales extends MY_Controller {
 		
 		//echo FCPATH . "assets\\templates\\". "template_sales_log.xlsx";		 
 		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");		
-		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xls","xls");		
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xls","xls");		
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_espb_list.xls","xls");		
+
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->getPageSetup()->setFitToWidth(1);
 		$sheet->getPageSetup()->setFitToHeight(0);
