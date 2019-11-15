@@ -38,8 +38,8 @@ class API extends CI_Controller {
 		
 		$appid = $this->input->post("app_id");	
 		//cek last sync data from server
-		//if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
-		if (true){
+		if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
+		//if (true){
 			$customers = $this->customer_model->getDataByAppId($appid);
 			$result = [
 				"post" => $_POST,
