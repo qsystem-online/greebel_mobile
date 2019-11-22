@@ -127,6 +127,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			dataSrc:"data",
 			processing: true,
 			serverSide: true,
+			searchDelay:1500, //milliseconds
 			ajax: "<?=$fetch_list_data_ajax_url?>",
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {
 				if (aData.inSchedule){

@@ -261,25 +261,40 @@ class API extends CI_Controller {
 	}
 	
 	
-	public function check_appid(){
-		
-		$appId = $this->input->post("app_id"); 
+	public function check_appid(){		
+		$appId = $this->input->post("app_id");
+		$pass = $this->input->post("admin_pass");
+		$admPass = getDbConfig("admin_password");
 		$status = "NOK";
-		if($this->appid_model->isValidAppid($appId)){
-			$status = "OK";	
+
+		//Sementara biar bisa jalan di dua versi
+		if($pass == null){
+			$pass = $admPass
 		}
 
-		if ($status == "OK"){
-			$result = [
-				"status" => $status,
-				"app_id" => $appId			
-			];			
+
+		if ($admPass == $pass){		
+			if($this->appid_model->isValidAppid($appId)){
+				$status = "OK";	
+			}
+
+			if ($status == "OK"){
+				$result = [
+					"status" => $status,
+					"app_id" => $appId			
+				];			
+			}else{
+				$result = [
+					"status" => "NOK",
+					"app_id" => ""
+				];			
+			}
 		}else{
 			$result = [
 				"status" => "NOK",
 				"app_id" => ""
-			];			
-		}
+			];
+		}		
 		header('Content-Type: application/json');
 		echo json_encode($result);
 		
@@ -531,7 +546,7 @@ class API extends CI_Controller {
 			
 
 			$dataH = [
-				"fst_order_id" => $this->input->post("fst_order_id"),
+				"fst_order_id" => $this->input->post("fst_order_id") . "|" . $rwSales->fst_sales_code,
 				"fst_cust_code"=> $this->input->post("fst_cust_code"),
 				"fst_sales_code" => $rwSales->fst_sales_code,
 				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
