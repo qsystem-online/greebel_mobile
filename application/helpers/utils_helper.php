@@ -56,7 +56,7 @@
     if (!function_exists('getDbConfig')){
         function getDbConfig($key){
             $CI = & get_instance();
-            $ssql ="select fst_value from config where fst_key = ? and fbl_active = true";
+            $ssql ="select fst_value from config where fst_key = ? and fst_active = 'A'";
             $qr = $CI->db->query($ssql,[$key]);
             $rw = $qr->row();
             if ($rw){
