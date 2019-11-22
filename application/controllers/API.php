@@ -269,7 +269,7 @@ class API extends CI_Controller {
 
 		//Sementara biar bisa jalan di dua versi
 		if($pass == null){
-			$pass = $admPass
+			$pass = $admPass;
 		}
 
 
