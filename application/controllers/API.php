@@ -546,7 +546,7 @@ class API extends CI_Controller {
 			
 
 			$dataH = [
-				"fst_order_id" => $this->input->post("fst_order_id") . "|" . $rwSales->fst_sales_code,
+				"fst_order_id" => $this->input->post("fst_order_id") . "_" . $rwSales->fst_sales_code,
 				"fst_cust_code"=> $this->input->post("fst_cust_code"),
 				"fst_sales_code" => $rwSales->fst_sales_code,
 				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
