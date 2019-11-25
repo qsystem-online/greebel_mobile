@@ -268,9 +268,9 @@ class API extends CI_Controller {
 		$status = "NOK";
 
 		//Sementara biar bisa jalan di dua versi
-		if($pass == null){
-			$pass = $admPass;
-		}
+		//if($pass == null){
+		//	$pass = $admPass;
+		//}
 
 
 		if ($admPass == $pass){		
