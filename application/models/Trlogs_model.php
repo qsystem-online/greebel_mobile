@@ -19,7 +19,7 @@ class Trlogs_model extends MY_Model {
 
 	
 	public function isLastUpdate($date,$type){
-		$ssql = "select * from " . $this->tableName . " where date(fdt_log_datetime) = ? and fst_log_type = ?";
+		$ssql = "select * from " . $this->tableName . " where date(fdt_log_datetime) = ? and fst_log_type = ? and fst_active ='A'";
 		$qr = $this->db->query($ssql,[$date,$type]);
 		$rw = $qr->row();
 		if ($rw){
