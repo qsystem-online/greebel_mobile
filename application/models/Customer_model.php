@@ -66,6 +66,16 @@ class Customer_model extends MY_Model {
 
         $query = $this->db->query($ssql,[$appId]);
         $result = $query->result();
+        for($i = 0 ;$i < sizeof($result);$i++){
+            $rw = $result[$i];
+            if ($rw->fst_active == 'A'){
+                if (! $this->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,date("Y-m-d")) ){
+                    //$rw->fst_active = 'S';
+                    $result[$i]->fst_active = 'S';
+                }
+            }                    
+        }
+        
         return $result;
 
     }
@@ -136,21 +146,44 @@ class Customer_model extends MY_Model {
     public function inSchedule($fst_cust_code,$fst_sales_code,$fdt_date){
         //php => 0 = minggu -> 6 = sabtu
         //DB =>  1 = Senin  -> 7 = Minggu
+        //DB => 0, ALL Days 
+        //System Putaran putaran 0 =>semua putaran, 1 => putaran 1 , 2 =>putaran kedua
+        //Putaran di lihat dari minggu ganjil atau genat di tentukan dari tanggal di setting
+        //$startPutaran = getDbConfig("start_putaran");
+        $startPutaran = date_create(getDbConfig("start_putaran"));
+        $dateNow = date_create($fdt_date);
+        $interval = date_diff($startPutaran, $dateNow);
+        $diffDay  =  $interval->d + 1;
+        $putaran = ceil($diffDay / 7) % 2;
+
+
 
         $dayofweek = date('w', strtotime($fdt_date));
         if ($dayofweek == 0 ){
             $dayofweek = 7;
         }
 
-        //$ssql = "Select * from tbcustomers where fst_cust_code = ? and fin_visit_day = ?";
-        $ssql = "Select * from tbjadwalsales where fst_cust_code = ? and fst_sales_code = ? and fin_visit_day = ?";
-        $qr = $this->db->query($ssql,[$fst_cust_code,$fst_sales_code ,$dayofweek]);
-        //echo $this->db->last_query();
-        //die();
+        //$ssql = "Select * from tbjadwalsales where fst_cust_code = ? and fst_sales_code = ? and fin_visit_day = ?";
+        //$qr = $this->db->query($ssql,[$fst_cust_code,$fst_sales_code ,$dayofweek]);
 
+        $ssql = "Select * from tbjadwalsales where fst_cust_code = ? and fst_sales_code = ?";
+        $qr = $this->db->query($ssql,[$fst_cust_code,$fst_sales_code]);                
         $rw = $qr->row();
-        if($rw){
-            return true;
+        if($rw != null){
+            if ($rw->fin_visit_day != 0){
+                if ($rw->fin_visit_day != $dayofweek){
+                    return false;
+                }
+            }
+
+            //Cek Putaran
+            if ($rw->fin_putaran != 0){
+                if ($rw->fin_putaran != $putaran){
+                    return false;
+                }
+            }
+
+            return true; //Sesuai Jadwal
         }
         return false;
     }

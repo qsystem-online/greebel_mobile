@@ -170,7 +170,6 @@ class API extends CI_Controller {
         echo json_encode($result);
 	}
 
-
 	public function feed_all_data(){
 		$appid = $this->input->post("app_id");
 
@@ -233,7 +232,6 @@ class API extends CI_Controller {
 		echo json_encode($result);		
 	} 
 
-
 	public function update_fcm_token(){
 		$appid = $this->input->post("app_id");
 		$token  = $this->input->post("fcm_token");		
@@ -255,13 +253,13 @@ class API extends CI_Controller {
 		$this->load->model("customer_model");
 		$this->customer_model->createDummy();
 	}
+	
 	public function generate_dummy_item(){
 		$this->load->model("item_model");
 		$this->item_model->createDummy();
 	}
-	
-	
-	public function check_appid(){		
+		
+	public function check_appid(){
 		$appId = $this->input->post("app_id");
 		$pass = $this->input->post("admin_pass");
 		$admPass = getDbConfig("admin_password");
@@ -299,7 +297,6 @@ class API extends CI_Controller {
 		echo json_encode($result);
 		
 	}
-
 	
 	public function test(){
 		$loc1 = "-6.182307, 106.674893";
