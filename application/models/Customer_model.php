@@ -155,6 +155,7 @@ class Customer_model extends MY_Model {
         $interval = date_diff($startPutaran, $dateNow);
         $diffDay  =  $interval->d + 1;
         $putaran = ceil($diffDay / 7) % 2;
+        $putaran = $putaran == 0 ? 2 : 1;
 
 
 
