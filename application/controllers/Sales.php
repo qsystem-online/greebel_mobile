@@ -565,7 +565,7 @@ class Sales extends MY_Controller {
 
 			$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
 			$sheet->setCellValue("J$iRow", 'Photo');
-			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			$sheet->getCell("J$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
 			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);
