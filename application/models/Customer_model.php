@@ -57,7 +57,7 @@ class Customer_model extends MY_Model {
         
         $ssql = "SELECT a.fin_cust_id, a.fst_cust_code, a.fst_cust_name, a.fst_cust_address, a.fst_cust_phone,a.fin_price_group_id,
             a.fst_company_code,a.fst_active,a.fdt_insert_datetime,a.fin_insert_id,a.fdt_update_datetime,a.fin_update_id,
-            b.fst_sales_code,b.fin_visit_day,
+            b.fst_sales_code,b.fin_visit_day,b.fin_putaran,
             d.fst_cust_location FROM ". $this->tableName ." a 
             inner join tbjadwalsales b on a.fst_cust_code = b.fst_cust_code  
             inner join tbappid c on b.fst_sales_code = c.fst_sales_code

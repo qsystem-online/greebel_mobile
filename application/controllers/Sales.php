@@ -516,8 +516,8 @@ class Sales extends MY_Controller {
 		
 		//echo FCPATH . "assets\\templates\\". "template_sales_log.xlsx";		 
 		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_sales_log.xlsx");		
-		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xls","xls");		
-		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_espb_list.xls","xls");		
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xls","xls");		
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_espb_list.xls","xls");		
 
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->getPageSetup()->setFitToWidth(1);
@@ -557,11 +557,14 @@ class Sales extends MY_Controller {
 			$sheet->setCellValue("B$iRow", $rw->fst_sales);
 			$sheet->setCellValue("C$iRow", $rw->fst_customer);
 			$sheet->setCellValue("D$iRow", $rw->fdt_checkin_datetime);
-			$sheet->setCellValue("E$iRow", $rw->fdt_checkout_datetime);
+			$sheet->setCellValue("E$iRow", $rw->fdt_checkout_datetime);			
 			$sheet->setCellValue("F$iRow", $rw->fin_visit_duration);
 			$sheet->setCellValue("G$iRow", $rw->fin_distance_meters);
-			$sheet->setCellValue("H$iRow", visit_day_name($rw->fin_visit_day));
-			$sheet->setCellValue("I$iRow", 'Photo');
+			$checkindate = strtotime($rw->fdt_checkin_datetime);
+			$sheet->setCellValue("H$iRow", date("Y-m-d",$checkindate));
+
+			$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
+			$sheet->setCellValue("J$iRow", 'Photo');
 			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
