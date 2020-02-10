@@ -153,7 +153,8 @@ class Customer_model extends MY_Model {
         $startPutaran = date_create(getDbConfig("start_putaran"));
         $dateNow = date_create($fdt_date);
         $interval = date_diff($startPutaran, $dateNow);
-        $diffDay  =  $interval->d + 1;
+        //$diffDay  =  $interval->d + 1;
+        $diffDay  =  $interval->days + 1;
         $putaran = ceil($diffDay / 7) % 2;
         $putaran = $putaran == 0 ? 2 : 1;
 
