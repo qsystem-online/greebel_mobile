@@ -291,7 +291,7 @@ class API extends CI_Controller {
 		}else{
 			$result = [
 				"status" => "NOK",
-				"message" => "Invalid pass",
+				"message" => "Invalid pass $admPass vs $pass",
 				"app_id" => ""
 			];
 		}		
