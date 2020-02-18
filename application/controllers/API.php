@@ -66,7 +66,8 @@ class API extends CI_Controller {
 	public function feed_items($returnJson = 1){
 		$this->load->model("item_model");
 		$appid = $this->input->post("app_id");	
-		$items = $this->item_model->getData();
+		//$items = $this->item_model->getData();
+		$items = $this->item_model->getDataByAppid($appid);
 
 		$result = [
             "post" => $_POST,
