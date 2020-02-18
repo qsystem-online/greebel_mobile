@@ -284,12 +284,14 @@ class API extends CI_Controller {
 			}else{
 				$result = [
 					"status" => "NOK",
+					"message" => "Invalid APPID",
 					"app_id" => ""
 				];			
 			}
 		}else{
 			$result = [
 				"status" => "NOK",
+				"message" => "Invalid pass",
 				"app_id" => ""
 			];
 		}		
