@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/select2/dist/css/select2.min.css">
 
 <style type="text/css">
 	.border-0{
@@ -60,6 +60,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fst_username" placeholder="<?=lang("Username")?>" name="fst_username" value="<?= set_value("fst_username") ?>">
 							<div id="fst_username_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_password" class="col-sm-2 control-label"><?=lang("Password")?> *</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="fst_password" name="fst_password" value="defaultpassword">
+							<div id="fst_password_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -129,7 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="select-departmentname" class="col-md-2 control-label"><?=lang("Department ID")?></label>
 						<div class="col-md-4">
-							<select id="select-departmentname" class="form-control" name="fin_department_id"></select>
+							<select id="select-departmentname" class="form-control" name="fin_department_id" style="width:100%"></select>
 							<div id="fst_department_name_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -148,15 +156,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-						<label for="fbl_admin" class="col-sm-2 control-label"><?=lang("Admin")?></label>
-						<div class="checkbox">
-							<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?=lang("Admin")?></label><br>
+						<label for="fst_privilege_group" class="col-sm-2 control-label"><?=lang("Privilege Group")?></label>
+						<div class="col-sm-10">
+							<select class="form-control" id="fst_privilege_group"  name="fst_privilege_group">
+								<option value='USER'>USER</option>
+								<option value='ADMIN'>ADMIN</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">						
+						<div class="col-sm-offset-2  checkbox">
+							<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?=lang("Administrator")?></label><br>
 						</div>
 					</div>
 				</div>
 				<!-- end box-body -->
 				<div class="box-footer">
-					<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Ajax</a>
+					<a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Data</a>
 				</div>
 				<!-- end box-footer -->			
 			</form>
@@ -272,6 +289,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+
+		App.fixedSelect2();
 		
 		
 	});
@@ -286,29 +305,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			success: function (resp) {	
 				console.log(resp.user);
 
-				$.each(resp.user, function(name, val){
-					var $el = $('[name="'+name+'"]'),
-					type = $el.attr('type');
-					switch(type){
-						case 'checkbox':
-							$el.attr('checked', 'checked');
-							break;
-						case 'radio':
-							$el.filter('[value="'+val+'"]').attr('checked', 'checked');
-							break;
-						default:
-							$el.val(val);
-							console.log(val);
-					}
-				});
+				var user = resp.user;
+				App.autoFillForm(user);
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
     			// Append it to the select
-    			$('#select-departmentname').append(newOption).trigger('change');
-				
+    			$('#select-departmentname').append(newOption).trigger('change');				
 				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
-
 				//Image Load 
 				$('#imgAvatar').attr("src",resp.user.avatarURL);
 			},
@@ -322,4 +326,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 </script>
 <!-- Select2 -->
-<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/select2/dist/js/select2.full.js"></script>

@@ -210,9 +210,13 @@ class Customer extends MY_Controller {
 			['title' => 'Code', 'width'=>'10%', 'data'=>'fst_cust_code'],
 			['title' => 'Name', 'width'=>'25%', 'data'=>'fst_cust_name'],
 			['title' => 'Location', 'width' =>'10%', 'data'=>'fst_cust_location'],
+			['title' => 'Zoom Level', 'width' =>'10%', 'data'=>'fin_view_zoom_level'],
+			['title' => 'Radius (meters)', 'width' =>'10%', 'data'=>'fin_radius_meters'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'text-center']
 		];
 
+		$this->list["pickup_location_modal"] = $this->parser->parse('template/pickup_location_modal',[],true);
+		
         $main_header = $this->parser->parse('inc/main_header',[],true);
     	$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
         $page_content = $this->parser->parse('customerLocationList',$this->list,true);
@@ -224,6 +228,58 @@ class Customer extends MY_Controller {
         $this->data['PAGE_CONTENT']= $page_content;
         $this->data['MAIN_FOOTER']= $main_footer;        
         $this->parser->parse('template/main',$this->data);
+	}
+
+	public function ajxUpdateLocation(){
+		$input =$this->input->post();
+		
+		$fstCustCode = $this->input->post("fst_cust_code");
+		$ssql = "SELECT * FROM tblocation where fst_cust_code =?";
+		$qr = $this->db->query($ssql,[$fstCustCode]);
+		$rw = $qr->row();
+		$mode = "";
+		if ($rw == null){
+			//insert
+			$data = [
+				"fst_cust_code"=>$fstCustCode,
+				"fst_cust_location"=> $this->input->post("fst_cust_location"),
+				"fin_view_zoom_level"=> $this->input->post("fin_view_zoom_level"),
+				"fin_radius_meters"=> $this->input->post("fin_radius_meters"),
+				"fst_active"=>'A',
+				"fin_insert_id"=>$this->aauth->get_user_id(),
+				"fdt_insert_datetime"=>date("Y-m-d H:i:s")
+			];
+			$this->db->insert("tblocation",$data);
+			$mode = "INSERT";
+		}else{
+			$data = [
+				"fst_cust_code"=>$fstCustCode,
+				"fst_cust_location"=> $this->input->post("fst_cust_location"),
+				"fin_view_zoom_level"=> $this->input->post("fin_view_zoom_level"),
+				"fin_radius_meters"=> $this->input->post("fin_radius_meters"),
+				"fst_active"=>'A',
+				"fin_update_id"=>$this->aauth->get_user_id(),
+				"fdt_update_datetime"=>date("Y-m-d H:i:s")
+			];
+			$this->db->where("fst_cust_code",$fstCustCode);
+			$this->db->update("tblocation",$data);
+			$mode = "UPDATE";
+		}
+		$error = $this->db->error();
+		if ($error["code"] == 0){
+			$result = [
+				"status"=>"SUCCESS",	
+				"mode"=>$mode,			
+			];
+		}else{
+			$result = [
+				"status"=>"FAILED",
+			];
+		}
+		header('Content-Type: application/json');
+		echo json_encode($result);
+		
+		
 	}
 
 	public function fetch_list_location_data(){
@@ -238,7 +294,7 @@ class Customer extends MY_Controller {
 		*/
 
 		$this->datatables->setTableName("
-			(Select a.*,b.fst_cust_location from tbcustomers a inner join tblocation b on a.fst_cust_code = b.fst_cust_code) as tbcustloc
+			(Select a.*,b.fst_cust_location,b.fin_view_zoom_level,b.fin_radius_meters from tbcustomers a inner join tblocation b on a.fst_cust_code = b.fst_cust_code) as tbcustloc
 		");
 		
 		$selectFields = "*";
@@ -258,6 +314,7 @@ class Customer extends MY_Controller {
 			
 			//$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_date"]);
 			$data["action"]	= "<div style='font-size:16px'>				
+				<a class='btn-edit' href='#' data-original-title='' title=''><i class='fa fa-pencil'></i></a>	
 				<a class='btn-delete' href='#' data-toggle='confirmation' data-original-title='' title=''><i class='fa fa-trash'></i></a>	
 				<a style='display:unset' class='btn-map' href='#'  data-original-title='' title=''><i class='fa fa-map-marker' aria-hidden='true'></i></a>			
 			</div>";
@@ -270,11 +327,27 @@ class Customer extends MY_Controller {
 	}
 	
 	public function delete_location($fst_cust_code){
-		$this->db->where('fst_customer_code', $fst_cust_code);
+		$this->db->where('fst_cust_code', $fst_cust_code);
 		$this->db->delete("tblocation");
 		$result =[
 			"status"=>"SUCCESS"
 		];
+		header('Content-Type: application/json');
+		echo json_encode($result);
+
+	}
+
+	public function ajxCustHaveNoLocation(){
+		$term  = $this->input->get("term");
+
+		$ssql = "select fst_cust_code,fst_cust_name from tbcustomers where fst_cust_code not in (select fst_cust_code from tblocation) and( fst_cust_name like ? or fst_cust_code like ?)";
+		$qr = $this->db->query($ssql,["%$term%","%$term%"]);
+		$rs = $qr->result();
+		$result=[
+			"status"=>"SUCCESS",
+			"data"=>$rs
+		];
+
 		header('Content-Type: application/json');
 		echo json_encode($result);
 

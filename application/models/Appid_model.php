@@ -17,30 +17,12 @@ class Appid_model extends MY_Model {
 		return $rules;		
 	}
 
-	public function getSales($appid,$companyCode,$custCode = ""){
-		if ($custCode == ""){
-			$ssql = "select b.* from " . $this->tableName . " a
-				inner join tbsales b on a.fst_sales_code = b.fst_sales_code
-				where a.fst_appid = ? and a.fst_company_code = ?";
+	public function getSales($appid){
 
-			$query = $this->db->query($ssql,[$appid,$companyCode]);
-			return $query->row();
-		}else{
-			/*
-			$ssql = "select c.* from " . $this->tableName . " a
-				inner join tbcustomers b on a.fst_sales_code = b.fst_sales_code
-				inner join tbsales c on a.fst_sales_code = c.fst_sales_code
-				where b.fst_cust_code = ?";
-			*/
-
-			$ssql = "select c.* from tbjadwalsales a
-				inner join tbappid b on a.fst_sales_code = b.fst_sales_code 
-				inner join tbsales c on a.fst_sales_code = c.fst_sales_code
-				where a.fst_cust_code = ? and b.fst_appid = ?";
-			$query = $this->db->query($ssql,[$custCode,$appid]);
-			return $query->row();
-
-		}
+		$ssql = "select * from tbappid where fst_appid =?";
+		$query = $this->db->query($ssql,[$appid]);
+		return $query->row();
+				
 	}
 
 	public function isValidAppid($appid){		

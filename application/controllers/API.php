@@ -38,8 +38,8 @@ class API extends CI_Controller {
 		
 		$appid = $this->input->post("app_id");	
 		//cek last sync data from server
-		if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
-		//if (true){
+		//if ( $this->trlogs_model->isLastUpdate(date("Y-m-d"),"sync_data") ){
+		if (true){
 			$customers = $this->customer_model->getDataByAppId($appid);
 			$result = [
 				"post" => $_POST,
@@ -74,6 +74,25 @@ class API extends CI_Controller {
             "status"=>"OK",
             "message"=>"OK",
             "data"=>$items
+		];	
+		
+		
+		if($returnJson === 0){
+			return $result;
+		}
+
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+	public function feed_discounts($returnJson = 1){
+		$this->load->model("discitem_model");
+		$discounts = $this->discitem_model->getData();
+
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$discounts
 		];	
 		
 		
@@ -186,10 +205,14 @@ class API extends CI_Controller {
 			$tmpResult =  $this->feed_customers(0);
 			if ($tmpResult["status"] == "OK"){
 				$arrCustomer  = $tmpResult["data"];
-
+				
 				$tmpResult =  $this->feed_items(0);
 				$arrItems = $tmpResult["data"];
 
+				$tmpResult =  $this->feed_discounts(0);
+				$arrDisc = $tmpResult["data"];
+
+				/*
 				$tmpResult =  $this->feed_company(0);
 				$arrCompany = $tmpResult["data"];
 
@@ -204,16 +227,17 @@ class API extends CI_Controller {
 
 				$tmpResult =  $this->feed_newcustomer(0);
 				$arrNewCustomer = $tmpResult["data"];
-
+				*/
 
 				$data = [
 					"arrCustomer" => $arrCustomer,
 					"arrItems" => $arrItems,
-					"arrCompany" => $arrCompany,
-					"arrPromo" => $arrPromo,
-					"arrTarget" => $arrTarget,
-					"arrOrderStatus" => $arrOrderStatus,
-					"arrNewCustomer" => $arrNewCustomer,
+					"arrDisc" => $arrDisc,
+					//"arrCompany" => $arrCompany,
+					//"arrPromo" => $arrPromo,
+					//"arrTarget" => $arrTarget,
+					//"arrOrderStatus" => $arrOrderStatus,
+					//"arrNewCustomer" => $arrNewCustomer,
 				];
 
 				$result = [
@@ -308,6 +332,26 @@ class API extends CI_Controller {
 		$loc2 = explode(",",$loc2);
 
 		echo "Distance :" . distance($loc1[0],$loc1[1],$loc2[0],$loc2[1],"M");
+		log_message("debug","POST :" . print_r($_POST,true));
+		log_message("debug","GET :" . print_r($_GET,true));
+		log_message("debug","FILES :" . print_r($_FILES,true));
+
+		if(!empty($_FILES['inside_file']['tmp_name'])) {
+			//$config['upload_path']          = FCPATH . "uploads\\checkinlog\\";
+			$config['upload_path']          =  APPPATH . "../uploads/customers/";
+			$config['file_name']			=  $_FILES['inside_file']['name'];
+			$config['overwrite']			= TRUE;
+			$config['file_ext_tolower']		= TRUE;
+			$config['allowed_types']        = 'jpg|png'; //'gif|jpg|png';
+			$config['max_size']             = 0; //(int) getDbConfig("document_max_size"); //kilobyte
+			$config['max_width']            = 0; //1024; //pixel
+			$config['max_height']           = 0; //768; //pixel				
+			$this->load->library('upload', $config);
+			if ( ! $this->upload->do_upload('inside_file')){			
+				echo $this->upload->display_errors();									
+			}
+			
+		}
 
 
 
@@ -316,13 +360,14 @@ class API extends CI_Controller {
 	public function checkinlog(){
 		$this->load->model("trcheckinlog_model");
 		$this->load->model("customer_model");
+		$this->load->model("jadwalsales_model");
 
 		$appid = $this->input->post("app_id");
 		$fin_id = $this->input->post("fin_id");
 		$fst_cust_code = $this->input->post("fst_cust_code");
 
-		$sales =  $this->appid_model->getSales($appid,null,$fst_cust_code);
-		if($sales){
+		$sales =  $this->appid_model->getSales($appid);
+		if($sales != null){
 			$salesCode = $sales->fst_sales_code;			
 			$loc =  explode(",",$this->input->post("fst_checkin_location"));			
 			$loc_lat = $loc[0];
@@ -369,10 +414,14 @@ class API extends CI_Controller {
 				//Data belum ada - Insert
 				$mode = "insert";
 				$checkout = $this->input->post("fdt_checkout_datetime");
+
 				if ($checkout == null){
 					$checkout = $this->input->post("fdt_checkin_datetime");
 				}
-				$data = [
+
+				
+
+				$data = [					
 					"fst_sales_code"=>$salesCode,
 					"fst_cust_code" => $this->input->post("fst_cust_code"),
 					"fdt_checkin_datetime" => $this->input->post("fdt_checkin_datetime"),
@@ -381,19 +430,28 @@ class API extends CI_Controller {
 					"fin_distance_meters" => distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M"),
 					"fst_active" => 'A',
 					"fdt_insert_datetime" => date("Y-m-d H:i:s"),
-					"fin_insert_id" => 1
+					"fin_insert_id" => 1,
+					"fbl_on_schedule" => $this->jadwalsales_model->onSchedule($this->input->post("fst_cust_code"),date("Y-m-d"))
 				];
 			}
+
+			
 
 			$result = [];
 			$this->db->trans_start();
 			try{
 				if ($mode == "insert"){
 					$id = $this->trcheckinlog_model->insert($data);
+					if ($data["fbl_on_schedule"]){
+						//UPDATE JADWAL SALES
+						$this->jadwalsales_model->updateVisited($data["fst_cust_code"],date("Y-m-d"),$id);
+					}
 				}else if($mode=="update"){
 					$id = $data["fin_id"]; 
 					$this->trcheckinlog_model->update($data);
 				}
+
+				
 
 
 				if(!empty($_FILES['photoloc']['tmp_name'])) {
@@ -441,67 +499,135 @@ class API extends CI_Controller {
 	}
 
 	public function newcust(){
+		//PriceGroup ID, 1:Retail|2:Hypermarket|3:Grosir|4:Sekolah/PO|5:MT Lokal|9:Group SMM/Internal
+		log_message('debug', print_r($this->input->post(),true));
+		log_message('debug', print_r($_FILES,true));		
+
+		/*
+			[fst_price_group] => Hypermarket
+			[fbl_is_rent] => 1
+			[fst_cust_location] => 106.67757,-6.1836045
+			[fst_area_code] => 31.73.02.1002
+			[fst_unique_id] => cust_for1_20200303170843497
+			[fst_cust_phone] => 0811953296
+			[app_id] => for1
+			[fst_cust_address] => Perum Puri Permata Blok F no 11
+			[fst_cust_name] => Devi Bastian
+			[fst_contact] => Devi
+		*/
+
 		
-		log_message('info', print_r($this->input->post(),true));
-
-		//$sales = $this->appid_model->getSales($this->input->post("app_id"),$this->input->post("fst_company_code"));
-		if ($this->input->post("fbl_is_new") == "3" ){
-			//delete data
-			$this->db->where('fin_id', $this->input->post("fin_id_server"));			
-			//$this->db->where('fst_appid', $this->input->post("app_id"));
-			$this->db->delete("tbnewcustomers");
-			$result = [
-				"status" => "OK",
-				"fin_cust_id" => $this->input->post("fin_cust_id"),
-				"post" => $this->input->post(),
-			];
-			header('Content-Type: application/json');
-			echo json_encode($result);
-			return;
-		}
-
-		$strCompanyCode = trim($this->input->post("fst_company_code"),",");
-		$arrCompanyCode  = explode ( "," ,$strCompanyCode);
+		
 		$strSalesCode = "";
-		$strSalesName = "";
-		$post =$this->input->post();
-		foreach($arrCompanyCode as $companyCode){
-			$sales = $this->appid_model->getSales($this->input->post("app_id"),$companyCode);
-			if($sales){
-				$strSalesCode .= $sales->fst_sales_code . ",";
-				$strSalesName .= $sales->fst_sales_name . "\r\n";			
-			}
+		//$strSalesName = "";
+		//$post =$this->input->post();
+		$sales = $this->appid_model->getSales($this->input->post("app_id"));
+		if($sales != null){
+			$strSalesCode = $sales->fst_sales_code;
 		}
-		$strSalesCode = rtrim($strSalesCode,",");
 		
+		
+		$finPriceGroupId =0;
+		$fstPriceGroup = strtoupper($this->input->post("fst_price_group"));
+		switch ($fstPriceGroup){
+			case "RETAIL":
+				$finPriceGroupId =1;
+				break;
+			case "HYPERMARKET":
+				$finPriceGroupId =2;
+				break;
+			case "GROSIR":
+				$finPriceGroupId =3;
+				break;
+			case "SEKOLAH/PO":
+				$finPriceGroupId =4;
+				break;
+			case "MT LOKAL":
+				$finPriceGroupId =5;
+				break;
+			case "GROUP SMM/INTERNAL":
+				$finPriceGroupId =9;
+				break;
+		}
+
 
 		$data = [
 			"fst_cust_name" => $this->input->post("fst_cust_name"),
 			"fst_contact" => $this->input->post("fst_contact"),
 			"fst_cust_phone" =>$this->input->post("fst_cust_phone"),
-			"fst_kelurahan" =>$this->input->post("fst_kelurahan"),
-			"fst_kecamatan" =>$this->input->post("fst_kecamatan"),
+			"fst_area_code" =>$this->input->post("fst_area_code"),
 			"fst_cust_address" =>$this->input->post("fst_cust_address"),
-			"fbl_is_pasar" =>$this->input->post("fbl_is_pasar"),
-			"fst_cust_location" => $this->input->post("fst_cust_location"),			
+			"fbl_is_rent" =>$this->input->post("fbl_is_rent"),
+			"fst_cust_location" => $this->input->post("fst_cust_location"),		
+			"fin_price_group_id"=> $finPriceGroupId,
 			"fst_appid" => $this->input->post("app_id"),
-			"fst_company_code" => $strCompanyCode,	
+			"fst_unique_id" => $this->input->post("fst_unique_id"),	
+			"fst_edit_id" => $this->input->post("fst_edit_id"),	
 			"fst_sales_code" => $strSalesCode,
-			"fst_sales_name" => $strSalesName,	
 			"fst_status" => "NEED APPROVAL",
 			"fst_active" => "A",
 			"fin_insert_id" => 1,
-			"fdt_insert_datetime" => date("Y-m-d H:i:s")
+			"fdt_insert_datetime" => date("Y-m-d H:i:s"),
 		];
 
+		
+		
+		
 		$this->db->insert("tbnewcustomers",$data);
 		$insertId = $this->db->insert_id();
 
-		$result = [
-			"status" => "OK",
-			"fin_cust_id" => $this->input->post("fin_cust_id"),
-			"fin_id_server" =>$insertId
-		];
+		$error =  $this->db->error();
+		if ($error["code"] == 0){
+
+		
+
+
+			//Save Image Uploaded
+			$config['upload_path']          =  APPPATH . "../uploads/customers/";
+			$config['file_name']			=  ""; //$_FILES['inside_file']['name'];
+			$config['overwrite']			= TRUE;
+			$config['file_ext_tolower']		= TRUE;
+			$config['allowed_types']        = 'jpg|png'; //'gif|jpg|png';
+			$config['max_size']             = 0; //(int) getDbConfig("document_max_size"); //kilobyte
+			$config['max_width']            = 0; //1024; //pixel
+			$config['max_height']           = 0; //768; //pixel				
+			
+			$this->load->library('upload', $config);
+
+			if(!empty($_FILES['front_image']['tmp_name'])) {
+				$config['file_name'] =  $_FILES['front_image']['name'];			
+				if ( ! $this->upload->do_upload('front_image')){			
+					echo $this->upload->display_errors();									
+				}			
+			}
+
+			if(!empty($_FILES['inside_image']['tmp_name'])) {
+				$config['file_name'] =  $_FILES['inside_image']['name'];			
+				if ( ! $this->upload->do_upload('inside_image')){			
+					echo $this->upload->display_errors();									
+				}			
+			}
+			
+			if(!empty($_FILES['other_image']['tmp_name'])) {
+				$config['file_name'] =  $_FILES['other_image']['name'];			
+				if ( ! $this->upload->do_upload('other_image')){			
+					echo $this->upload->display_errors();									
+				}			
+			}
+			
+			$result = [
+				"status" => "OK",
+				"fst_unique_id" => $this->input->post("fst_unique_id"),
+			];
+		}else{
+			$result = [
+				"status" => "NOK",
+				"message"=>$error["message"],
+				"fst_unique_id" => $this->input->post("fst_unique_id"),
+			];
+		}
+
+
 		header('Content-Type: application/json');
 		echo json_encode($result);
 	}
@@ -532,7 +658,7 @@ class API extends CI_Controller {
 
 
 	
-		$rwSales = $this->appid_model->getSales($this->input->post("app_id"),null,$this->input->post("fst_cust_code"));		
+		$rwSales = $this->appid_model->getSales($this->input->post("app_id"));		
 		$result =[
 			"status"=>"NOK",
 			"order_id"=>$this->input->post("fst_order_id"),
@@ -541,19 +667,15 @@ class API extends CI_Controller {
 
 		if(!$rwSales){
 			$result["message"] = "Invalid sales";
-		}else{
-
-			
-
+		}else{		
 			$dataH = [
-				"fst_order_id" => $this->input->post("fst_order_id") . "_" . $rwSales->fst_sales_code,
+				"fst_order_id" => $this->input->post("fst_order_id"),
 				"fst_cust_code"=> $this->input->post("fst_cust_code"),
 				"fst_sales_code" => $rwSales->fst_sales_code,
 				"fdt_order_datetime" => $this->input->post("fdt_order_datetime"),
 				"fst_notes" => $this->input->post("fst_notes"),
 				"fst_appid" => $this->input->post("app_id"),
 				"fst_status" => "UPLOADED",//$this->input->post("fst_status"),
-				"fst_company_code"=>$rwSales->fst_company_code,
 				"fst_active" => 'A',
 				"fin_insert_id" => 1,
 				"fdt_insert_datetime" => date("Y-m-d H:i:s"),
@@ -577,6 +699,7 @@ class API extends CI_Controller {
 					"fst_order_id"=>$dataH["fst_order_id"],
 					"fst_item_code"=>$detail->fst_item_code,
 					"fst_satuan"=>$detail->fst_satuan,
+					"fst_disc"=>$detail->fst_disc,
 					"fin_qty"=>$detail->fin_qty,
 					"fin_price"=>$detail->fin_price					
 				];
@@ -585,7 +708,7 @@ class API extends CI_Controller {
 			}
 			//var_dump($this->db->error());
 			if ($this->db->error()["code"] == 0 ){
-				//$this->db->trans_complete();
+				$this->db->trans_complete();
 			}else{
 
 			}
@@ -598,5 +721,5 @@ class API extends CI_Controller {
 		}
 		header('Content-Type: application/json');
 		echo json_encode($result);
-	}
+	}	
 }

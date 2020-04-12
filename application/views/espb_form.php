@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<!-- <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
+<!-- <link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
+<link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.css">
 <style>
 	.additional-schedule{
 		background-color: #f5bebe !important;
@@ -94,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<div class="row">
 					<div class="col-lg-12 text-right">
-						<label style="font-style: italic;">Sub Total</label>
+						<label style="font-style: italic;">DPP</label>
 						<label>:</label>
 						<label id="lblDPP" class="text-right" style="width:100px;"></label>
 					</div>
@@ -134,11 +134,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{ title: "Satuan",data:"fst_satuan" },
 				{ title: "Qty",data:"fin_qty",className:"text-right" },
 				{ title: "Price",data:"fin_price",className:"text-right",render:$.fn.dataTable.render.number( '\,', '.', 2, '' )},
+				{ title: "Disc",data:"fst_disc",className:"text-right" },
+				{ title: "Disc Amount",className:"text-right",
+					render:function(data,type,row){
+						var discAmount = App.calculateDisc(row.fin_price , row.fst_disc);
+
+						return App.money_format(discAmount);
+					},
+				},
 				{ title: "Total",className:"text-right",
 					render : function(data,type,row,meta){
 						//return row.fin_qty * row.fin_price;
 						//console.log( $.fn.dataTable.render.number(",", ".", 2, ''));
-						return $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(row.fin_qty * row.fin_price);
+						//return $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(row.fin_qty * row.fin_price);
+						var discAmount = App.calculateDisc(row.fin_price , row.fst_disc);
+						var totalPrice = row.fin_price -discAmount;
+						var subTotal =totalPrice * row.fin_qty;
+						return App.money_format(subTotal);
+
 					}
 				}
 			],
@@ -162,12 +175,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		t = $("#tblDetails").DataTable();
 		data = t.data();
 		total =0;
+
 		$.each(data , function(i,v){
-			total += v.fin_qty * v.fin_price;
+			//total += v.fin_qty * v.fin_price;
+
+			var discAmount = App.calculateDisc(v.fin_price , v.fst_disc);
+			var totalPrice = v.fin_price - discAmount;
+			var subTotal =totalPrice * v.fin_qty;
+			total += subTotal;
+			//return App.money_format(subTotal);
+
+			
 		});
 		
-		//dpp = total / 1.1;
-		dpp = total;
+		dpp = total / 1.1;
+		//dpp = total;
 		ppn = dpp * 10/100;
 
 		$("#lblDPP").html( $.fn.dataTable.render.number( '\,', '.', 2, '' ).display(dpp));
@@ -176,9 +198,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </script>
 <!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.js"></script>
 <!--
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net/js/datetime.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/datetime.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 -->

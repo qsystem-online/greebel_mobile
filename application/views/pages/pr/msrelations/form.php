@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/select2/dist/css/select2.min.css">
 
 <style type="text/css">
 	.border-0{
@@ -608,7 +608,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <!-- Select2 -->
-<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/select2/dist/js/select2.full.js"></script>
 
 <script type="text/javascript">
     $(function(){

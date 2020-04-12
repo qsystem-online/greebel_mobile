@@ -105,7 +105,7 @@ class User extends MY_Controller {
 
         $data = [
 			"fst_username"=>$this->input->post("fst_username"),
-			"fst_password"=> md5("defaultpassword"),
+			"fst_password"=> md5($this->input->post("fst_password")),
 			"fst_fullname"=>$this->input->post("fst_fullname"),
 			"fdt_birthdate"=>dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender"=>$this->input->post("fst_gender"),
@@ -115,6 +115,7 @@ class User extends MY_Controller {
 			"fst_email"=>$this->input->post("fst_email"),
 			"fst_phone"=>$this->input->post("fst_phone"),
 			"fin_department_id"=>$this->input->post("fin_department_id"),
+			"fst_privilege_group"=>$this->input->post("fst_privilege_group"),
 			"fbl_admin"=>$this->input->post("fbl_admin")
 		];
 
@@ -188,10 +189,11 @@ class User extends MY_Controller {
 			return;
 		}
 
+		$pass = $this->input->post("fst_password") == $user->fst_password ? $user->fst_password : md5($this->input->post("fst_password"));
         $data = [
 			"fin_user_id"=>$fin_user_id,
 			"fst_username"=>$this->input->post("fst_username"),
-			//"fst_password"=> md5("defaultpassword"),//$this->input->post("fst_password"),
+			"fst_password"=> $pass , // md5("defaultpassword")
 			"fst_fullname"=>$this->input->post("fst_fullname"),
 			"fdt_birthdate"=>dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender"=>$this->input->post("fst_gender"),
@@ -201,6 +203,7 @@ class User extends MY_Controller {
 			"fst_email"=>$this->input->post("fst_email"),
 			"fst_phone"=>$this->input->post("fst_phone"),
 			"fin_department_id"=>$this->input->post("fin_department_id"),
+			"fst_privilege_group"=>$this->input->post("fst_privilege_group"),
 			"fbl_admin"=>$this->input->post("fbl_admin")
 		];
 

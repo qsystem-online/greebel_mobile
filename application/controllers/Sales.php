@@ -325,12 +325,11 @@ class Sales extends MY_Controller {
 			(SELECT a.fin_id,
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
-			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,d.fin_visit_day,			
+			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,			
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
-			LEFT JOIN tbjadwalsales d on a.fst_cust_code = d.fst_cust_code and a.fst_sales_code = d.fst_sales_code
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd' 
 			) as trcheckinlog
 		");
@@ -348,9 +347,9 @@ class Sales extends MY_Controller {
 		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			//action
-			
-			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fst_sales_code"],$data["fdt_checkin_datetime"]);
+			//action			
+			//$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fst_sales_code"],$data["fdt_checkin_datetime"]);
+			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
 			$diff = strtotime($data["fdt_checkout_datetime"]) - strtotime($data["fdt_checkin_datetime"]);
 			$days = floor($diff/86400);
 			$diff = $diff % 86400;
@@ -578,5 +577,203 @@ class Sales extends MY_Controller {
 		//$this->phpspreadsheet->save("test-coba");		
 	}
 	
-	
+
+	public function schedule(){
+		$this->load->library("menus");
+		//$this->load->model("groups_model");
+
+		if($this->input->post("submit") != "" ){
+			$this->add_save();
+		}
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+		
+		$data["title"] = "Schedule";
+		
+		$ssql ="SELECT * FROM tbsales where fst_active = 'A'";
+		$qr = $this->db->query($ssql);
+		$arrSales = $qr->result();
+		$data["arrSales"] = $arrSales;		
+		$page_content = $this->parser->parse('pages/sales/schedule',$data,true);
+		$main_footer = $this->parser->parse('inc/main_footer',[],true);
+			
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main',$this->data);
+	}
+
+
+	public function ajxGetCustomer($fst_sales_code){
+		$ssql = "Select * from tbcustomers where fst_sales_code = ?";
+		$qr = $this->db->query($ssql,[$fst_sales_code]);
+		$rs = $qr->result();
+
+		$result=[
+			"arrCustomer"=>$rs
+		];
+
+		header('Content-Type: application/json');
+		echo json_encode($result);
+		
+	}
+
+	public function ajxSchedule_add(){
+		$this->load->helper("utils");
+		$fdt_schedule_date = $this->input->post("fdt_schedule_date");
+		$fst_cust_code = $this->input->post("fst_cust_code");
+		$fdt_schedule_date = dBDateFormat($fdt_schedule_date);
+		$data = [
+			"fdt_schedule_date" => $fdt_schedule_date,
+			"fst_cust_code" => $fst_cust_code
+		];
+
+		$this->db->insert("tbjadwalsales",$data);
+		$error = $this->db->error(); // Has keys 'code' and 'message'
+		if ($error["code"] != 0){
+			$message = "Failed add schedule !";
+			if ($error["code"] == 1062){
+				$message = "Customer sudah terdaftar";
+			}
+			$result=[
+				"status"=>"FAILED",
+				"message"=>$message,
+				"data"=>$error,
+			];
+		}else{	
+			$insert_id = $this->db->insert_id();	
+			$result=[
+				"status"=>"SUCCESS",
+				"data"=>$data,
+				"insertId"=>$insert_id,
+			];
+		}
+		header('Content-Type: application/json');
+		echo json_encode($result);
+	}	
+
+	public function ajxSchedule_list($fdt_schedule_date){
+		$this->load->helper("utils");
+		//$fdt_schedule_date = $this->input->post("fdt_schedule_date");
+		$fdt_schedule_date = dBDateFormat($fdt_schedule_date);
+		$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+			INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code 
+			INNER JOIN tbsales c on b.fst_sales_code= c.fst_sales_code 
+			where a.fdt_schedule_date = ?";
+		
+		$qr = $this->db->query($ssql,[$fdt_schedule_date]);
+		$error = $this->db->error(); // Has keys 'code' and 'message'
+		//var_dump($error);
+		$rs = $qr->result();
+		$result=[
+			"status"=>"SUCCESS",
+			"data"=>$rs,
+		];
+		
+		header('Content-Type: application/json');
+		echo json_encode($result);
+	}	
+	function ajxSchedule_delete($finRecId){
+		//$ssql ="DELETE FROM tbjadwalsales where fin_rec_id = ?";
+		$this->db->delete('tbjadwalsales', array('fin_rec_id' => $finRecId)); 
+		$error = $this->db->error(); // Has keys 'code' and 'message'
+		if ($error["code"] != 0){
+			$result=[
+				"status"=>"FAILED",		
+				"message"=>$error["message"],
+				"data"=>$error,
+			];
+		}else{
+			$result=[
+				"status"=>"SUCCESS",			
+				"message"=>"",
+			];
+		}
+		header('Content-Type: application/json');
+		echo json_encode($result);
+
+		
+		
+		
+
+	}
+
+
+	public function schedule_monitoring(){
+		$this->load->library("menus");
+		//$this->load->model("groups_model");
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+		
+		$data["title"] = "Schedule Monitoring";
+		
+		$page_content = $this->parser->parse('pages/sales/schedule_monitoring',$data,true);
+		$main_footer = $this->parser->parse('inc/main_footer',[],true);
+			
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main',$this->data);
+	}
+
+	public function ajxScheduleMonitoringData(){
+		$fstDateRange = $this->input->post("fstDateRange");
+		$fstStatus = $this->input->post("fstStatus");
+
+		$arrDateRange = explode(" - ",$fstDateRange);
+		if (sizeof($arrDateRange) != 2){
+			$result = [
+				"status"=>"SUCCESS",
+				"data"=>[]
+			];
+			header('Content-Type: application/json');
+			echo json_encode($result);
+			die();
+		}
+
+		$fstStartDate = dBDateFormat($arrDateRange[0]);
+		$fstEndDate = dBDateFormat($arrDateRange[1]);
+		$ssql = "";
+		switch ($fstStatus){
+			case "ALL":
+				$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+					INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code
+					INNER JOIN tbsales c on b.fst_sales_code = c.fst_sales_code
+					where a.fdt_schedule_date between  ? and ?";
+				break;
+			case "VISITED":
+				$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+					INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code
+					INNER JOIN tbsales c on b.fst_sales_code = c.fst_sales_code
+					where a.fdt_schedule_date between  ? and ? and fbl_visited = true";
+				break;
+			case "UNVISITED":
+				$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+					INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code
+					INNER JOIN tbsales c on b.fst_sales_code = c.fst_sales_code
+					where a.fdt_schedule_date between  ? and ? and fbl_visited = false";
+				break;
+		}
+		$qr = $this->db->query($ssql,[$fstStartDate,$fstEndDate]);
+		$rs = $qr->result();
+
+		$result = [
+			"status"=>"SUCCESS",
+			"data"=>$rs
+		];
+
+		header('Content-Type: application/json');
+		echo json_encode($result);
+
+	}
+
+
 }

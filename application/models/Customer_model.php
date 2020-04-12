@@ -54,7 +54,7 @@ class Customer_model extends MY_Model {
             left join tblocation c on a.fst_cust_code = c.fst_cust_code 
             where b.fst_appid = ?";
         */
-        
+        /*
         $ssql = "SELECT a.fin_cust_id, a.fst_cust_code, a.fst_cust_name, a.fst_cust_address, a.fst_cust_phone,a.fin_price_group_id,
             a.fst_company_code,a.fst_active,a.fdt_insert_datetime,a.fin_insert_id,a.fdt_update_datetime,a.fin_update_id,
             b.fst_sales_code,b.fin_visit_day,b.fin_putaran,
@@ -63,17 +63,53 @@ class Customer_model extends MY_Model {
             inner join tbappid c on b.fst_sales_code = c.fst_sales_code
             left join tblocation d on a.fst_cust_code = d.fst_cust_code 
             where c.fst_appid = ?";
+        */
+        /*
+        contentValues.put("fin_cust_id", customer.getInt("fin_cust_id"));
+			contentValues.put("fst_cust_code", customer.getString("fst_cust_code"));
 
+			if(customer.getString("fst_unique_id") == null){
+				contentValues.put("fst_unique_id", customer.getString("fst_cust_code"));
+			}else{
+				contentValues.put("fst_unique_id", customer.getString("fst_unique_id"));
+			}
+			contentValues.put("fst_cust_name", customer.getString("fst_cust_name"));
+			contentValues.put("fst_cust_address", customer.getString("fst_cust_address"));
+			contentValues.put("fst_cust_phone", customer.getString("fst_cust_phone"));
+			contentValues.put("fst_cust_location", customer.getString("fst_cust_location"));
+			contentValues.put("fst_contact", customer.getString("fst_contact"));
+			contentValues.put("fst_area_code", customer.getString("fst_area_code"));
+			contentValues.put("fbl_is_rent", customer.getString("fbl_is_rent"));
+
+			int finPriceGroup = customer.getInt("fin_price_group_id");
+			contentValues.put("fst_price_group", PriceGroup.getGroupName(finPriceGroup));
+
+			contentValues.put("fbl_on_schedule", customer.getString("fbl_on_schedule"));
+
+			contentValues.put("fst_status", customer.getString("fst_active"));
+            contentValues.put("fbl_is_new", 0);
+            
+        */
+
+        $this->load->model("jadwalsales_model");
+
+        $ssql = "select  a.fin_cust_id,a.fst_cust_code,a.fst_unique_id,a.fst_cust_name,
+            a.fst_cust_address,a.fst_cust_phone,a.fst_contact,a.fst_area_code,
+            a.fbl_is_rent,a.fin_price_group_id,a.fst_active,a.fst_sales_code,a.fst_last_edit_id,
+            a.fdc_max_disc from tbcustomers a 
+            inner join tbsales b on a.fst_sales_code = b.fst_sales_code
+            inner join tbappid c on b.fst_sales_code = c.fst_sales_code
+            Where c.fst_appid = ? ";
+            
         $query = $this->db->query($ssql,[$appId]);
         $result = $query->result();
         for($i = 0 ;$i < sizeof($result);$i++){
             $rw = $result[$i];
-            if ($rw->fst_active == 'A'){
-                if (! $this->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,date("Y-m-d")) ){
-                    //$rw->fst_active = 'S';
-                    $result[$i]->fst_active = 'S';
-                }
-            }                    
+            if (! $this->jadwalsales_model->onSchedule($rw->fst_cust_code,date("Y-m-d")) ){
+                $result[$i]->fbl_on_schedule = false;
+            }else{
+                $result[$i]->fbl_on_schedule = true;
+            }
         }
         
         return $result;
@@ -143,13 +179,32 @@ class Customer_model extends MY_Model {
 
     }
 
-    public function inSchedule($fst_cust_code,$fst_sales_code,$fdt_date){
+    public function inSchedule($fst_cust_code,$fdt_datetime){
         //php => 0 = minggu -> 6 = sabtu
         //DB =>  1 = Senin  -> 7 = Minggu
         //DB => 0, ALL Days 
         //System Putaran putaran 0 =>semua putaran, 1 => putaran 1 , 2 =>putaran kedua
         //Putaran di lihat dari minggu ganjil atau genat di tentukan dari tanggal di setting
         //$startPutaran = getDbConfig("start_putaran");
+        //random(0,1);
+        $timeStamp = strtotime($fdt_datetime);
+        $fdt_date = date("Y-m-d",$timeStamp);
+
+        $ssql = "SELECT * FROM tbjadwalsales where fst_cust_code = ? and fdt_schedule_date = ?";
+        $qr = $this->db->query($ssql,[$fst_cust_code,$fdt_date]);
+        //echo $this->db->last_query();
+        //die();
+        $rw = $qr->row();
+        if ($rw == null){
+            return false;
+        }else{
+            return true;
+        }
+
+        //return rand(0,1);
+        //return true;
+
+        /*
         $startPutaran = date_create(getDbConfig("start_putaran"));
         $dateNow = date_create($fdt_date);
         $interval = date_diff($startPutaran, $dateNow);
@@ -188,6 +243,7 @@ class Customer_model extends MY_Model {
             return true; //Sesuai Jadwal
         }
         return false;
+        */
     }
 
     public function get_select2(){
@@ -210,5 +266,11 @@ class Customer_model extends MY_Model {
         return $newRs;
     }
 
+    public function getSchools(){
+        $ssql = "SELECT * FROM tbcustomers where fin_price_group_id = 4 and fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        return $rs;
+    }
 
 }

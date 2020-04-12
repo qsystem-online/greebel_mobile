@@ -24,18 +24,7 @@ class Item_model extends MY_Model {
     }
 
     public function getDataByAppid($appId){
-        /*
-        $ssql ="select a.* from tbitems a 
-            inner join tbsales b on FIND_IN_SET(a.fst_group_item_code,b.fst_group_item_code) 
-            inner join tbappid c on c.fst_sales_code = b.fst_sales_code
-            where c.fst_appid = ?";
-        */
-        
-        $ssql = "SELECT  DISTINCT a.* FROM tbitems a 
-            INNER JOIN tbsales b ON (FIND_IN_SET(a.fst_group_item_code,b.fst_group_item_code) OR b.fst_group_item_code = '' OR b.fst_group_item_code  IS NULL) 
-            INNER JOIN tbappid c ON c.fst_sales_code = b.fst_sales_code
-            WHERE c.fst_appid = ?";
-
+        $ssql = "SELECT   a.* FROM tbitems a ";            
         $qr = $this->db->query($ssql,[$appId]);
         return $qr->result();
     }
@@ -95,4 +84,9 @@ class Item_model extends MY_Model {
 
     }
 
+    public function getLogistics(){
+        $ssql = "select * from tbitems where fin_item_type_id = 5 and fst_active='A'";
+        $qr =$this->db->query($ssql,[]);
+        return $qr->result();
+    }
 }

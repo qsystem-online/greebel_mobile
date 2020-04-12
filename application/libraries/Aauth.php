@@ -55,7 +55,9 @@ class Aauth {
 
 
 
-	public function is_permit($permission_name,$notRecordDefault = true,$user = null){		
+	public function is_permit($permission_name,$notRecordDefault = true,$user = null,$mode="view"){		
+		//$this-CI->load->model("users_model");
+
 		if ($permission_name == "dashboard_v2"){
 			return false;	
 		}
@@ -71,12 +73,62 @@ class Aauth {
 		if ($permission_name == "new_customer" && $user->fbl_admin == 0){
 			return false;	
 		}
+
 		if ($permission_name == "user" && $user->fbl_admin == 0){
 			return false;	
 		}
 
-
-		return true;		
+		
+		
+		//Cek privileges by id
+		$ssql ="SELECT * FROM usergroupprivileges where fin_user_id = ? and fst_menu_name = ? and fst_active ='A'";
+		$qr = $this->CI->db->query($ssql,[$user->fin_user_id,$permission_name]);
+		$rw = $qr->row();
+		if ($rw != null){
+			switch($mode){
+				case "view":
+					return $rw->fbl_view;
+					break;
+				case "add":
+					return $rw->fbl_add;
+					break;
+				case "update":
+					return $rw->fbl_update;
+					break;
+				case "delete":
+					return $rw->fbl_delete;
+					break;
+				default:
+					return $notRecordDefault;
+					break;
+			}
+		}else{
+			//cek privileges by group
+			$privilegesGroup = $user->fst_privilege_group;
+			$ssql ="SELECT * FROM usergroupprivileges where fst_privilege_group = ? and fst_menu_name = ? and fst_active ='A'";
+			$qr = $this->CI->db->query($ssql,[$privilegesGroup,$permission_name]);
+			$rw = $qr->row();
+			if ($rw != null){
+				switch($mode){
+					case "view":
+						return $rw->fbl_view;
+						break;
+					case "add":
+						return $rw->fbl_add;
+						break;
+					case "update":
+						return $rw->fbl_update;
+						break;
+					case "delete":
+						return $rw->fbl_delete;
+						break;
+					default:
+						return $notRecordDefault;
+						break;
+				}
+			}
+		}	
+		return $notRecordDefault;		
 	}
 
 }

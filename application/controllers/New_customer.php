@@ -32,7 +32,6 @@ class New_customer extends MY_Controller {
 			['title' => 'User ID', 'width'=>'5%', 'data'=>'fin_id'],
 			['title' => 'Full Name', 'width'=>'20%', 'data'=>'fst_cust_name'],
 			['title' => 'Address', 'width' =>'10%', 'data'=>'fst_cust_address'],
-			['title' => 'Company', 'width' =>'15%', 'data'=>'fst_company_code'],
             ['title' => 'Sales', 'width' =>'15%', 'data'=>'fst_sales_name',
                 'render'=>"function(data,type,row){
                     return row.fst_sales_name.replace(/\\r/g,'<br>');
@@ -73,9 +72,9 @@ class New_customer extends MY_Controller {
 
 
         if($isAllStatus == 0){
-            $this->datatables->setTableName(" (select * from tbnewcustomers where fst_status ='NEED APPROVAL') a ");
+            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  where fst_status ='NEED APPROVAL') a ");
         }else{
-            $this->datatables->setTableName(" (select * from tbnewcustomers ) a ");
+            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code ) a ");
         }
 		
 		$selectFields = "a.*";

@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<!-- <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
+<!-- <link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
+<link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.css">
 
 <section class="content-header">
 	<h1><?=$page_name?><small>List</small></h1>
@@ -69,24 +69,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
                 <?php
-                    foreach($columns as $col){?>
-                        {"title" : "<?=$col['title']?>","width": "<?=$col['width']?>","data":"<?=$col['data']?>"
-                            <?php if(isset($col['render'])){?>
-                                ,"render":<?php echo $col['render'] ?>
-                            <?php } ?>
-                            <?php if(isset($col['sortable'])){
+					foreach($columns as $col){?>
+						{
+						<?php foreach ($col as $key => $value){ ?>	
+							<?php if ($key == "render"){ ?>
+								<?=$key?>:<?=$value?>,							
+							<?php } else {?>
+								<?=$key?>:"<?=$value?>",							
+							<?php } ?>																			
+						<?php } ?>
+						},
+						/*
+                        {"title" : "<=$col['title']?>","width": "<=$col['width']?>","data":"<=$col['data']?>"
+                            <php if(isset($col['render'])){?>
+                                ,"render":<php echo $col['render'] ?>
+                            <php } ?>
+                            <php if(isset($col['sortable'])){
                                 if ($col['sortable']){ ?>
                                     ,"sortable": true
-                                <?php }else
+                                <php }else
                                 {?>
                                     ,"sortable": false
-                                <?php }
+                                <php }
                                 
                             } ?>
-                            <?php if(isset($col['className'])){?>
-                                ,"className":"<?=$col['className']?>"
-                            <?php } ?>
-                        },
+                            <php if(isset($col['className'])){?>
+                                ,"className":"<=$col['className']?>"
+                            <php } ?>
+						},
+						*/
                     <?php }
                 ?>
 			],
@@ -125,10 +136,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	});
 </script>
+<?php
+	if (isset($script_page)){
+		echo $script_page;
+	};
+?>
 <!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.js"></script>
 <!--
-<script src="<?=base_url()?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net/js/datetime.js"></script>
-<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/datetime.js"></script>
+<script src="<?=COMPONENT_URL?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 -->

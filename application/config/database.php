@@ -69,14 +69,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'qsystem';
+$active_group = 'default';
 $query_builder = TRUE;
 $db['qsystem'] = array(
 	'dsn'	=> '',
 	'hostname' => 'qsystem-online.com',
-	'username' => 'u5538790_amex_mobile',
-	'password' => 'p455amexmobile',
-	'database' => 'u5538790_armex_mobile2', //'u5538790_edoc',
+	'username' => 'u5538790_user',
+	'password' => 'passuser',
+	'database' => 'u5538790_greebel_mobile', //'u5538790_edoc',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -97,7 +97,7 @@ $db['default'] = array(
 	'hostname' => 'localhost', //'qsystem-online.com',
 	'username' => 'root', //'u5538790_edoc',
 	'password' => '', //'passedoc',
-	'database' => 'db_armex_mobile', //'u5538790_edoc',
+	'database' => 'greebel_mobile', //'u5538790_edoc',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
