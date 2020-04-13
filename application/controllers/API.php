@@ -326,36 +326,10 @@ class API extends CI_Controller {
 	}
 	
 	public function test(){
-		$loc1 = "-6.182307, 106.674893";
-		$loc2 = "-6.1823019, 106.6747216";
-		$loc1 = explode(",",$loc1);
-		$loc2 = explode(",",$loc2);
-
-		echo "Distance :" . distance($loc1[0],$loc1[1],$loc2[0],$loc2[1],"M");
-		log_message("debug","POST :" . print_r($_POST,true));
-		log_message("debug","GET :" . print_r($_GET,true));
-		log_message("debug","FILES :" . print_r($_FILES,true));
-
-		if(!empty($_FILES['inside_file']['tmp_name'])) {
-			//$config['upload_path']          = FCPATH . "uploads\\checkinlog\\";
-			$config['upload_path']          =  APPPATH . "../uploads/customers/";
-			$config['file_name']			=  $_FILES['inside_file']['name'];
-			$config['overwrite']			= TRUE;
-			$config['file_ext_tolower']		= TRUE;
-			$config['allowed_types']        = 'jpg|png'; //'gif|jpg|png';
-			$config['max_size']             = 0; //(int) getDbConfig("document_max_size"); //kilobyte
-			$config['max_width']            = 0; //1024; //pixel
-			$config['max_height']           = 0; //768; //pixel				
-			$this->load->library('upload', $config);
-			if ( ! $this->upload->do_upload('inside_file')){			
-				echo $this->upload->display_errors();									
-			}
-			
-		}
-
-
-
+		echo "TEST";
 	}
+
+
 
 	public function checkinlog(){
 		$this->load->model("trcheckinlog_model");
