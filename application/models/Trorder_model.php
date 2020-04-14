@@ -81,7 +81,8 @@ class Trorder_model extends MY_Model {
 
 
 	public function getSummary($fst_order_id){
-		$ssql ="select sum(fin_qty) as total_qty, sum(fin_qty * fin_price) as total_amount from tr_order_details where fst_order_id = ?";
+
+		$ssql ="select sum(fin_qty) as total_qty, sum(fin_qty * (fin_price - fdc_disc)) as total_amount from tr_order_details where fst_order_id = ?";
 		$qr = $this->db->query($ssql,[$fst_order_id]);
 		return $qr->row();
 

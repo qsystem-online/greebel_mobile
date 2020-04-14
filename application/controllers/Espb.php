@@ -320,10 +320,9 @@ class Espb extends MY_Controller {
 			$summ = $this->trorder_model->getSummary($data["fst_order_id"]);
 
 			$data["total_qty"]	= $summ->total_qty;
-			$data["total_amount"]	= $summ->total_amount;
-			$data["total_ppn"]	= $summ->total_amount * 10 /100;
-			$data["total_amount_ppn"]	= $data["total_amount"] + $data["total_ppn"];
-			
+			$data["total_amount"]	= $summ->total_amount; //DPP + PPN
+			$data["total_ppn"]	= ($summ->total_amount / 1.1) * 10 /100;
+			$data["total_amount_ppn"]	= $data["total_amount"];			
 			$arrDataFormated[] = $data;
 		}
 

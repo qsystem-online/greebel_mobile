@@ -675,7 +675,8 @@ class API extends CI_Controller {
 					"fst_satuan"=>$detail->fst_satuan,
 					"fst_disc"=>$detail->fst_disc,
 					"fin_qty"=>$detail->fin_qty,
-					"fin_price"=>$detail->fin_price					
+					"fin_price"=>$detail->fin_price,
+					"fdc_disc"=>calculateDisc($detail->fst_disc,$detail->fin_price)
 				];
 				$this->db->insert("tr_order_details",$dataD);
 
