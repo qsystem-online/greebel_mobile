@@ -100,6 +100,7 @@
             $arrDisc = explode("+",$strDisc);    
             $totalDisc = 0;
             foreach($arrDisc as $disc){
+                $disc = trim($disc);
                 $discAmount = $amount * ($disc/100);
                 $totalDisc +=  $discAmount;
                 $amount = $amount - $discAmount;
@@ -107,7 +108,7 @@
             return $totalDisc;
         }
     }
-    
+
     function visit_day_name($day){
         switch ($day) {
             case 1:

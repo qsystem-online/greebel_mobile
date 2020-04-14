@@ -326,7 +326,7 @@ class API extends CI_Controller {
 	}
 	
 	public function test(){
-		echo "TEST";
+		echo calculateDisc("5","10000");
 	}
 
 
@@ -679,7 +679,6 @@ class API extends CI_Controller {
 					"fdc_disc"=>calculateDisc($detail->fst_disc,$detail->fin_price)
 				];
 				$this->db->insert("tr_order_details",$dataD);
-
 			}
 			//var_dump($this->db->error());
 			if ($this->db->error()["code"] == 0 ){
