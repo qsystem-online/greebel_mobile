@@ -57,9 +57,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label for="fst_sales" class="col-sm-2 control-label">Sales</label>
 						<div class="col-sm-6">
 							<select id="fst_sales" class="form-control">
+								<option value='ALL'>ALL</option>
 								<?php
 									foreach($arrSales as $sales){
-										echo "<option value='$sales->fst_sales_code'>$sales->fst_sales_name</option>";
+										echo "<option value='$sales->fst_sales_code' selected>$sales->fst_sales_name</option>";
 									}
 								?>
 							</select>
@@ -95,50 +96,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var customer;
 	var sales;
 	$(function(){
-		/*
-		var btDatePicker = $.fn.datepicker.noConflict();
-		$("#scheduleCalendar").datepicker({
-			numberOfMonths: 3,
-			changeMonth: true,
-			changeYear: true,
-			dateFormat: "yy-mm-dd",
-			onSelect:function(dateText,instObj){
-				console.log(dateText);
-				console.log(instObj);
-
-			}
-		});
-		*/
-
-
 		$("#scheduleCalendar").change(function(e){
-			//App.log($("#scheduleCalendar").val());
-
-			$.ajax({
-				url:"<?=site_url()?>sales/ajxSchedule_list/" +  $("#scheduleCalendar").val(),
-				method:"GET",
-			}).done(function(resp){
-				if (resp.status = "SUCCESS"){
-					listSchedule = resp.data;
-					t = $('#tblSchedule').DataTable();
-					t.clear();
-					$.each(listSchedule,function(i,schedule){						
-						var dataRow = {
-							fin_rec_id:schedule.fin_rec_id,
-							fst_cust_code:schedule.fst_cust_code,
-							fst_cust_name:schedule.fst_cust_name,
-							fst_sales_code:schedule.fst_sales_code
-						}
-						t.row.add(dataRow)
-					});
-
-					t.draw(false);	
-				}
-			});
+			refreshTable();
 		});
 
 		$("#fst_sales").select2();
-		$("#fst_sales").val(null).trigger("change.select2");
+		$("#fst_sales").val("ALL").trigger("change.select2");
 		$('#fst_sales').on('select2:select', function (e) {
 			var data = e.params.data;
 			sales = data;		
@@ -153,6 +116,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 				$("#fst_customer").val(null).trigger("change.select2");
 			});
+
+			refreshTable();
+			
 			console.log(data);
 		});
 
@@ -237,9 +203,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					t = $('#tblSchedule').DataTable();
 					t.row.add(dataRow).draw(false);					
 				}
-			});
-			App.log(sales);
-			App.log(customer);
+			});			
 		});
 
 		App.fixedSelect2();
@@ -247,6 +211,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 	});
 
+	function refreshTable(){
+		App.log(sales);
+
+		$.ajax({
+			url:"<?=site_url()?>sales/ajxSchedule_list/" +  $("#scheduleCalendar").val()+"/"+  $("#fst_sales").val(),
+			method:"GET",
+		}).done(function(resp){
+			if (resp.status = "SUCCESS"){
+				listSchedule = resp.data;
+				t = $('#tblSchedule').DataTable();
+				t.clear();
+				$.each(listSchedule,function(i,schedule){						
+					var dataRow = {
+						fin_rec_id:schedule.fin_rec_id,
+						fst_cust_code:schedule.fst_cust_code,
+						fst_cust_name:schedule.fst_cust_name,
+						fst_sales_code:schedule.fst_sales_code
+					}
+					t.row.add(dataRow)
+				});
+
+				t.draw(false);	
+			}
+		});
+	}
 	
 	function init_form(fin_user_id){
 		

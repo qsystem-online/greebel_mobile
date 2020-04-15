@@ -648,6 +648,7 @@ class Sales extends MY_Controller {
 			$insert_id = $this->db->insert_id();	
 			$result=[
 				"status"=>"SUCCESS",
+				"message"=>"",
 				"data"=>$data,
 				"insertId"=>$insert_id,
 			];
@@ -656,16 +657,25 @@ class Sales extends MY_Controller {
 		echo json_encode($result);
 	}	
 
-	public function ajxSchedule_list($fdt_schedule_date){
+	public function ajxSchedule_list($fdt_schedule_date,$fst_sales_code){
 		$this->load->helper("utils");
 		//$fdt_schedule_date = $this->input->post("fdt_schedule_date");
 		$fdt_schedule_date = dBDateFormat($fdt_schedule_date);
-		$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
-			INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code 
-			INNER JOIN tbsales c on b.fst_sales_code= c.fst_sales_code 
-			where a.fdt_schedule_date = ?";
+		if ($fst_sales_code == "ALL"){
+			$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+				INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code 
+				INNER JOIN tbsales c on b.fst_sales_code= c.fst_sales_code 
+				WHERE a.fdt_schedule_date = ?";		
+			$qr = $this->db->query($ssql,[$fdt_schedule_date]);
+		}else{
+			$ssql = "SELECT a.*,b.fst_cust_name,b.fst_sales_code,c.fst_sales_name FROM tbjadwalsales a
+				INNER JOIN tbcustomers b on a.fst_cust_code = b.fst_cust_code 
+				INNER JOIN tbsales c on b.fst_sales_code= c.fst_sales_code 
+				WHERE a.fdt_schedule_date = ? and c.fst_sales_code = ?";		
+			$qr = $this->db->query($ssql,[$fdt_schedule_date,$fst_sales_code]);
+		}
+
 		
-		$qr = $this->db->query($ssql,[$fdt_schedule_date]);
 		$error = $this->db->error(); // Has keys 'code' and 'message'
 		//var_dump($error);
 		$rs = $qr->result();

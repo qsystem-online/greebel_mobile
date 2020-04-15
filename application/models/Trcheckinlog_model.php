@@ -33,14 +33,9 @@ class trcheckinlog_model extends MY_Model {
 			where a.fst_sales_code = ?  and fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ? order by fin_id";
 		*/
 
-		$ssql = "select a.*,b.fst_cust_name,c.fin_visit_day from trcheckinlog a
+		$ssql = "select a.*,b.fst_cust_name from trcheckinlog a
 			inner join tbcustomers b on a.fst_cust_code = b.fst_cust_code
-			inner join tbjadwalsales c on c.fst_sales_code = a.fst_sales_code AND a.fst_cust_code = c.fst_cust_code 
 			where a.fst_sales_code = ?  and fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ? order by fin_id";
-		
-
-
-
 		
 		$qr = $this->db->query($ssql,[$fst_sales_code,$fdt_date,$fdt_date . " 23:59:59"]);
 		
