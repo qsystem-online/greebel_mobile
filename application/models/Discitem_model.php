@@ -17,7 +17,7 @@ class Discitem_model extends MY_Model {
     }
     
     public function getData(){
-        $ssql = "select * from ". $this->tableName;
+        $ssql = "select distinct fst_disc_item from ". $this->tableName;
         $query = $this->db->query($ssql,[]);
         $result = $query->result();
         return $result;
