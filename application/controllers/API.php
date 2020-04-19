@@ -225,7 +225,7 @@ class API extends CI_Controller {
 
 				$tmpResult =  $this->feed_order(0);
 				$arrOrderStatus = $tmpResult["data"];
-				
+
 				/*
 				$tmpResult =  $this->feed_newcustomer(0);
 				$arrNewCustomer = $tmpResult["data"];
@@ -238,7 +238,7 @@ class API extends CI_Controller {
 					//"arrCompany" => $arrCompany,
 					//"arrPromo" => $arrPromo,
 					//"arrTarget" => $arrTarget,
-					//"arrOrderStatus" => $arrOrderStatus,
+					"arrOrderStatus" => $arrOrderStatus,
 					//"arrNewCustomer" => $arrNewCustomer,
 				];
 
