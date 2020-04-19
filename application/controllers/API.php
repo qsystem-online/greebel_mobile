@@ -221,10 +221,12 @@ class API extends CI_Controller {
 
 				$tmpResult =  $this->feed_target(0);
 				$arrTarget = $tmpResult["data"];
+				*/
 
 				$tmpResult =  $this->feed_order(0);
 				$arrOrderStatus = $tmpResult["data"];
-
+				
+				/*
 				$tmpResult =  $this->feed_newcustomer(0);
 				$arrNewCustomer = $tmpResult["data"];
 				*/

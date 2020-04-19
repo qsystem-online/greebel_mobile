@@ -116,10 +116,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 				$("#fst_customer").val(null).trigger("change.select2");
 			});
-
-			refreshTable();
-			
-			console.log(data);
+			refreshTable();			
 		});
 
 
@@ -201,7 +198,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_sales_code:sales.id,
 					}
 					t = $('#tblSchedule').DataTable();
-					t.row.add(dataRow).draw(false);					
+					t.row.add(dataRow).draw(false);
+					$("#fst_customer option[value='"+dataPost.fst_cust_code+"']").remove();
+					$("#fst_customer").select2();
+					App.fixedSelect2();
 				}
 			});			
 		});
@@ -229,9 +229,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_cust_name:schedule.fst_cust_name,
 						fst_sales_code:schedule.fst_sales_code
 					}
-					t.row.add(dataRow)
+					t.row.add(dataRow);
+					$("#fst_customer option[value='"+schedule.fst_cust_code+"']").remove();
 				});
-
+				$("#fst_customer").select2();
+				App.fixedSelect2();
 				t.draw(false);	
 			}
 		});
