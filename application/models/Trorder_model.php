@@ -16,10 +16,15 @@ class Trorder_model extends MY_Model {
     
 
     public function getDataStatusByAppid($appid){
+		/*
 		$ssql = "select SUBSTRING_INDEX(fst_order_id,'_',1) as fst_order_id,fst_status 
 			FROM tr_order 
 			WHERE fst_appid = ? and  fdt_order_datetime >= (DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
-			
+		*/
+		$ssql = "select fst_order_id,fst_status 
+			FROM tr_order 
+			WHERE fst_appid = ? and  fdt_order_datetime >= (DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
+		
         $qr = $this->db->query($ssql,[$appid]);
         $rs= $qr->result();
         return $rs;
