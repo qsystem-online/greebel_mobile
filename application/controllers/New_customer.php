@@ -67,7 +67,8 @@ class New_customer extends MY_Controller {
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-        $this->load->model("newcustomer_model");
+		$this->load->model("newcustomer_model");
+		$this->load->model("msarea_model");		
         $isAllStatus = $this->input->get("optionIsAllStatus");
 
 
@@ -95,9 +96,9 @@ class New_customer extends MY_Controller {
 			$data["action"]	= "<div style='font-size:16px'>
 				<a class='btn-detail' href='#' data-id=''>Detail</a>				
 			</div>";
-	
+			$data["area_detail"] = $this->msarea_model->getAreaDetail($data["fst_area_code"]);
 			$arrDataFormated[] = $data;
-			}
+		}
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);

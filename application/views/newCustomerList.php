@@ -119,74 +119,89 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h4 class="modal-title">Detail Info</h4>
 			</div>
 
-			<div class="modal-body" style="height:220px">
-				
-				<div class="form-group">															
-					<label for="fst_cust_name" class="col-md-2 control-label"><?=lang("Name")?></label>	
-					<div class="col-md-10">	
-						<label class="control-label">:</label>			
-						<label id="fst_cust_name" style="font-weight:unset">Name</label>									
+			<div class="modal-body" style="height:270px">
+				<form class=''> 
+					<div class="form-group">															
+						<label for="fst_cust_name" class="col-md-2 control-label"><?=lang("Name")?></label>	
+						<div class="col-md-10">	
+							<label class="control-label">:</label>			
+							<label id="fst_cust_name" style="font-weight:unset">Name</label>									
+						</div>
 					</div>
-				</div>
 
-				<div class="form-group">															
-					<label for="fst_contact" class="col-md-2 control-label"><?=lang("Contact")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>			
-						<label id="fst_contact" style="font-weight:unset">Contact</label>									
+					<div class="form-group">															
+						<label for="fst_contact" class="col-md-2 control-label"><?=lang("Contact")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>			
+							<label id="fst_contact" style="font-weight:unset">Contact</label>									
+						</div>
 					</div>
-				</div>
 
-				<div class="form-group">															
-					<label for="fst_cust_phone" class="col-md-2 control-label"><?=lang("Phone")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fst_cust_phone" style="font-weight:unset">Phone</label>
+					<div class="form-group">															
+						<label for="fst_cust_phone" class="col-md-2 control-label"><?=lang("Phone")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_cust_phone" style="font-weight:unset">Phone</label>
+						</div>
 					</div>
-				</div>
 
-				<div class="form-group">															
-					<label for="fst_kelurahan" class="col-md-2 control-label"><?=lang("Kelurahan")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fst_kelurahan" style="font-weight:unset">Kelurahan</label>
+					<div class="form-group">															
+						<label for="fst_kelurahan" class="col-md-2 control-label"><?=lang("Kelurahan")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_kelurahan" style="font-weight:unset">Kelurahan</label>
+						</div>
 					</div>
-				</div>
-				
-				<div class="form-group">															
-					<label for="fst_kecamatan" class="col-md-2 control-label"><?=lang("Kecamatan")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fst_kecamatan" style="font-weight:unset">Kecamatan</label>
+					
+					<div class="form-group">															
+						<label for="fst_kecamatan" class="col-md-2 control-label"><?=lang("Kecamatan")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_kecamatan" style="font-weight:unset">Kecamatan</label>
+						</div>
 					</div>
-				</div>
-
-				<div class="form-group">															
-					<label for="fst_cust_address" class="col-md-2 control-label"><?=lang("Address")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fst_cust_address" style="font-weight:unset"></label>
+					<div class="form-group">															
+						<label for="fst_kabupaten" class="col-md-2 control-label"><?=lang("Kabupaten")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_kabupaten" style="font-weight:unset">Kabupaten</label>
+						</div>
 					</div>
-				</div>
-
-				<div class="form-group">															
-					<label for="fbl_is_pasar" class="col-md-2 control-label"><?=lang("Pasar")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fbl_is_pasar" style="font-weight:unset"></label>
+					<div class="form-group">															
+						<label for="fst_provinsi" class="col-md-2 control-label"><?=lang("Provinsi")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_provinsi" style="font-weight:unset">Provinsi</label>
+						</div>
 					</div>
-				</div>
 
-				<div class="form-group">															
-					<label for="fst_company_code" class="col-md-2 control-label"><?=lang("Company")?></label>	
-					<div class="col-md-10">				
-						<label class="control-label">:</label>
-						<label id="fst_company_code" style="font-weight:unset"></label>
+					<div class="form-group">															
+						<label for="fst_cust_address" class="col-md-2 control-label"><?=lang("Address")?></label>	
+						<div class="col-md-10">				
+							<label class="control-label">:</label>
+							<label id="fst_cust_address" style="font-weight:unset"></label>
+						</div>
 					</div>
-				</div>
 
+					<div class="form-group">															
+						<label for="fbl_is_rent" class="col-md-10 col-md-offset-2 control-label"><input type="checkbox" id="fbl_is_rent" disabled/> &nbsp; <?=lang("Sewa")?></label>					
+					</div>
+					<div class="form-group">															
+						<div class="col-md-4">				
+							<img id="img_front" src="" alt="front">
+						</div>
+						<div class="col-md-4">				
+							<img id="img_insde" src="" alt="inside">
+						</div>
+						<div class="col-md-4">				
+							<img id="img_other" src="" alt="other">
+						</div>
+						
 
+					</div>
+					
 
+				</form>
 
 			</div>
 
@@ -284,11 +299,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fst_cust_name").text(row.fst_cust_name);
 			$("#fst_contact").text(row.fst_contact);
 			$("#fst_cust_phone").text(row.fst_cust_phone);
-			$("#fst_kecamatan").text(row.fst_kecamatan);
-			$("#fst_kelurahan").text(row.fst_kelurahan);
+			
+			$("#fst_kelurahan").text(row.area_detail.kelurahan.name);
+			$("#fst_kecamatan").text(row.area_detail.kecamatan.name);
+			$("#fst_kabupaten").text(row.area_detail.kabupaten.name);
+			$("#fst_provinsi").text(row.area_detail.provinsi.name);
+
 			$("#fst_cust_address").text(row.fst_cust_address);
-			$("#fbl_is_pasar").text(row.fbl_is_pasar);
-			$("#fst_company_code").text(row.fst_company_code);
+			var checked = row.fbl_is_rent == 1 ? true:false;
+			$("#fbl_is_rent").attr("checked",checked);
+
+			$("#img_front").attr("src","<?=site_url()?>uploads/customers/"+row.fst_unique_id+"_front.jpg");
+			$("#img_inside").attr("src","<?=site_url()?>uploads/customers/"+row.fst_unique_id+"_inside.jpg");
+			$("#img_other").attr("src","<?=site_url()?>uploads/customers/"+row.fst_unique_id+"_other.jpg");
 
 			$("#myModalDetail").modal("show");
 			
