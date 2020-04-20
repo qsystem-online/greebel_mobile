@@ -119,7 +119,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h4 class="modal-title">Detail Info</h4>
 			</div>
 
-			<div class="modal-body" style="height:270px">
+			<div class="modal-body" style="height:450px">
 				<form class=''> 
 					<div class="form-group">															
 						<label for="fst_cust_name" class="col-md-2 control-label"><?=lang("Name")?></label>	
@@ -188,13 +188,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<div class="form-group">															
 						<div class="col-md-4">				
-							<img id="img_front" src="" alt="front">
+							<img id="img_front" src="" alt="front" style="width:100%">
 						</div>
 						<div class="col-md-4">				
-							<img id="img_inside" src="" alt="inside">
+							<img id="img_inside" src="" alt="inside" style="width:100%">
 						</div>
 						<div class="col-md-4">				
-							<img id="img_other" src="" alt="other">
+							<img id="img_other" src="" alt="other" style="width:100%">
 						</div>
 						
 
