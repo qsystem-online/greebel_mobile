@@ -191,7 +191,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<img id="img_front" src="" alt="front">
 						</div>
 						<div class="col-md-4">				
-							<img id="img_insde" src="" alt="inside">
+							<img id="img_inside" src="" alt="inside">
 						</div>
 						<div class="col-md-4">				
 							<img id="img_other" src="" alt="other">
