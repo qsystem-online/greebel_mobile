@@ -36,7 +36,26 @@ class New_customer extends MY_Controller {
                 'render'=>"function(data,type,row){
                     return row.fst_sales_name.replace(/\\r/g,'<br>');
                 }"
-            ],
+			],
+			['title' => 'Group', 'width' =>'15%', 'data'=>'fin_price_group_id',
+                'render'=>"function(data,type,row){
+					//1;Retail;2;Hypermarket;3;Grosir;4;Sekolah/PO;5;MT Lokal;9;Group SMM/Internal
+                    if (data ==1){
+						return 'RETAIL';
+					}else if(data ==2){
+						return 'HYPERMARKET';
+					}else if(data ==3){
+						return 'GROSIR';
+					}else if(data ==4){
+						return 'SEKOLAH/PO';
+					}else if(data ==5){
+						return 'MT LOKAL';
+					}else if(data ==5){
+						return 'GROUP SMM/INTERNAL';
+					}				
+                }"
+			],
+			
             ['title' => 'Status', 'width' =>'15%', 'data'=>'fst_status'],
             ['title' => 'Request Date', 'width' =>'10%', 'data'=>'fdt_insert_datetime'],            
             ['title' => 'Action', 'width'=>'10%', 'data'=>'','sortable'=>false, 'className'=>'dt-center',
