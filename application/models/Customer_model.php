@@ -11,10 +11,9 @@ class Customer_model extends MY_Model {
 
 	public function getDataById($fin_user_id){
 		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
-		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level,d.fst_cust_location from " . $this->tableName ." a 
+		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level from " . $this->tableName ." a 
 			left join departments b on a.fin_department_id = b.fin_department_id 
             left join master_groups c on a.fin_group_id = c.fin_group_id 
-            left join tblocation d on a.fst_cust_code = d.fst_cust_code 
 			where a.fin_user_id = ?";
 
 
@@ -97,9 +96,10 @@ class Customer_model extends MY_Model {
         $ssql = "select  a.fin_cust_id,a.fst_cust_code,a.fst_unique_id,a.fst_cust_name,
             a.fst_cust_address,a.fst_cust_phone,a.fst_contact,a.fst_area_code,
             a.fbl_is_rent,a.fin_price_group_id,a.fst_active,a.fst_sales_code,a.fst_last_edit_id,
-            a.fdc_max_disc from tbcustomers a 
+            a.fdc_max_disc,d.fst_cust_location from tbcustomers a 
             inner join tbsales b on a.fst_sales_code = b.fst_sales_code
             inner join tbappid c on b.fst_sales_code = c.fst_sales_code
+            LEFT JOIN tblocation d on a.fst_cust_code = d.fst_cust_code
             Where c.fst_appid = ? ";
             
         $query = $this->db->query($ssql,[$appId]);
