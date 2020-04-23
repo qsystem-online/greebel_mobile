@@ -50,7 +50,7 @@ class New_customer extends MY_Controller {
 						return 'SEKOLAH/PO';
 					}else if(data ==5){
 						return 'MT LOKAL';
-					}else if(data ==5){
+					}else if(data == 9){
 						return 'GROUP SMM/INTERNAL';
 					}				
                 }"
