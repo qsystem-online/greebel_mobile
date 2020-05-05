@@ -501,14 +501,17 @@ class Sales extends MY_Controller {
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
-			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
-			c.fin_visit_day 
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd'";
 	
 		$query = $this->db->query($ssql,[]);
+
+
+		//var_dump($this->db->error());
+		//die();
 		$rs = $query->result();
 		
 		$this->load->library('phpspreadsheet');
@@ -562,9 +565,9 @@ class Sales extends MY_Controller {
 			$checkindate = strtotime($rw->fdt_checkin_datetime);
 			$sheet->setCellValue("H$iRow", date("Y-m-d",$checkindate));
 
-			$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
-			$sheet->setCellValue("J$iRow", 'Photo');
-			$sheet->getCell("J$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			//$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
+			$sheet->setCellValue("I$iRow", 'Photo');
+			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
 			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);
