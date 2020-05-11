@@ -95,9 +95,17 @@ class Customer_model extends MY_Model {
 
         $ssql = "select  a.fin_cust_id,a.fst_cust_code,a.fst_unique_id,a.fst_cust_name,
             a.fst_cust_address,a.fst_cust_phone,a.fst_contact,a.fst_area_code,
-            a.fbl_is_rent,a.fin_price_group_id,a.fst_active,a.fst_sales_code,a.fst_last_edit_id,
-            a.fdc_max_disc,d.fst_cust_location from tbcustomers a 
-            inner join tbsales b on a.fst_sales_code = b.fst_sales_code
+            a.fbl_is_rent,a.fin_price_group_id,a.fst_active,            
+            a.fst_sales_code,a.fst_sales_area_code,a.fst_sales_regional_code,a.fst_sales_national_code,
+            a.fst_last_edit_id,
+            a.fdc_max_disc,d.fst_cust_location,
+            a.fdc_total_ar,a.fdc_total_current_monthly_omset from tbcustomers a 
+            inner join tbsales b on (
+                (a.fst_sales_code = b.fst_sales_code) OR
+                (a.fst_sales_area_code = b.fst_sales_code) OR
+                (a.fst_sales_regional_code = b.fst_sales_code) OR
+                (a.fst_sales_national_code = b.fst_sales_code)
+            )
             inner join tbappid c on b.fst_sales_code = c.fst_sales_code
             LEFT JOIN tblocation d on a.fst_cust_code = d.fst_cust_code
             Where c.fst_appid = ? ";
