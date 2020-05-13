@@ -106,6 +106,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "id","width": "20%","data":"fin_rec_id","sortable":false,visible:false},
 				{"title" : "Customer Code","width": "20%","data":"fst_cust_code","sortable":true},
 				{"title" : "Customer Name","width": "40%","data":"fst_cust_name","sortable":true},
+				{"title" : "Date","width": "20%","data":"fdt_schedule_date","sortable":true},
                 {"title" : "Sales","width": "30%","data":"fst_sales_code_name","sortable":true},
                 {"title" : "Status","width": "10%","data":"fbl_visited","sortable":true},                				
 			],			
@@ -139,6 +140,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             fin_rec_id:record.fin_rec_id,
                             fst_cust_code:record.fst_cust_code,
                             fst_cust_name:record.fst_cust_name,
+							fdt_schedule_date:record.fdt_schedule_date,
                             fst_sales_code_name:record.fst_sales_code + " - " + record.fst_sales_name,
                             fbl_visited:record.fbl_visited
                         };

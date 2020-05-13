@@ -352,4 +352,14 @@ class Customer extends MY_Controller {
 		echo json_encode($result);
 
 	}
+
+	public function ajxCustList(){
+		$this->load->model("customer_model");
+		$data = $this->customer_model->get_select2();
+		$result = [];
+		$result["status"] ="SUCCESS";		
+		$result["data"] = $data;
+
+		$this->json_output($result);
+	}
 }

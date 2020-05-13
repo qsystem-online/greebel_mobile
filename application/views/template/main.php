@@ -108,6 +108,9 @@
 				//if session expired redirect to login page
 				$(document).ajaxError(function(event, jqxhr, settings, thrownError){
 					var resp = jqxhr.responseJSON;
+					if (typeof resp === "undefined"){
+						return;
+					}
 					if(resp.status == "SESSION_EXPIRED"){
 						$.dialog({
 							title: 'Error',
