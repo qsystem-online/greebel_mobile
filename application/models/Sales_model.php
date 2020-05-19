@@ -20,5 +20,11 @@ class Sales_model extends MY_Model {
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;
-    }
+	}
+	
+	public function getAll(){
+		$ssql ="SELECT * FROM tbsales where fst_active ='A'";
+		$qr=$this->db->query($ssql,[]);
+		return $qr->result();
+	}
 }

@@ -255,13 +255,22 @@ class Customer_model extends MY_Model {
         */
     }
 
-    public function get_select2(){
+    public function get_select2($fstSalesCode = null){
         $term = $this->input->get("term");
 
-        $ssql = "select a.fst_cust_code, a.fst_cust_name,b.fst_cust_location from " . $this->tableName . " a
-            left join tblocation b on a.fst_cust_code = b.fst_cust_code
-            where a.fst_active = 'A' and a.fst_cust_code like ? || a.fst_cust_name like ?";
-        $qr = $this->db->query($ssql,["%$term%","%$term%"]);
+        if ($fstSalesCode == null){        
+            $ssql = "select a.fst_cust_code, a.fst_cust_name,b.fst_cust_location from " . $this->tableName . " a
+                left join tblocation b on a.fst_cust_code = b.fst_cust_code
+                where a.fst_active = 'A' and a.fst_cust_code like ? || a.fst_cust_name like ?";
+            $qr = $this->db->query($ssql,["%$term%","%$term%"]);
+        }else{
+            $ssql = "select a.fst_cust_code, a.fst_cust_name,b.fst_cust_location from " . $this->tableName . " a
+                left join tblocation b on a.fst_cust_code = b.fst_cust_code
+                where a.fst_active = 'A' and (a.fst_cust_code like ? || a.fst_cust_name like ?) and fst_sales_code = ?";
+
+            $qr = $this->db->query($ssql,["%$term%","%$term%",$fstSalesCode]);
+        }
+        
         $rs = $qr->result();
 
         $newRs = [];

@@ -121,6 +121,8 @@ class Customer extends MY_Controller {
 	
 	public function maps(){
 		$this->load->library("menus");
+		$this->load->model("sales_model");
+		
 	    $main_header = $this->parser->parse('inc/main_header',[],true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
@@ -355,11 +357,29 @@ class Customer extends MY_Controller {
 
 	public function ajxCustList(){
 		$this->load->model("customer_model");
-		$data = $this->customer_model->get_select2();
+
+		$fstSalesCode = $this->input->get("fstSalesCode");
+
+		$data = $this->customer_model->get_select2($fstSalesCode);
 		$result = [];
 		$result["status"] ="SUCCESS";		
 		$result["data"] = $data;
 
 		$this->json_output($result);
+	}
+
+	public function ajx_get_cust_by_sales(){
+		$this->load->model("customer_model");
+
+		$fstSalesCode = $this->input->get("fst_sales_code");
+
+		$rs = $this->customer_model->get_select2($fstSalesCode);
+		
+		$result["status"] ="SUCCESS";		
+		$result["message"] ="";		
+		$result["data"] = $rs;
+
+		$this->json_output($result);
+
 	}
 }

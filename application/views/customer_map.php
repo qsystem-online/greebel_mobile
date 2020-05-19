@@ -56,11 +56,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-body">
 					<form class="form-horizontal">
 						<div class='form-group'>
+							<label for="fst_sales_code" class="col-sm-2 control-label"><?=lang("Sales")?></label>
+							<div class="col-sm-10">
+								<select class="form-control" id="fst_sales_code" placeholder="<?=lang("Sales")?>" name="fst_sales_code">
+	  							<?php
+									$listSales = $this->sales_model->getAll();
+									foreach($listSales as $sales){
+										echo "<option value='$sales->fst_sales_code'>$sales->fst_sales_name</option>";
+									}
+								?>
+								</select>
+								<div id="fst_sales_code_err" class="text-danger"></div>
+							</div>
+						</div>
+						<div class='form-group'>
 							<label for="fst_customer_code" class="col-sm-2 control-label"><?=lang("Customer")?></label>
 							<div class="col-sm-10">
 								<select class="form-control" id="fst_customer_code" placeholder="<?=lang("Customer")?>" name="fst_customer_code[]"  multiple="multiple"></select>
 								<div id="fst_customer_code_err" class="text-danger"></div>
 							</div>
+						</div>
+						<div class='form-group'>
+							<div class="col-sm-12 text-right">
+								<button id="btnShowMap" class="btn btn-primary"><?=lang("Show Maps")?></button>
+							</div>							
 						</div>
 					</form>
 				</div>			            
@@ -81,18 +100,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	//var directionsService;
 	var directionsDisplay;
 
-	var arrLabel = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+	//var arrLabel = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 	$(function(){
+		$("#fst_sales_code").select2();
+
 		$("#fst_customer_code").select2({
 			minimumInputLength: 3,
 			ajax:{
 				url:"<?=site_url()?>customer/ajxCustList",
+				data:function(params){
+					params.fstSalesCode = $("#fst_sales_code").val();
+					return params;
+				},
 				dataType: 'json',
 				delay:250,
 				processResults: function (resp) {
 					console.log(resp.data);
 					var customerList =[];
-
 					$.each(resp.data,function(i,value){
 						customerList.push({
 							"id" : value.fst_cust_code,
@@ -100,7 +124,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							"loc_lat" : value.fst_lat,
 							"loc_log" : value.fst_log
 						});
-					});				
+					});			
 					return {
 						results: customerList
 					};
@@ -109,6 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 			//data: items,
 		}).on("change",function(e){
+			/*
 			$selectedData = $('#fst_customer_code').select2("data");
 			for (var i = 0; i < arrMarker.length; i++) {
 				arrMarker[i].setMap(null);
@@ -140,8 +165,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				arrMarker.push(marker);
 
 			});
+			*/
+
 		});
 
+		$("#btnShowMap").click(function(e){
+			e.preventDefault();
+			var selectedData = $('#fst_customer_code').select2("data");
+
+			if (typeof(selectedData) === "undefined" || selectedData.length == 0){
+				App.blockUIOnAjaxRequest();
+
+				$.ajax({
+					url:"<?=site_url()?>customer/ajx_get_cust_by_sales",
+					method:"GET",
+					data:{
+						fst_sales_code:$("#fst_sales_code").val(),
+					}
+				}).done(function(resp){
+					if (resp.status == "SUCCESS"){
+						selectedData =[];
+						$.each(resp.data,function(i,v){
+							if (v.fst_cust_location != "0,0"){
+								selectedData.push({
+									id:v.fst_cust_code,
+									text:v.fst_cust_name,
+									loc_lat:v.fst_lat,
+									loc_log:v.fst_log
+								});
+							}
+							
+						})
+						drawMap(selectedData);
+					}
+
+				});
+
+			}else{
+				drawMap(selectedData);
+			}
+
+			
+		})
 		/*
 		$.ajax({
 			url: '<=site_url()?>customer/get_customer',
@@ -233,6 +298,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var _currentPoints = event.latLng;
 			alert(_currentPoints);
 			console.log(_currentPoints);
+		});
+
+	}
+
+	function drawMap(selectedData){
+
+		for (var i = 0; i < arrMarker.length; i++) {
+			arrMarker[i].setMap(null);
+		}
+		arrMarker = [];
+
+		$.each(selectedData,function(i,v){
+			console.log(v);
+			if (v.loc_lat == "0" && v.loc_log == "0"){
+				return true;
+			}
+
+			myLatLng = {lat: parseFloat(v.loc_lat), lng: parseFloat(v.loc_log)};
+			console.log(myLatLng);
+			var marker = new google.maps.Marker({
+				position: myLatLng,
+				map: map,
+				//label: arrLabel[i],                            
+				label:{
+					text:v.text,
+					//color:"#4074b4",
+					color:"#000000",
+					fontWeight:"bold",
+				},                            
+				title: v.text
+			});
+			
+			arrMarker.push(marker);
+
 		});
 
 	}

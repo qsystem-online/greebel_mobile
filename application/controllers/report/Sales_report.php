@@ -8,14 +8,13 @@ class Sales_report extends CI_Controller {
 		$this->load->library('form_validation');
 	}
 
-	public function index(){
-		var_dump($_SERVER);
-		
+	public function index(){		
 		$this->load->library("pHP_AES_Cipher");
 		$this->load->model("appid_model");
-
 		$appId = $this->input->post("appid");
-		$appId = "AMING";
+
+
+		//$appId = "AMING";
 		$key="com_greebel_key";
 		
 		$token = $this->input->post("token");
@@ -23,6 +22,15 @@ class Sales_report extends CI_Controller {
 		//var_dump($encryptedData);
 		try{
 			$decryptToken =  PHP_AES_Cipher::decrypt($key,$token);
+			$arrDecryptToken = explode("|",$decryptToken);
+			var_dump($arrDecryptToken);
+			
+			if (sizeof($arrDecryptToken) < 2){
+				show_404();
+			}
+			$appId = $arrDecryptToken[0];
+			$keyNow = $arrDecryptToken[1];
+
 		}catch(Exception $e){
 			var_dump($e);
 		}        
@@ -32,7 +40,10 @@ class Sales_report extends CI_Controller {
 		//$main_header = $this->parser->parse('inc/main_header',[],true);
 		//$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 		$rwSales = $this->appid_model->getSales($appId);
-		
+		if ($rwSales == null){
+			show_404();
+		}
+
 		$data["title"] = "Sales Summary";
 		$data["salesCode"] = $rwSales->fst_sales_code;
 		
