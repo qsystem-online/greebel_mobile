@@ -358,7 +358,7 @@ class Espb extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
 	}
 
-	public function record2Excel(){		
+	public function record2Excel_bac(){		
 		$this->load->model("trorder_model");		
 		$datelog = $this->input->get("dateLog");
 		//selectSearch		
@@ -413,4 +413,91 @@ class Espb extends MY_Controller {
 		//$this->phpspreadsheet->save("test-coba");		
 	}
 	
+	public function record2Excel(){		
+		$this->load->model("trorder_model");		
+		$datelog = $this->input->get("dateLog");
+		//selectSearch		
+		$arrDateLog = explode("-",$datelog);
+		$dateStart = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateLog[1]),"j/m/Y","Y-m-d");
+		
+		$ssql = "SELECT a.fst_order_id,
+			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
+			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
+			fdt_order_datetime,fst_status,0 as fin_total,a.fst_active
+			FROM tr_order a 
+			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
+			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code			
+			WHERE DATE(fdt_order_datetime) >= ? and DATE(fdt_order_datetime) <= ?";
+	
+		$query = $this->db->query($ssql,[$dateStart,$dateEnd]);
+		$rs = $query->result();
+		
+		$this->load->library('phpspreadsheet');		
+		$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_espb_list.xls";
+		$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+		
+		
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		
+		
+		//$sheet->setTitle('Coba Aja');
+		$iRow = 4;
+		$sheet->setCellValue("B2", $datelog); 
+		
+		foreach($rs as $rw){
+			$ssql ="SELECT a.*,b.fst_item_name FROM tr_order_details a
+				INNER JOIN tbitems b on a.fst_item_code =  b.fst_item_code
+				where fst_order_id = ? ";
+
+			$qr = $this->db->query($ssql,[$rw->fst_order_id]);
+			$rsDetail = $qr->result();
+
+			$summ = $this->trorder_model->getSummary($rw->fst_order_id);
+			$sheet->setCellValue("A$iRow", $rw->fst_order_id); 
+			$sheet->setCellValue("B$iRow", $rw->fdt_order_datetime);
+			$sheet->setCellValue("C$iRow", $rw->fst_sales);
+			$sheet->setCellValue("D$iRow", $rw->fst_customer);
+			$sheet->setCellValue("E$iRow", $rw->fst_status);			
+			foreach($rsDetail as $rwDetail){
+				$sheet->setCellValue("F$iRow", $rwDetail->fst_item_name);
+				$sheet->setCellValue("G$iRow", $rwDetail->fst_satuan);
+				$sheet->setCellValue("H$iRow", $rwDetail->fin_qty);
+				$sheet->setCellValue("I$iRow", $rwDetail->fin_price);
+				$sheet->setCellValue("J$iRow", $rwDetail->fdc_disc);
+				$total = $rwDetail->fin_qty * ($rwDetail->fin_price - $rwDetail->fdc_disc);				
+				$sheet->setCellValue("K$iRow", $total);
+				$sheet->getStyle("I$iRow:K$iRow")->getNumberFormat()
+					->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+	
+				$iRow++;
+			}			
+
+			$styleArray = [
+				'font' => [
+					'bold' => true,
+				],			
+				'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+			];
+
+
+			$sheet->setCellValue("H$iRow", $summ->total_qty);
+			//$sheet->setCellValue("K$iRow", $summ->total_amount + ($summ->total_amount * 10/100));			
+			$sheet->setCellValue("K$iRow", $summ->total_amount);			
+			$sheet->getStyle("H$iRow:K$iRow")->applyFromArray($styleArray);
+			$sheet->getStyle("H$iRow:K$iRow")->getNumberFormat()->applyFromArray($styleArray);
+
+			$iRow++;
+		}		
+		
+		//var_dump($spreadsheet);
+		$this->phpspreadsheet->save("espb_list_" . date("Ymd") ,$spreadsheet);
+		//$this->phpspreadsheet->save("test-coba");		
+	}
 }

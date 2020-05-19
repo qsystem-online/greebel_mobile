@@ -132,10 +132,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {
 				if (aData.inSchedule){
 					//$(nRow).addClass("TEST");
+					console.log("nRow",nRow);
+					console.log("aData",aData);
 				}else{
 					$(nRow).removeClass("odd");
 					$(nRow).removeClass("even");
-
 					$(nRow).addClass("additional-schedule");
 				}
         	},
@@ -265,7 +266,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.js"></script>
 <!--
-<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=COMPONENT_URL?>bower_components/datatables.net/js/datetime.js"></script>
-<script src="<?=COMPONENT_URL?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="<=COMPONENT_URL?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="<=COMPONENT_URL?>bower_components/datatables.net/js/datetime.js"></script>
+<script src="<=COMPONENT_URL?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 -->

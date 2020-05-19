@@ -280,6 +280,7 @@ class Sales extends MY_Controller {
 			['title' => 'Customer', 'width'=>'25%', 'data'=>'fst_customer'],
 			['title' => 'Date IN', 'width' =>'15%', 'data'=>'fdt_checkin_datetime'],
 			['title' => 'Date Out', 'width' =>'15%', 'data'=>'fdt_checkout_datetime'],
+			['title' => 'Cordinate', 'width' =>'15%', 'data'=>'fst_checkin_location'],
 			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance_meters'],
 			['title' => 'Duration', 'width' =>'15%', 'data'=>'fin_visit_duration','className'=>'dt-body-right text-right'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
@@ -326,7 +327,9 @@ class Sales extends MY_Controller {
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,			
-			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
+			a.fbl_on_schedule as inSchedule,
+			a.fst_checkin_location 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
@@ -348,8 +351,7 @@ class Sales extends MY_Controller {
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
 			//action			
-			//$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fst_sales_code"],$data["fdt_checkin_datetime"]);
-			$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
+			//$data["inSchedule"] = $this->customer_model->inSchedule($data["fst_cust_code"],$data["fdt_checkin_datetime"]);
 			$diff = strtotime($data["fdt_checkout_datetime"]) - strtotime($data["fdt_checkin_datetime"]);
 			$days = floor($diff/86400);
 			$diff = $diff % 86400;
@@ -501,7 +503,9 @@ class Sales extends MY_Controller {
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
 			CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
-			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration
+			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
+			a.fbl_on_schedule,
+			a.fst_checkin_location 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
@@ -549,10 +553,10 @@ class Sales extends MY_Controller {
 		];
 		
 		foreach($rs as $rw){
-			if ($this->customer_model->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,$rw->fdt_checkin_datetime)){
-				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
+			if ($rw->fbl_on_schedule == true){ // $this->customer_model->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,$rw->fdt_checkin_datetime)){
+				$sheet->getStyle("A$iRow:I$iRow")->applyFromArray($inScheduleStyle);
 			}else{
-				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
+				$sheet->getStyle("A$iRow:I$iRow")->applyFromArray($outOfScheduleStyle);
 			}
 
 			$sheet->setCellValue("A$iRow", $rw->fin_id); 
@@ -561,13 +565,14 @@ class Sales extends MY_Controller {
 			$sheet->setCellValue("D$iRow", $rw->fdt_checkin_datetime);
 			$sheet->setCellValue("E$iRow", $rw->fdt_checkout_datetime);			
 			$sheet->setCellValue("F$iRow", $rw->fin_visit_duration);
-			$sheet->setCellValue("G$iRow", $rw->fin_distance_meters);
+			$sheet->setCellValue("G$iRow", $rw->fst_checkin_location);
+			$sheet->setCellValue("H$iRow", $rw->fin_distance_meters);
 			$checkindate = strtotime($rw->fdt_checkin_datetime);
-			$sheet->setCellValue("H$iRow", date("Y-m-d",$checkindate));
+			$sheet->setCellValue("I$iRow", date("Y-m-d",$checkindate));
 
 			//$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
-			$sheet->setCellValue("I$iRow", 'Photo');
-			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			$sheet->setCellValue("J$iRow", 'Photo');
+			$sheet->getCell("J$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
 			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);

@@ -14,6 +14,11 @@
 		
 		<!-- jQuery 3 -->
 		<script src="<?=COMPONENT_URL?>bower_components/jquery/dist/jquery.min.js"></script>				
+		
+		<!-- Daterange picker -->
+		<link rel="stylesheet" href="<?=COMPONENT_URL?>bower_components/bootstrap-daterangepicker/daterangepicker.css">
+		
+
 		<!-- CONFIG JS -->
 		<script src="<?=base_url()?>assets/system/js/config.js"></script>
 		<!-- APP JS -->
@@ -36,6 +41,10 @@
 		<!-- FastClick -->
 		<script src="<?=COMPONENT_URL?>bower_components/fastclick/lib/fastclick.js"></script>
 		<!-- BlockUI -->
-		<script src="<?=COMPONENT_URL?>bower_components/jquery.blockUI.js"></script>			
+		<script src="<?=COMPONENT_URL?>bower_components/jquery.blockUI.js"></script>	
+		<!-- daterangepicker -->
+		<script src="<?=COMPONENT_URL?>bower_components/moment/min/moment.min.js"></script>
+		<script src="<?=COMPONENT_URL?>bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+				
 	</body>
 </html>
