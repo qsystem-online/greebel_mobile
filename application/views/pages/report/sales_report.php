@@ -1,14 +1,14 @@
 <div class="row" style="margin-top:20px">
 	<div class="input-group">
 		<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-		<input type="text" id="date-log" class="form-control" value="01/05/2020 - 18/05/2020">
+		<input type="text" id="date-log" class="form-control" value="<?=date('01/m/y') .' - ' . date('d/m/y') ?>">
 	</div>    
 </div>
 
 <div class="row">
 	<h2><a href="sales_report/test" target="_blank">Report Summary </a></h2>
 	<div class="row">
-		<p class="col-md-10"><b>Level :<span id="report-level"></span></b></p>            		
+		<p class="col-md-10"><b>Level :<span id="report-level"></span><span id="report-owner"></span></b></p>            		
 	</div>
 
 	<table class="table table-striped">
@@ -16,20 +16,12 @@
 			<tr>
 				<th></th>
 				<th>Name</th>
-				<th>Total Omset Harian</th>
-				<th>Total Omset Bulanan</th>
-				<th>Efektifitas</th>
+				<th class='text-right'>Total Omset Harian</th>
+				<th class='text-right'>Total Omset Bulanan</th>
+				<th class='text-center'>Efektifitas</th>
 			</tr>
 		</thead>
-		<tbody id="body-report">
-			<tr class="subreport" data-code='DYK'>
-				<td ><i class="fa fa-caret-right"></i></td>
-				<td>Doyok</td>
-				<td>1.000.000</td>
-				<td>20.000.000</td>
-				<td>5/10</td>
-			</tr>		
-		</tbody>
+		<tbody id="body-report"></tbody>
 	</table>
 </div>
 
@@ -59,7 +51,7 @@
 			getReport(salesCode);
 		}) 
 
-
+		getReport("<?=$salesCode?>");
 	});
 
 	function getReport(salesCode){
@@ -94,14 +86,17 @@
 				$("#body-report").empty();
 				var level = resp.data.level.toUpperCase();
 				$("#report-level").text(level);
+				$("#report-owner").text(" - " + salesCode);
+
 				var details = resp.data.detail;
+				var hideCaret = level == "SALES" ? "none" :"unset";
 				$.each(details , function(i,v){
 					sstr = "<tr class='subreport' data-code='"+v.fst_code+"'>";
-					sstr += "<td><i class='fa fa-caret-right'></i></td>";
+					sstr += "<td><i class='fa fa-caret-right' style='display:"+hideCaret+"'></i></td>";
 					sstr += "<td>"+v.fst_name+"</td>";
-					sstr += "<td>"+v.ttl_daily_omset+"</td>";
-					sstr += "<td>"+v.ttl_monthly_omset+"</td>";
-					sstr += "<td>"+ v.ttl_visited + "/" + v.ttl_schedule+"</td>";
+					sstr += "<td class='text-right'>"+ App.money_format(v.ttl_daily_omset) +"</td>";
+					sstr += "<td class='text-right'>"+ App.money_format(v.ttl_monthly_omset) +"</td>";
+					sstr += "<td class='text-center'>"+ v.ttl_visited + "/" + v.ttl_schedule+"</td>";
 					sstr += "</tr>";
 
 					$("#body-report").append(sstr);

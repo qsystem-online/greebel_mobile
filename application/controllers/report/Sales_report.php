@@ -23,8 +23,10 @@ class Sales_report extends CI_Controller {
 		try{
 			$decryptToken =  PHP_AES_Cipher::decrypt($key,$token);
 			$arrDecryptToken = explode("|",$decryptToken);
-			var_dump($arrDecryptToken);
-			
+
+			//$arrDecryptToken =["AMING","asdasdasd"];
+			//var_dump($arrDecryptToken);
+
 			if (sizeof($arrDecryptToken) < 2){
 				show_404();
 			}
@@ -216,7 +218,7 @@ class Sales_report extends CI_Controller {
 					INNER JOIN tr_order_details b ON a.fst_order_id = b.fst_order_id
 					WHERE fdt_order_datetime >= ? AND fdt_order_datetime <= ? GROUP BY a.fst_cust_code
 				) d ON a.fst_cust_code = d.fst_cust_code 
-			INNER JOIN tbsales e on a.fst_sales_area_code = e.fst_sales_code 
+			INNER JOIN tbsales e on a.fst_sales_code = e.fst_sales_code 
 			WHERE 
 			a.fst_sales_area_code = ? GROUP BY a.fst_sales_code";
 		}else{
