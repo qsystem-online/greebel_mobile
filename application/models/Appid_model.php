@@ -55,4 +55,17 @@ class Appid_model extends MY_Model {
 		$this->db->update($this->tableName,$data);
 	}
 
+	public function getList(){
+		$ssql = "SELECT a.*,b.fst_sales_name FROM tbappid a inner join tbsales b on a.fst_sales_code = b.fst_sales_code";
+		$qr = $this->db->query($ssql,[]);
+		return $qr->result();
+	}
+	public function updateStatus($id,$isChecked){
+		if($isChecked == 1){
+			$ssql = "UPDATE tbappid set fst_active = 'A' where fin_rec_id = ?";
+		}else{
+			$ssql = "UPDATE tbappid set fst_active = 'D' where fin_rec_id = ?";
+		}				
+		$qr = $this->db->query($ssql,[$id]);		
+	}
 }
