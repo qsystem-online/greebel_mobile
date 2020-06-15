@@ -212,8 +212,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	});
 
 	function refreshTable(){
-		App.log(sales);
-
+		App.log(sales);		
 		$.ajax({
 			url:"<?=site_url()?>sales/ajxSchedule_list/" +  $("#scheduleCalendar").val()+"/"+  $("#fst_sales").val(),
 			method:"GET",
@@ -222,6 +221,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				listSchedule = resp.data;
 				t = $('#tblSchedule').DataTable();
 				t.clear();
+				customer = null;
 				$.each(listSchedule,function(i,schedule){						
 					var dataRow = {
 						fin_rec_id:schedule.fin_rec_id,
