@@ -97,7 +97,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var sales;
 	$(function(){
 		$("#scheduleCalendar").change(function(e){
-			refreshTable();
+			getCustomerList($('#fst_sales').val(),$("#scheduleCalendar").val());
+			refreshTable();			
 		});
 
 		$("#fst_sales").select2();
@@ -105,17 +106,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$('#fst_sales').on('select2:select', function (e) {
 			var data = e.params.data;
 			sales = data;		
-			$.ajax({
-				url:"<?=site_url()?>sales/ajxGetCustomer/" + data.id,
-				method:"GET",
-			}).done(function(resp){
-				arrCustomer = resp.arrCustomer;
-				$("#fst_customer").empty();
-				$.each(arrCustomer,function(i,customer){
-					App.addOptionIfNotExist("<option value='"+customer.fst_cust_code+"'>"+customer.fst_cust_name +"</option>","fst_customer");
-				});
-				$("#fst_customer").val(null).trigger("change.select2");
-			});
+			getCustomerList(data.id,$("#scheduleCalendar").val());			
 			refreshTable();			
 		});
 
@@ -221,7 +212,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				listSchedule = resp.data;
 				t = $('#tblSchedule').DataTable();
 				t.clear();
-				customer = null;
+				data = {
+					id:$('#fst_sales').val()
+				};
+				
+
 				$.each(listSchedule,function(i,schedule){						
 					var dataRow = {
 						fin_rec_id:schedule.fin_rec_id,
@@ -239,10 +234,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	}
 	
-	function init_form(fin_user_id){
-		
+	function init_form(fin_user_id){		
 	}
 
+	function getCustomerList(salesId,scheduleDate){
+		$.ajax({
+			url:"<?=site_url()?>sales/ajxGetCustomer/" + salesId,
+			data:{
+				fdt_schedule_date:scheduleDate
+			},
+			method:"GET",
+		}).done(function(resp){
+			arrCustomer = resp.arrCustomer;
+			$("#fst_customer").empty();
+			$.each(arrCustomer,function(i,customer){
+				App.addOptionIfNotExist("<option value='"+customer.fst_cust_code+"'>"+customer.fst_cust_name +"</option>","fst_customer");
+			});
+			$("#fst_customer").val(null).trigger("change.select2");
+		});
+	}
 </script>
 <!-- DataTables -->
 <script src="<?=COMPONENT_URL?>bower_components/datatables.net/datatables.min.js"></script>

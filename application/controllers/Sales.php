@@ -617,8 +617,17 @@ class Sales extends MY_Controller {
 
 
 	public function ajxGetCustomer($fst_sales_code){
-		$ssql = "Select * from tbcustomers where fst_sales_code = ?";
-		$qr = $this->db->query($ssql,[$fst_sales_code]);
+
+		$fdtScheduleDate = $this->input->get("fdt_schedule_date");
+
+		$fdtScheduleDate = dBDateFormat($fdtScheduleDate);
+		
+
+		$ssql = "Select * from tbcustomers 
+		where fst_sales_code = ? and fst_cust_code not in (select fst_cust_code from tbjadwalsales where fdt_schedule_date = ?)";
+
+
+		$qr = $this->db->query($ssql,[$fst_sales_code,$fdtScheduleDate]);
 		$rs = $qr->result();
 
 		$result=[
