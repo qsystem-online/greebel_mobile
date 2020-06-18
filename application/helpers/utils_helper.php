@@ -162,7 +162,8 @@
 		$response_a = json_decode($response, true);
 
 
-		var_dump ($response_a['rows'][0]['elements'][0]);
+		//var_dump ($response_a['rows'][0]['elements'][0]);
+		return $response_a['rows'][0]['elements'][0];
 
 		//$dist = $response_a['rows'][0]['elements'][0]['distance']['text'];
 		//$time = $response_a['rows'][0]['elements'][0]['duration']['text'];
