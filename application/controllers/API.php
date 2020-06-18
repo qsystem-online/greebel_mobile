@@ -438,7 +438,7 @@ class API extends CI_Controller {
 						$data["fin_distance_from_last_checkin_meters"] = $distObj["distance"]["value"];
 						$data["fin_distance_from_last_checkin_seconds"] = $distObj["duration"]["value"];
 						$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
-						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["value"];
+						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["text"];
 						$data["fin_duration_from_last_checkout"] = $diffSecFromLastCheckout;
 
 					}
