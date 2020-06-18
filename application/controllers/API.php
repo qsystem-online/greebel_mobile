@@ -328,7 +328,8 @@ class API extends CI_Controller {
 	}
 	
 	public function test(){
-		echo calculateDisc("5","10000");
+		//echo calculateDisc("5","10000");
+		getDistance("a","b");
 	}
 
 
@@ -417,6 +418,31 @@ class API extends CI_Controller {
 			$this->db->trans_start();
 			try{
 				if ($mode == "insert"){
+
+					$rwLastRec = $this->trcheckinlog_model->getLastCheckin($salesCode,date("Y-m-d"));
+					if ($rwLastRec != null){
+						$strlastPos = $rwLastRec->fst_checkin_location;
+						$arrLastPos = [
+							"lat"=>explode(",",$strlastPos)[0],
+							"long"=>explode(",",$strlastPos)[1]
+						];
+						
+						$arrCurPos = [
+							"lat"=>$loc_lat,
+							"long"=>$loc_log
+						];
+
+						$distObj = getDistance($arrLastPos, $arrCurPos);
+
+						$diffSecFromLastCheckout = strtotime($data["fdt_checkin_datetime"]) - strtotime($rwLastRec->fdt_checkout_datetime);
+						$data["fin_distance_from_last_checkin_meters"] = $distObj["distance"]["value"];
+						$data["fin_distance_from_last_checkin_seconds"] = $distObj["duration"]["value"];
+						$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
+						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["value"];
+						$data["fin_duration_from_last_checkout"] = $diffSecFromLastCheckout;
+
+					}
+
 					$id = $this->trcheckinlog_model->insert($data);
 					if ($data["fbl_on_schedule"]){
 						//UPDATE JADWAL SALES
@@ -426,9 +452,6 @@ class API extends CI_Controller {
 					$id = $data["fin_id"]; 
 					$this->trcheckinlog_model->update($data);
 				}
-
-				
-
 
 				if(!empty($_FILES['photoloc']['tmp_name'])) {
 					//$config['upload_path']          = FCPATH . "uploads\\checkinlog\\";

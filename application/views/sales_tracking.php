@@ -306,7 +306,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 </script>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCN8-AYGQU5NGopLLCQaqXmvwty4jHEpC0&callback=initMap">   </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKrB-u5723kMlg7AQue5Jhk3ap3n7DEPI&callback=initMap">   </script>
 
 <!-- Select2 -->
 <script src="<?=COMPONENT_URL?>bower_components/select2/dist/js/select2.full.js"></script>

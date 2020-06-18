@@ -70,4 +70,11 @@ class trcheckinlog_model extends MY_Model {
 		$rw = $qr->row();
 		return $rw;
 	}
+
+	public function getLastCheckin($fst_sales_code,$fdt_date){
+		$ssql = "select * from trcheckinlog where fst_sales_code = ? and CAST(fdt_checkin_datetime as DATE) = ? order by fin_id desc limit 1";
+		$qr = $this->db->query($ssql,[$fst_sales_code,$fdt_date]);
+		return $qr->row();
+
+	}
 }
