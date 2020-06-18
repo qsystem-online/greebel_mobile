@@ -140,12 +140,11 @@
 		//$long1 = $loc1["log"];
 		//$lat1 = $loc1["lat"];
 
-		$long1 = 106.4639618;
-		$lat1 = -6.1922781;
-		$long2 = 106.4563529;
-		$lat2 = -6.1889017;
-
-
+		$lat1 = $loc1["lat"];;
+		$long1 = $loc1["long"];
+		$lat2 = $loc2["lat"];;
+		$long2 = $loc2["long"];
+				
 		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$lat1.",";
 		$url .= $long1."&destinations=".$lat2.",".$long2."&mode=driving&language=en";
 		$url .= "&key=AIzaSyAKrB-u5723kMlg7AQue5Jhk3ap3n7DEPI";		
