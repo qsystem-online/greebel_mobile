@@ -283,6 +283,7 @@ class Sales extends MY_Controller {
 			['title' => 'Cordinate', 'width' =>'15%', 'data'=>'fst_checkin_location'],
 			['title' => 'Range (meters)', 'width' =>'15%', 'data'=>'fin_distance_meters'],
 			['title' => 'Duration', 'width' =>'15%', 'data'=>'fin_visit_duration','className'=>'dt-body-right text-right'],
+			['title' => 'Compare Dur', 'width' =>'15%', 'data'=>'fin_distance_disputed','className'=>'dt-body-right text-right'],			
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
 		];
 
@@ -329,7 +330,8 @@ class Sales extends MY_Controller {
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,			
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
 			a.fbl_on_schedule as inSchedule,
-			a.fst_checkin_location 
+			a.fst_checkin_location,
+			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
