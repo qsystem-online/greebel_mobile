@@ -66,6 +66,7 @@ class Aauth {
 			$user = $this->CI->aauth->user();
 		}
 
+		/*
 		if ($permission_name == "approval" && $user->fbl_admin == 0){
 			return false;	
 		}
@@ -77,8 +78,8 @@ class Aauth {
 		if ($permission_name == "user" && $user->fbl_admin == 0){
 			return false;	
 		}
+		*/
 
-		
 		
 		//Cek privileges by id
 		$ssql ="SELECT * FROM usergroupprivileges where fin_user_id = ? and fst_menu_name = ? and fst_active ='A'";
