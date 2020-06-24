@@ -169,7 +169,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group">						
+					<div class="form-group" style="display:none">						
 						<div class="col-sm-offset-2  checkbox">
 							<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?=lang("Administrator")?></label><br>
 						</div>
