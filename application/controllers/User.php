@@ -57,6 +57,7 @@ class User extends MY_Controller {
     public function openForm($mode="ADD",$fin_user_id=0){
         $this->load->library("menus");
 		//$this->load->model("groups_model");
+		$this->load->model("privilegesgroup_model");
 
 		if($this->input->post("submit") != "" ){
 			$this->add_save();

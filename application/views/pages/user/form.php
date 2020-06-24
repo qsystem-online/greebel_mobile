@@ -159,8 +159,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label for="fst_privilege_group" class="col-sm-2 control-label"><?=lang("Privilege Group")?></label>
 						<div class="col-sm-10">
 							<select class="form-control" id="fst_privilege_group"  name="fst_privilege_group">
-								<option value='USER'>USER</option>
-								<option value='ADMIN'>ADMIN</option>
+								<?php
+									$groups = $this->privilegesgroup_model->getListGroup();
+									foreach($groups as $group){
+										echo "<option value='$group->fst_privilege_group'>$group->fst_privilege_group</option>";
+									}
+								?>
 							</select>
 						</div>
 					</div>
