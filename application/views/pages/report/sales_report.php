@@ -104,7 +104,7 @@
 					sstr += "<td>"+v.fst_name+"</td>";
 					sstr += "<td class='text-right'>"+ App.money_format(v.ttl_daily_omset) +"</td>";
 					sstr += "<td class='text-right'>"+ App.money_format(v.ttl_monthly_omset) +"</td>";
-					sstr += "<td class='text-center'>"+ v.ttl_visited + "/" + v.ttl_schedule+"</td>";
+					sstr += "<td class='text-center'>"+ v.ttl_visited_all + "/" + v.ttl_visited + "/" + v.ttl_schedule+"</td>";
 					sstr += "</tr>";
 
 					$("#body-report").append(sstr);
