@@ -20,6 +20,7 @@ class Sales_report extends CI_Controller {
 		$token = $this->input->post("token");
 		//$encryptedData =  PHP_AES_Cipher::encrypt($key,"1111111111111111","hello wordld !");
 		//var_dump($encryptedData);
+		
 		try{
 			$decryptToken =  PHP_AES_Cipher::decrypt($key,$token);
 			$arrDecryptToken = explode("|",$decryptToken);
@@ -35,8 +36,8 @@ class Sales_report extends CI_Controller {
 
 		}catch(Exception $e){
 			var_dump($e);
-		}        
-
+		}		
+		//$appId = "WITONO";
 		//var_dump($this->input->post());
 		
 		//$main_header = $this->parser->parse('inc/main_header',[],true);
@@ -85,7 +86,8 @@ class Sales_report extends CI_Controller {
 		$salesCode = $this->input->post("salesCode");
 		$rangeDate = $this->input->post("daterange");
 		$fstLevel = $this->input->post("level");
-
+		//var_dump($fstLevel);
+		//die();
 		//$appId = 'AMING';
 		//$rangeDate = "01/05/2020 - 18/05/2020";
 		//$fstLevel = "";
@@ -95,10 +97,7 @@ class Sales_report extends CI_Controller {
 		$dateEnd = dateFormat(trim($arrRangeDate[1]),"j/m/Y","Y-m-d");
 		$dateEnd = $dateEnd . " 23:59:59";
 
-		//$rwSales = $this->appid_model->getSales($appId);
-		
-		
-
+		//$rwSales = $this->appid_model->getSales($appId)			
 
 		if ($fstLevel == ""){
 			$rsData = $this->getReport($salesCode,$dateStart,$dateEnd,"NATIONAL");
@@ -114,7 +113,6 @@ class Sales_report extends CI_Controller {
 						$fstLevel = "SALES";
 					}
 				}
-
 			}
 			header('Content-Type: application/json');
 			echo json_encode([
@@ -122,7 +120,7 @@ class Sales_report extends CI_Controller {
 				"message"=>"",
 				"data"=>[
 					"level"=>$fstLevel,
-					"detail"=>$rsData
+					"detail"=>$rsData,
 				]
 			]);
 		}else{
@@ -133,7 +131,7 @@ class Sales_report extends CI_Controller {
 				"message"=>"",
 				"data"=>[
 					"level"=>$fstLevel,
-					"detail"=>$rsData
+					"detail"=>$rsData,
 				]
 			]);
 		}
@@ -142,7 +140,10 @@ class Sales_report extends CI_Controller {
 	}
 
 	private function getReport($fstSalesCode,$startDate,$endDate,$fstLevel){
-
+		//var_dump($fstLevel);
+		//var_dump($fstSalesCode);
+		//die();
+		//$fstLevel ="AREA";
 		if ($fstLevel == "NATIONAL"){
 			$ssql = "SELECT a.fst_sales_regional_code as fst_code,e.fst_sales_name as fst_name,
 				SUM(IFNULL(b.ttl_schedule,0)) as ttl_schedule,

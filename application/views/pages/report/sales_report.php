@@ -8,7 +8,7 @@
 <div class="row">
 	<h2><a href="sales_report/test" target="_blank">Report Summary </a></h2>
 	<div class="row">
-		<p class="col-md-10"><b>Level :<span id="report-level"></span><span id="report-owner"></span></b></p>            		
+		<p class="col-md-10"><b>Level :<span id="report-level"></span> - <span id="report-owner"></span></b></p>            		
 	</div>
 
 	<table class="table table-striped">
@@ -27,6 +27,9 @@
 
 
 <script type="text/javascript">
+	var dateLog = "";
+	var level ="";
+
 	$(function(){		
 		$("#date-log").daterangepicker({
 			minDate: moment().startOf('month').format('DD/MM/YYYY'),
@@ -34,19 +37,37 @@
 			locale: {
 				format: 'DD/MM/YYYY'
 			}
-		},function(){
-			//alert("Get Report");
-			getReport("<?=$salesCode?>");
-			
 		});		
+
+		$('#date-log').on('apply.daterangepicker', function(ev, picker) {
+			dateLog = picker.startDate.format('DD/MM/YYYY') + " - " +picker.endDate.format('DD/MM/YYYY');
+			var currentLevel = $("#report-level").text();
+			level = currentLevel.toUpperCase();
+			salesCode = $("#report-owner").text();
+			getReport(salesCode);
+		});
+
+
 		/*
 		$("#date-log").change(function(e){			
-			getReport("<?=$salesCode?>");
+			getReport("<=$salesCode?>");
 		});
 		*/
 		$("#body-report").on("click",".subreport",function(e){
 			e.preventDefault();
-
+			var currentLevel = $("#report-level").text();
+			currentLevel = currentLevel.toUpperCase();
+			if (currentLevel == ""){
+				level ="";
+			}else if (currentLevel == "NATIONAL"){
+				level ="REGIONAL";
+			}else if (currentLevel == "REGIONAL"){
+				level ="AREA";
+			}else if (currentLevel == "AREA"){
+				level ="SALES";
+			}else if (currentLevel == "SALES"){
+				level = currentLevel;
+			}
 			salesCode = $(this).data("code");
 			getReport(salesCode);
 		}) 
@@ -54,31 +75,18 @@
 		getReport("<?=$salesCode?>");
 	});
 
-	function getReport(salesCode){
-		var currentLevel = $("#report-level").text();
-		currentLevel = currentLevel.toUpperCase();
-
-		var level ="";
-		if (currentLevel == ""){
-			level ="";
-		}else if (currentLevel == "NATIONAL"){
-			level ="REGIONAL";
-		}else if (currentLevel == "REGIONAL"){
-			level ="AREA";
-		}else if (currentLevel == "AREA"){
-			level ="SALES";
-		}else if (currentLevel == "SALES"){
-			return;
-		}
-
+	function getReport(salesCode){		
 		App.blockUIOnAjaxRequest();
 
+		if (dateLog == ""){
+			dateLog = $("#date-log").val();
+		}
 		$.ajax({
 			url:"<?= site_url() ?>report/sales_report/ajxGetSumReport",
 			method:"POST",
 			data:{
 				salesCode:salesCode,
-				daterange:$("#date-log").val(),
+				daterange: dateLog,
 				level: level,
 			}
 		}).done(function(resp){				
@@ -86,7 +94,7 @@
 				$("#body-report").empty();
 				var level = resp.data.level.toUpperCase();
 				$("#report-level").text(level);
-				$("#report-owner").text(" - " + salesCode);
+				$("#report-owner").text(salesCode);
 
 				var details = resp.data.detail;
 				var hideCaret = level == "SALES" ? "none" :"unset";
