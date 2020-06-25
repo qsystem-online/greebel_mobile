@@ -19,7 +19,7 @@ class Sales_report extends CI_Controller {
 		
 		$token = $this->input->post("token");
 		//$encryptedData =  PHP_AES_Cipher::encrypt($key,"1111111111111111","hello wordld !");
-		$token =  PHP_AES_Cipher::encrypt($key,"1111111111111111","WITONO|202006123");
+		//$token =  PHP_AES_Cipher::encrypt($key,"1111111111111111","WITONO|202006123");
 		//var_dump($encryptedData);
 		
 		try{
