@@ -507,7 +507,9 @@ class Sales extends MY_Controller {
 			fdt_checkin_datetime,fdt_checkout_datetime,fin_distance_meters,a.fst_active,
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
 			a.fbl_on_schedule,
-			a.fst_checkin_location 
+			a.fst_checkin_location,
+			a.fst_distance_from_last_checkin_meters,
+			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
@@ -556,9 +558,9 @@ class Sales extends MY_Controller {
 		
 		foreach($rs as $rw){
 			if ($rw->fbl_on_schedule == true){ // $this->customer_model->inSchedule($rw->fst_cust_code,$rw->fst_sales_code,$rw->fdt_checkin_datetime)){
-				$sheet->getStyle("A$iRow:I$iRow")->applyFromArray($inScheduleStyle);
+				$sheet->getStyle("A$iRow:L$iRow")->applyFromArray($inScheduleStyle);
 			}else{
-				$sheet->getStyle("A$iRow:I$iRow")->applyFromArray($outOfScheduleStyle);
+				$sheet->getStyle("A$iRow:L$iRow")->applyFromArray($outOfScheduleStyle);
 			}
 
 			$sheet->setCellValue("A$iRow", $rw->fin_id); 
@@ -571,10 +573,12 @@ class Sales extends MY_Controller {
 			$sheet->setCellValue("H$iRow", $rw->fin_distance_meters);
 			$checkindate = strtotime($rw->fdt_checkin_datetime);
 			$sheet->setCellValue("I$iRow", date("Y-m-d",$checkindate));
+			$sheet->setCellValue("J$iRow", $rw->fst_distance_from_last_checkin_meters);
+			$sheet->setCellValue("K$iRow", $rw->fin_distance_disputed);
 
 			//$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
-			$sheet->setCellValue("J$iRow", 'Photo');
-			$sheet->getCell("J$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			$sheet->setCellValue("L$iRow", 'Photo');
+			$sheet->getCell("L$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
 			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);
