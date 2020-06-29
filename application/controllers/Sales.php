@@ -303,6 +303,7 @@ class Sales extends MY_Controller {
     public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->load->model("customer_model");
+		$this->load->model("trcheckinlog_model");
 		
 		$datelog = $this->input->get("dateLog");
 		$arrDateLog = explode("-",$datelog);
@@ -331,6 +332,7 @@ class Sales extends MY_Controller {
 			TIMEDIFF(fdt_checkout_datetime,fdt_checkin_datetime) as fin_visit_duration,
 			a.fbl_on_schedule as inSchedule,
 			a.fst_checkin_location,
+			a.fin_distance_from_last_checkin_meters,
 			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
@@ -364,7 +366,10 @@ class Sales extends MY_Controller {
 			</div>";
 	
 			$arrDataFormated[] = $data;
+			if ($data["fin_distance_from_last_checkin_meters"] == null){
+				$this->trcheckinlog_model->fillCompareDurationAndDistance($data["fin_id"]);
 			}
+		}
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);

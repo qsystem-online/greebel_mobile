@@ -77,4 +77,62 @@ class trcheckinlog_model extends MY_Model {
 		return $qr->row();
 
 	}
+
+	
+	
+	public function fillCompareDurationAndDistance($id){
+		$ssql = "SELECT * from trcheckinlog where fin_id = ?";
+		$qr = $this->db->query($ssql,[$id]);
+		$rw = $qr->row();
+		if ($rw != null){
+			$tglCheckin = date("Y-m-d",strtotime($rw->fdt_checkin_datetime));
+			$salesCode = $rw->fst_sales_code;
+
+			//GET LAST RECORD BEFORE THIS
+			$ssql = "select * from trcheckinlog where fst_sales_code = ? and CAST(fdt_checkin_datetime AS DATE) = ? and fin_id < ? limit 1";
+			$qr =$this->db->query($ssql,[$salesCode,$tglCheckin,$id]);
+			$rwLast = $qr->row();
+			if ($rwLast == null){
+				$data=[
+					"fin_distance_from_last_checkin_meters"=>0,
+					"fin_distance_from_last_checkin_seconds"=>0,
+					"fst_distance_from_last_checkin_meters"=>"",
+					"fst_distance_from_last_checkin_seconds"=>"",
+					"fin_duration_from_last_checkout"=>0
+				];
+
+			}else{
+
+				$strlastPos = $rwLast->fst_checkin_location;
+				$arrLastPos = [
+					"lat"=>explode(",",$strlastPos)[0],
+					"long"=>explode(",",$strlastPos)[1]
+				];
+
+				$strPos = $rw->fst_checkin_location;
+				$arrCurPos = [
+					"lat"=>explode(",",$strPos)[0],
+					"long"=>explode(",",$strPos)[1]
+				];
+
+				$distObj = getDistance($arrLastPos, $arrCurPos);
+				$diffSecFromLastCheckout = strtotime($rw->fdt_checkin_datetime) - strtotime($rwLast->fdt_checkout_datetime);
+				$data=[
+					"fin_distance_from_last_checkin_meters"=> $distObj["distance"]["value"],
+					"fin_distance_from_last_checkin_seconds"=>$distObj["duration"]["value"],
+					"fst_distance_from_last_checkin_meters"=>$distObj["distance"]["text"],
+					"fst_distance_from_last_checkin_seconds"=>$distObj["duration"]["text"],
+					"fin_duration_from_last_checkout"=>$diffSecFromLastCheckout
+				];
+			}
+			$data["fin_id"] = $id;
+			$this->trcheckinlog_model->update($data);
+
+		}
+		
+
+
+	}
+
+
 }

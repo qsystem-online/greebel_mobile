@@ -440,7 +440,12 @@ class API extends CI_Controller {
 						$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
 						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["text"];
 						$data["fin_duration_from_last_checkout"] = $diffSecFromLastCheckout;
-
+					}else{
+						$data["fin_distance_from_last_checkin_meters"] = 0;
+						$data["fin_distance_from_last_checkin_seconds"] = 0;
+						$data["fst_distance_from_last_checkin_meters"] = "";
+						$data["fst_distance_from_last_checkin_seconds"]= "";
+						$data["fin_duration_from_last_checkout"] = 0;
 					}
 
 					$id = $this->trcheckinlog_model->insert($data);
