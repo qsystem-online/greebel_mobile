@@ -39,7 +39,7 @@ class Sales_report extends CI_Controller {
 			var_dump($e);
 		}	
 
-		var_dump($appId);	
+		//var_dump($appId);	
 		//$appId = "WITONO";
 		//var_dump($this->input->post());
 		
@@ -151,7 +151,7 @@ class Sales_report extends CI_Controller {
 			$ssql = "SELECT a.fst_sales_regional_code as fst_code,e.fst_sales_name as fst_name,
 				SUM(IFNULL(b.ttl_schedule,0)) as ttl_schedule,
 				SUM(IFNULL(c.ttl_visited,0)) as ttl_visited,
-				SUM(IFNULL(f.ttl_visited_all,0)) as ttl_visited_all,
+				IFNULL(f.ttl_visited_all,0) as ttl_visited_all,
 				IFNULL(d.ttl_espb,0) as ttl_daily_omset,
 				SUM(a.fdc_total_current_monthly_omset) as ttl_monthly_omset
 			FROM tbcustomers a 
@@ -173,10 +173,10 @@ class Sales_report extends CI_Controller {
 				) d ON a.fst_sales_code = d.fst_sales_code 			
 			LEFT JOIN 
 				(
-					select fst_cust_code,count(fin_id) as ttl_visited_all from trcheckinlog 
+					select fst_sales_code,count(fin_id) as ttl_visited_all from trcheckinlog 
 					where fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ?  
-					GROUP BY fst_cust_code
-				) f ON a.fst_cust_code = f.fst_cust_code 
+					GROUP BY fst_sales_code
+				) f ON a.fst_sales_code = f.fst_sales_code 
 			INNER JOIN tbsales e on a.fst_sales_regional_code = e.fst_sales_code 
 			WHERE 
 			a.fst_sales_national_code = ? GROUP BY a.fst_sales_regional_code";
@@ -184,7 +184,7 @@ class Sales_report extends CI_Controller {
 			$ssql = "SELECT a.fst_sales_area_code as fst_code,e.fst_sales_name as fst_name,
 				SUM(IFNULL(b.ttl_schedule,0)) as ttl_schedule,
 				SUM(IFNULL(c.ttl_visited,0)) as ttl_visited,
-				SUM(IFNULL(f.ttl_visited_all,0)) as ttl_visited_all,
+				IFNULL(f.ttl_visited_all,0) as ttl_visited_all,
 				IFNULL(d.ttl_espb,0) as ttl_daily_omset,
 				SUM(a.fdc_total_current_monthly_omset) as ttl_monthly_omset
 			FROM tbcustomers a 
@@ -206,10 +206,10 @@ class Sales_report extends CI_Controller {
 				) d ON a.fst_sales_code = d.fst_sales_code 
 			LEFT JOIN 
 				(
-					select fst_cust_code,count(fin_id) as ttl_visited_all from trcheckinlog 
+					select fst_sales_code,count(fin_id) as ttl_visited_all from trcheckinlog 
 					where fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ?  
-					GROUP BY fst_cust_code
-				) f ON a.fst_cust_code = f.fst_cust_code 
+					GROUP BY fst_sales_code
+				) f ON a.fst_sales_code = f.fst_sales_code 
 			INNER JOIN tbsales e on a.fst_sales_area_code = e.fst_sales_code 
 			WHERE 
 			a.fst_sales_regional_code = ? GROUP BY a.fst_sales_area_code";
@@ -217,7 +217,7 @@ class Sales_report extends CI_Controller {
 			$ssql = "SELECT a.fst_sales_code as fst_code,e.fst_sales_name as fst_name,
 				SUM(IFNULL(b.ttl_schedule,0)) as ttl_schedule,
 				SUM(IFNULL(c.ttl_visited,0)) as ttl_visited,
-				SUM(IFNULL(f.ttl_visited_all,0)) as ttl_visited_all,
+				IFNULL(f.ttl_visited_all,0) as ttl_visited_all,
 				IFNULL(d.ttl_espb,0) as ttl_daily_omset,
 				SUM(a.fdc_total_current_monthly_omset) as ttl_monthly_omset
 			FROM tbcustomers a 
@@ -239,10 +239,10 @@ class Sales_report extends CI_Controller {
 				) d ON a.fst_sales_code = d.fst_sales_code 
 			LEFT JOIN 
 				(
-					select fst_cust_code,count(fin_id) as ttl_visited_all from trcheckinlog 
+					select fst_sales_code,count(fin_id) as ttl_visited_all from trcheckinlog 
 					where fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ?  
-					group by fst_cust_code
-				) f ON a.fst_cust_code = f.fst_cust_code 
+					group by fst_sales_code
+				) f ON a.fst_sales_code = f.fst_sales_code
 			INNER JOIN tbsales e on a.fst_sales_code = e.fst_sales_code 
 			WHERE 
 			a.fst_sales_area_code = ? GROUP BY a.fst_sales_code";
@@ -250,7 +250,7 @@ class Sales_report extends CI_Controller {
 			$ssql = "SELECT a.fst_cust_code as fst_code,a.fst_cust_name as fst_name,
 				SUM(IFNULL(b.ttl_schedule,0)) as ttl_schedule,
 				SUM(IFNULL(c.ttl_visited,0)) as ttl_visited,
-				SUM(IFNULL(e.ttl_visited_all,0)) as ttl_visited_all,
+				IFNULL(e.ttl_visited_all,0) as ttl_visited_all,
 				IFNULL(d.ttl_espb,0) as ttl_daily_omset,
 				SUM(a.fdc_total_current_monthly_omset) as ttl_monthly_omset
 			FROM tbcustomers a 
@@ -276,7 +276,7 @@ class Sales_report extends CI_Controller {
 			LEFT JOIN 
 				(
 					SELECT fst_cust_code,count(fin_id) as ttl_visited_all from trcheckinlog 
-					WHERE fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ?  
+					WHERE fdt_checkin_datetime >= ? and fdt_checkin_datetime <= ?  and fst_sales_code = '$fstSalesCode' 
 					GROUP BY fst_cust_code 
 				) e on a.fst_cust_code = e.fst_cust_code 
 			WHERE 
