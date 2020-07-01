@@ -470,10 +470,13 @@ class Espb extends MY_Controller {
 				$sheet->setCellValue("G$iRow", $rwDetail->fst_satuan);
 				$sheet->setCellValue("H$iRow", $rwDetail->fin_qty);
 				$sheet->setCellValue("I$iRow", $rwDetail->fin_price);
-				$sheet->setCellValue("J$iRow", $rwDetail->fdc_disc);
+				$sheet->setCellValue("J$iRow", $rwDetail->fst_disc);
+				$sheet->setCellValue("K$iRow", $rwDetail->fdc_disc);
 				$total = $rwDetail->fin_qty * ($rwDetail->fin_price - $rwDetail->fdc_disc);				
-				$sheet->setCellValue("K$iRow", $total);
-				$sheet->getStyle("I$iRow:K$iRow")->getNumberFormat()
+				$sheet->setCellValue("L$iRow", $total);
+				$sheet->getStyle("I$iRow")->getNumberFormat()
+					->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+				$sheet->getStyle("K$iRow:L$iRow")->getNumberFormat()
 					->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
 	
 				$iRow++;
