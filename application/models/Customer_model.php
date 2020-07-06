@@ -114,16 +114,27 @@ class Customer_model extends MY_Model {
         $result = $query->result();
         for($i = 0 ;$i < sizeof($result);$i++){
             $rw = $result[$i];
+            
             if (! $this->jadwalsales_model->onSchedule($rw->fst_cust_code,date("Y-m-d")) ){
                 $result[$i]->fbl_on_schedule = false;
             }else{
                 $result[$i]->fbl_on_schedule = true;
             }
+            //Overdue List
+            $result[$i]->invoiceOverdueList = $this->getInvoiceDueList($rw->fst_cust_code);
+            
         }
         
         return $result;
 
     }
+
+    public function getInvoiceDueList($fst_cust_code){
+        $ssql = "SELECT * FROM invoiceduelist where fst_cust_code = ?";
+        $qr = $this->db->query($ssql,[$fst_cust_code]);
+        $rs = $qr->result();
+        return $rs;
+    }   
 
     public function getLocation($fin_cust_code){
         $ssql = "select fst_cust_location from tblocation where fst_cust_code = ?";
