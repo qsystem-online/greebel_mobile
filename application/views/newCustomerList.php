@@ -58,6 +58,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</span>
 					</div>
 					<table id="tblList" class="table table-bordered table-hover table-striped"></table>
+					<button id="btnExport2Excel" class="btn"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
+
 				</div><!-- /.box-body -->
 				
 				<div class="box-footer">
@@ -351,6 +353,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnSubmitReject").click(function(e){
 			e.preventDefault();
 			submitApproval(selectedRecordId,false);
+		});
+
+		$("#btnExport2Excel").click(function(e){
+			e.preventDefault();
+			window.location = "<?= base_url() ?>new_customer/toExcel";
+			//window.open("<= base_url() ?>sales/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
 		});
 
 	});

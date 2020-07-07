@@ -315,4 +315,97 @@ class New_customer extends MY_Controller {
 		echo json_encode($result);
 
 	}
+
+
+	public function toExcel(){
+		$this->load->model("msarea_model");
+		$ssql ="select a.*,
+			b.fst_sales_name 
+			from tbnewcustomers a 
+			inner join tbsales b on a.fst_sales_code =b.fst_sales_code where a.fst_active != 'D'";
+
+		$qr = $this->db->query($ssql,[]);
+		$rs = $qr->result();
+
+		$this->load->library('phpspreadsheet');		
+		$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_new_customers.xls";
+		$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+		
+		
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		
+		
+		//$sheet->setTitle('Coba Aja');
+		$iRow = 3;
+		foreach($rs as $rw){
+			$sheet->setCellValue("A$iRow", $rw->fin_id); 
+			$sheet->setCellValue("B$iRow", $rw->fst_cust_name);
+			$sheet->setCellValue("C$iRow", $rw->fst_contact);
+			$sheet->setCellValue("D$iRow", $rw->fst_cust_phone);
+			$sheet->setCellValue("E$iRow", $rw->fbl_is_rent);
+			$sheet->setCellValue("F$iRow", $rw->fst_cust_address);
+			$sheet->setCellValue("G$iRow", $rw->fst_cust_location);
+			
+			$result = $this->msarea_model->getAreaDetail($rw->fst_area_code);
+			
+			$sheet->setCellValue("H$iRow", $result["provinsi"]["code"] ." - " . $result["provinsi"]["name"]);
+			$sheet->setCellValue("I$iRow", $result["kabupaten"]["code"] ." - " . $result["kabupaten"]["name"]);
+			$sheet->setCellValue("J$iRow", $result["kecamatan"]["code"] ." - " . $result["kecamatan"]["name"]);
+			$sheet->setCellValue("K$iRow", $result["kelurahan"]["code"] ." - " . $result["kelurahan"]["name"]);
+			$sheet->setCellValue("L$iRow", $rw->fst_area_code);
+			$sheet->setCellValue("M$iRow", $rw->fst_sales_name);
+			$priceGroup = "";
+			switch ($rw->fin_price_group_id){
+				case 1:
+					$priceGroup = "RETAIL";
+					break;
+				case 2:
+					$priceGroup = "HYPERMARKET";
+					break;
+				case 3:
+					$priceGroup = "GROSIR";
+					break;
+				case 4:
+					$priceGroup = "SEKOLAH/PO";
+					break;
+				case 5:
+					$priceGroup = "MT LOKAL";
+					break;
+				case 9:
+					$priceGroup = "GROUP SMM/INTERNAL";
+					break;
+				default:
+					$priceGroup = $rw->fin_price_group_id;
+			}
+			$sheet->setCellValue("N$iRow", $priceGroup);			
+			$sheet->setCellValue("O$iRow", $rw->fst_status);			
+			$sheet->setCellValue("P$iRow", date("d-m-Y",strtotime($rw->fdt_insert_datetime)));			
+
+			/*
+			$styleArray = [
+				'font' => [
+					'bold' => true,
+				],			
+				'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+			];
+			$sheet->setCellValue("H$iRow", $summ->total_qty);
+			//$sheet->setCellValue("K$iRow", $summ->total_amount + ($summ->total_amount * 10/100));			
+			$sheet->setCellValue("K$iRow", $summ->total_amount);						
+			$sheet->getStyle("H$iRow:K$iRow")->applyFromArray($styleArray);
+			$sheet->getStyle("H$iRow:K$iRow")->getNumberFormat()->applyFromArray($styleArray);
+			*/
+
+			$iRow++;
+		}		
+		
+		$this->phpspreadsheet->save("espb_list_" . date("Ymd") ,$spreadsheet);
+		//$this->phpspreadsheet->save("test-coba");		
+		
+	}
 }
