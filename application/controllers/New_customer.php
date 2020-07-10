@@ -322,7 +322,7 @@ class New_customer extends MY_Controller {
 		$ssql ="select a.*,
 			b.fst_sales_name 
 			from tbnewcustomers a 
-			inner join tbsales b on a.fst_sales_code =b.fst_sales_code where a.fst_active != 'D'";
+			inner join tbsales b on a.fst_sales_code =b.fst_sales_code";
 
 		$qr = $this->db->query($ssql,[]);
 		$rs = $qr->result();
