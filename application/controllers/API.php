@@ -504,9 +504,8 @@ class API extends CI_Controller {
 
 	public function newcust(){
 		//PriceGroup ID, 1:Retail|2:Hypermarket|3:Grosir|4:Sekolah/PO|5:MT Lokal|9:Group SMM/Internal
-		log_message('debug', print_r($this->input->post(),true));
-		log_message('debug', print_r($_FILES,true));		
-
+		//log_message('debug', print_r($this->input->post(),true));
+		//log_message('debug', print_r($_FILES,true));		
 		/*
 			[fst_price_group] => Hypermarket
 			[fbl_is_rent] => 1
@@ -520,6 +519,20 @@ class API extends CI_Controller {
 			[fst_contact] => Devi
 		*/
 
+		$fstUniqueId = $this->input->post("fst_unique_id");
+		//Cek If Exist;
+		$ssql ="SELECT * FROM tbnewcustomers where fst_unique_id = ?";
+		$qr=$this->db->query($ssql,[$fstUniqueId]);
+		$rw = $qr->row();
+		if($rw != null){
+			header('Content-Type: application/json');
+			$result = [
+				"status" => "OK",
+				"fst_unique_id" => $this->input->post("fst_unique_id"),
+			];
+			echo json_encode($result);
+			return;
+		}
 		
 		
 		$strSalesCode = "";
