@@ -58,6 +58,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</span>
 					</div>
 					<table id="tblList" class="table table-bordered table-hover table-striped"></table>
+					<div>
+						Limit <input id="rowLimit" class="text-right" value="0" size="25"/> offset <input id="rowOffset" class="text-right" value="0" size="5"/>
+					</div>
 					<button id="btnExport2Excel" class="btn"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
 
 				</div><!-- /.box-body -->
@@ -357,7 +360,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnExport2Excel").click(function(e){
 			e.preventDefault();
-			window.location = "<?= base_url() ?>new_customer/toExcel";
+			window.location = "<?= base_url() ?>new_customer/toExcel/" + $("#rowLimit").val() + "/" + $("#rowOffset").val();
 			//window.open("<= base_url() ?>sales/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
 		});
 

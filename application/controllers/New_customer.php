@@ -317,7 +317,7 @@ class New_customer extends MY_Controller {
 	}
 
 
-	public function toExcel(){
+	public function toExcel($rowLimit,$rowOffset){
 		set_time_limit(0);   
 		ini_set('mysql.connect_timeout','0');   
 		ini_set('max_execution_time', '0'); 
@@ -326,9 +326,12 @@ class New_customer extends MY_Controller {
 		$ssql ="select a.*,
 			b.fst_sales_name 
 			from tbnewcustomers a 
-			inner join tbsales b on a.fst_sales_code =b.fst_sales_code";
+			inner join tbsales b on a.fst_sales_code =b.fst_sales_code order by fin_id limit ? offset ?";
 
-		$qr = $this->db->query($ssql,[]);
+		$qr = $this->db->query($ssql,[intval($rowLimit),intval($rowOffset)]);
+
+		//var_dump($this->db->last_query());
+		//die();
 		$rs = $qr->result();
 
 		$this->load->library('phpspreadsheet');		
