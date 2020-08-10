@@ -318,6 +318,10 @@ class New_customer extends MY_Controller {
 
 
 	public function toExcel(){
+		set_time_limit(0);   
+		ini_set('mysql.connect_timeout','0');   
+		ini_set('max_execution_time', '0'); 
+
 		$this->load->model("msarea_model");
 		$ssql ="select a.*,
 			b.fst_sales_name 
