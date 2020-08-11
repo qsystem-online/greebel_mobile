@@ -59,7 +59,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<table id="tblList" class="table table-bordered table-hover table-striped"></table>
 					<div>
-						Limit <input id="rowLimit" class="text-right" value="25" size="5"/> offset <input id="rowOffset" class="text-right" value="0" size="5"/>
+						Limit <input id="rowLimit" class="text-right" value="25" size="5"/> offset ID <input id="rowOffset" class="text-right" value="0" size="5"/>
 					</div>
 					<button id="btnExport2Excel" class="btn"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to Excel</button>
 
