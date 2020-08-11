@@ -229,7 +229,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#filterAllStatus").change(function(e){
 			t = $("#tblList").DataTable();
 			t.draw();
-
 		});
 
 		$('#tblList').on('preXhr.dt', function ( e, settings, data ) {
@@ -264,6 +263,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			dataSrc:"data",
 			processing: true,
 			serverSide: true,
+			stateSave: true,
 			ajax: "<?=$fetch_list_data_ajax_url?>"
 		}).on('draw',function(){
 		});
@@ -382,7 +382,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			console.log(resp);
 			if (resp.status == "SUCCESS"){
 				t = $("#tblList").DataTable();
-				t.row(selectedRecord).remove().draw();
+				t.row(selectedRecord).remove().draw(false);
 				$("#myModal").modal("hide");
 			}
 		});
