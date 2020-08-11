@@ -327,7 +327,7 @@ class New_customer extends MY_Controller {
 			b.fst_sales_name 
 			from tbnewcustomers a 
 			inner join tbsales b on a.fst_sales_code =b.fst_sales_code 
-			WHERE fst_active = 'A' and fin_id > ? order by fin_id limit ?";
+			WHERE a.fst_active = 'A' and fin_id > ? order by fin_id limit ?";
 
 		$qr = $this->db->query($ssql,[intval($offsetId),intval($rowLimit)]);
 
