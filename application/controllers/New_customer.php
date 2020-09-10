@@ -319,7 +319,7 @@ class New_customer extends MY_Controller {
 
 	public function toExcel($rowLimit,$offsetId){
 		set_time_limit(0);   
-		ini_set('mysql.connect_timeout','0');   
+		ini_set('mysql.connect_timeout','0');
 		ini_set('max_execution_time', '0'); 
 
 		$this->load->model("msarea_model");
@@ -393,7 +393,7 @@ class New_customer extends MY_Controller {
 			}
 			$sheet->setCellValue("N$iRow", $priceGroup);			
 			$sheet->setCellValue("O$iRow", $rw->fst_status);			
-			$sheet->setCellValue("P$iRow", date("d-m-Y",strtotime($rw->fdt_insert_datetime)));			
+			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_insert_datetime)));			
 
 			/*
 			$styleArray = [
