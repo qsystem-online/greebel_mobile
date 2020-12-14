@@ -41,7 +41,15 @@ class Espb extends MY_Controller {
             ],
 			['title' => 'Request Datetime', 'width'=>'15%', 'data'=>'fdt_order_datetime'],
 			['title' => 'Sales', 'width' =>'10%', 'data'=>'fst_sales'],
-			['title' => 'Customer', 'width' =>'30%', 'data'=>'fst_customer'],
+			['title' => 'Customer', 'width' =>'30%', 'data'=>'fst_customer',
+				'render'=>"function(data,type,row){
+					var sstr = data;
+					if (row.fst_message != null){
+						sstr  += '<br>' + row.fst_message;
+					}
+					return sstr;
+				}"
+			],
 			['title' => 'Total Qty', 'width' =>'10%', 'data'=>'total_qty', 'className'=>'text-right'],
 			['title' => 'Total Amount', 'width' =>'15%', 'data'=>'total_amount_ppn' , 
 				'className'=>'text-right',
@@ -289,10 +297,12 @@ class Espb extends MY_Controller {
 			(SELECT a.fst_order_id,
 			CONCAT(a.fst_sales_code,' - ',b.fst_sales_name) as fst_sales,a.fst_sales_code,
             CONCAT (a.fst_cust_code,' - ',c.fst_cust_name) as fst_customer,a.fst_cust_code,
-            fdt_order_datetime,fst_status,0 as fin_total,a.fst_active
+			fdt_order_datetime,fst_status,0 as fin_total,a.fst_active,
+			d.fst_message 
 			FROM tr_order a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			LEFT JOIN trverification d on a.fin_rec_id = d.fin_transaction_id 
 			WHERE DATE(fdt_order_datetime) >= '$dateStart' and DATE(fdt_order_datetime) <= '$dateEnd' 
 			) as a
 		");
