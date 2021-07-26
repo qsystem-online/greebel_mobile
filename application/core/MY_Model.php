@@ -24,7 +24,7 @@ class MY_Model extends CI_Model {
 		
 		$this->db->insert($this->tableName,$data);
 		$insertId = $this->db->insert_id();
-		$error = $this->db->error();
+		$error = $this->db->error();		
 		if($error["code"] != 0 ){
 			throw new Exception("Database Error !",1000); 
 			//echo "TEST throw, never call statement";
