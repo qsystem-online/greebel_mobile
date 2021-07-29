@@ -475,7 +475,7 @@ class All_customer extends MY_Controller {
 			$iRow++;
 		}		
 		
-		$this->phpspreadsheet->save("AllCustomer_list_" . date("Ymd") ,$spreadsheet);
+		$this->phpspreadsheet->save("AllCustomer_list_" .$nouStart."-".$nouEnd ,$spreadsheet);
 		//$this->phpspreadsheet->save("test-coba");		
 		
 	}
