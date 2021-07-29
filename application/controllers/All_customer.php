@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class New_customer extends MY_Controller {
+class All_customer extends MY_Controller {
 
     public function __construct(){
         parent:: __construct();
@@ -14,30 +14,30 @@ class New_customer extends MY_Controller {
 
     public function view_list(){
         $this->load->library('menus');
-        $this->list['page_name']="New Customer";
-        $this->list['list_name']="New Customer List";
-        $this->list['fetch_list_data_ajax_url']=site_url().'new_customer/fetch_list_data';
+        $this->list['page_name']="All Customer";
+        $this->list['list_name']="All Customer List";
+        $this->list['fetch_list_data_ajax_url']=site_url().'all_customer/fetch_list_data';
         $this->list['arrSearch']=[
-            'a.fst_cust_name' => 'Customer',
-            'a.fst_status' => 'Status'
+            'a.fst_cust_name' => 'Customer Name',
+            'a.fst_sales_code' => 'Sales Code'
 		];
 
         $this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-			['title'=>'New Customer','link'=>'#','icon'=>''],
+			['title'=>'All Customer','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 
 		$this->list['columns']=[
-			['title' => 'User ID', 'width'=>'5%', 'data'=>'fin_id'],
+            ['title' => 'Cust Code', 'width'=>'10%', 'data'=>'fst_cust_code'],
 			['title' => 'Full Name', 'width'=>'20%', 'data'=>'fst_cust_name'],
-			['title' => 'Address', 'width' =>'10%', 'data'=>'fst_cust_address'],
-            ['title' => 'Sales', 'width' =>'15%', 'data'=>'fst_sales_name',
+			['title' => 'Address', 'width' =>'25%', 'data'=>'fst_cust_address'],
+            ['title' => 'Sales', 'width' =>'10%', 'data'=>'fst_sales_name',
                 'render'=>"function(data,type,row){
                     return row.fst_sales_name.replace(/\\r/g,'<br>');
                 }"
 			],
-			['title' => 'Group', 'width' =>'15%', 'data'=>'fin_price_group_id',
+			['title' => 'Group', 'width' =>'10%', 'data'=>'fin_price_group_id',
                 'render'=>"function(data,type,row){
 					//1;Retail;2;Hypermarket;3;Grosir;4;Sekolah/PO;5;MT Lokal;9;Group SMM/Internal
                     if (data ==1){
@@ -56,13 +56,19 @@ class New_customer extends MY_Controller {
                 }"
 			],
 			
-            ['title' => 'Status', 'width' =>'15%', 'data'=>'fst_status'],
-            ['title' => 'Request Date', 'width' =>'10%', 'data'=>'fdt_insert_datetime'],            
+            ['title' => 'Status', 'width' =>'5%', 'data'=>'fbl_is_new',
+				'render'=>"function(data,type,row){
+					if (data ==0){
+						return 'OLD';
+					}else if(data ==1){
+						return 'NEW';
+					}
+				}"
+		    ],
+            ['title' => 'Create Date', 'width' =>'10%', 'data'=>'fdt_created_datetime'],            
             ['title' => 'Action', 'width'=>'10%', 'data'=>'','sortable'=>false, 'className'=>'dt-center',
                 'render'=>"function(data,type,row){
-                    action = '<a class=\"btn-approve\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px\" class=\"fa fa-check-circle-o\"></i></a>';
-					action += '<a class=\"btn-map\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;color:green\" class=\"fa fa-map-marker\"></i></a>';
-					action += '<a class=\"btn-detail\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;\" class=\"fa fa-info\"></i></a>';
+					action = '<a class=\"btn-detail\" href=\"#\"><i style=\"font-size:14pt;margin-right:10px;\" class=\"fa fa-info\"></i></a>';
 					return action;
                         
                 }"
@@ -71,7 +77,7 @@ class New_customer extends MY_Controller {
 
         $main_header = $this->parser->parse('inc/main_header',[],true);
     	$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
-        $page_content = $this->parser->parse('newCustomerList',$this->list,true);
+        $page_content = $this->parser->parse('allCustomerList',$this->list,true);
         $main_footer = $this->parser->parse('inc/main_footer',[],true);
         $control_sidebar =null;
         $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
@@ -86,16 +92,26 @@ class New_customer extends MY_Controller {
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->load->model("newcustomer_model");
+		$this->load->model("allcustomer_model");
 		$this->load->model("msarea_model");		
         $isAllStatus = $this->input->get("optionIsAllStatus");
 
+		$datecreate = $this->input->get("dateCreate");
+		$arrDateCreate = explode("-",$datecreate);
+		$dateStart = dateFormat(trim($arrDateCreate[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateCreate[1]),"j/m/Y","Y-m-d");
 
-        if($isAllStatus == 0){
-            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  where fst_status ='NEED APPROVAL') a ");
-        }else{
-            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code ) a ");
-        }
+		switch ($isAllStatus){
+			case 0:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' ) a ");
+				break;
+			case 1:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND  a.fbl_is_new = '1') a ");
+				break;
+			case 2:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND a.fbl_is_new = '0') a ");
+				break;
+		}
 		
 		$selectFields = "a.*";
 		$this->datatables->setSelectFields($selectFields);
@@ -122,26 +138,6 @@ class New_customer extends MY_Controller {
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
     }
-
-
-    public function do_approval(){
-        $this->load->model("newcustomer_model");
-
-        $data =[
-            "fin_id" => $this->input->post("fin_id"),
-            "fst_status" => ($this->input->post("isApproved") == "true") ? "APPROVED" : "REJECTED",
-            "fst_approval_notes" =>$this->input->post("fst_approval_notes"),
-		];
-		
-        $this->newcustomer_model->update($data);
-        $result = [
-            "status"=>"SUCCESS",
-            "message"=>"",
-            "data"=>$this->input->post()
-        ];
-        $this->json_output($result);
-    }
-
 
 
 	public function fetch_detail_log(){
@@ -316,27 +312,75 @@ class New_customer extends MY_Controller {
 
 	}
 
+	public function show_link_pics($id)	{
+		//$pic = md5("doc_" . $id) . "*";		
+		//$dir = APPPATH . '../uploads/customers/';
+		//chdir($dir);
+		//$arrFiles = glob($pic);
+		//$arrFiles = glob($pic);		
 
-	public function toExcel($rowLimit,$offsetId){
+       	$this->data["unique_id"] = $id;
+		$this->parser->parse('pages/customer_pic',$this->data);
+		
+	}
+
+
+	public function toExcel(){
 		set_time_limit(0);   
 		ini_set('mysql.connect_timeout','0');
 		ini_set('max_execution_time', '0'); 
 
+		$this->load->model("allcustomer_model");
 		$this->load->model("msarea_model");
-		$ssql ="select a.*,
-			b.fst_sales_name 
-			from tbnewcustomers a 
-			inner join tbsales b on a.fst_sales_code =b.fst_sales_code 
-			WHERE fin_id > ? order by fin_id limit ?";
 
-		$qr = $this->db->query($ssql,[intval($offsetId),intval($rowLimit)]);
+		$datecreated = $this->input->get("datecreated");
+		//var_dump($datecreated);
+		//die();
+		$arrDateCreate = explode("-",$datecreated);
+		$dateStart = dateFormat(trim($arrDateCreate[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateCreate[1]),"j/m/Y","Y-m-d");
+		$status = $arrDateCreate[2];
+		$nouStart = $arrDateCreate[3];
+		$nouEnd = $arrDateCreate[4];
+
+		switch ($status){
+			case 0:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' ) a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+			case 1:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND  a.fbl_is_new = '1') a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd' AND  fbl_is_new = '1') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+			case 2:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND a.fbl_is_new = '0') a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd' AND  fbl_is_new = '0') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+		}
+		/*$ssql ="select a.*,ROW_NUMBER() OVER () AS Id,
+			b.fst_sales_name 
+			from tbcustomers a 
+			inner join tbsales b on a.fst_sales_code =b.fst_sales_code 
+			WHERE Id > ? order by Id limit ?";
+		*/
+
+		$qr = $this->db->query($ssql,[]);
 
 		//var_dump($this->db->last_query());
 		//die();
 		$rs = $qr->result();
 
 		$this->load->library('phpspreadsheet');		
-		$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_new_customers.xls";
+		$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
 		$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
 		
 		
@@ -352,13 +396,19 @@ class New_customer extends MY_Controller {
 		//$sheet->setTitle('Coba Aja');
 		$iRow = 3;
 		foreach($rs as $rw){
-			$sheet->setCellValue("A$iRow", $rw->fin_id); 
+			$sheet->setCellValue("A$iRow", $rw->fst_cust_code); 
 			$sheet->setCellValue("B$iRow", $rw->fst_cust_name);
 			$sheet->setCellValue("C$iRow", $rw->fst_contact);
 			$sheet->setCellValue("D$iRow", $rw->fst_cust_phone);
-			$sheet->setCellValue("E$iRow", $rw->fbl_is_rent);
+			$rental = "";
+			if ($rw->fbl_is_rent == 1){
+				$rental = "YES";
+			}else{
+				$rental = "NO";
+			}
+			$sheet->setCellValue("E$iRow", $rental);
 			$sheet->setCellValue("F$iRow", $rw->fst_cust_address);
-			$sheet->setCellValue("G$iRow", $rw->fst_cust_location);
+			$sheet->setCellValue("G$iRow", $rw->fdc_max_disc);
 			
 			$result = $this->msarea_model->getAreaDetail($rw->fst_area_code);
 			
@@ -391,9 +441,22 @@ class New_customer extends MY_Controller {
 				default:
 					$priceGroup = $rw->fin_price_group_id;
 			}
-			$sheet->setCellValue("N$iRow", $priceGroup);			
-			$sheet->setCellValue("O$iRow", $rw->fst_status);			
-			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_insert_datetime)));			
+			$sheet->setCellValue("N$iRow", $priceGroup);
+			$status = "";
+			switch ($rw->fbl_is_new){
+				case 0:
+					$status = "OLD";
+					break;
+				case 1:
+					$status = "NEW";
+					break;
+				default:
+					$status = $rw->fbl_is_new;
+			}			
+			$sheet->setCellValue("O$iRow", $status);			
+			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_created_datetime)));
+			$sheet->setCellValue("Q$iRow", 'Photo');
+			$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);			
 
 			/*
 			$styleArray = [
@@ -412,7 +475,7 @@ class New_customer extends MY_Controller {
 			$iRow++;
 		}		
 		
-		$this->phpspreadsheet->save("espb_list_" . date("Ymd") ,$spreadsheet);
+		$this->phpspreadsheet->save("AllCustomer_list_" . date("Ymd") ,$spreadsheet);
 		//$this->phpspreadsheet->save("test-coba");		
 		
 	}
