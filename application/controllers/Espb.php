@@ -352,6 +352,7 @@ class Espb extends MY_Controller {
 			['title'=>'','link'=> NULL ,'icon'=>''],
 		];
 
+		$fst_order_id = urldecode($fst_order_id);
         $order = $this->trorder_model->getDataById($fst_order_id);
 		$this->list["order"] = $order;
 		

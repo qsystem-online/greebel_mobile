@@ -31,6 +31,7 @@ class Trorder_model extends MY_Model {
 	}
 	
 	public function getDataById($fst_order_id,$withDetails = true){
+
 		$ssql = "select * from tr_order a 
 			inner join tbsales b on a.fst_sales_code = b.fst_sales_code
 			inner join tbcustomers c on a.fst_cust_code = c.fst_cust_code
@@ -38,6 +39,9 @@ class Trorder_model extends MY_Model {
 		
 		$qr = $this->db->query($ssql,[$fst_order_id]);
 		$rw = $qr->row_array();
+
+		
+
 		if(!$rw){
 			return null;
 		}else{
