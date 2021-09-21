@@ -420,6 +420,7 @@ class API extends CI_Controller {
 				if ($mode == "insert"){
 
 					$rwLastRec = $this->trcheckinlog_model->getLastCheckin($salesCode,date("Y-m-d"));
+
 					if ($rwLastRec != null){
 						$strlastPos = $rwLastRec->fst_checkin_location;
 						$arrLastPos = [
@@ -435,8 +436,17 @@ class API extends CI_Controller {
 						$distObj = getDistance($arrLastPos, $arrCurPos);
 
 						$diffSecFromLastCheckout = strtotime($data["fdt_checkin_datetime"]) - strtotime($rwLastRec->fdt_checkout_datetime);
+
 						$data["fin_distance_from_last_checkin_meters"] = $distObj["distance"]["value"];
 						$data["fin_distance_from_last_checkin_seconds"] = $distObj["duration"]["value"];
+
+						if ($data["fin_distance_from_last_checkin_meters"] == null){
+							$data["fin_distance_from_last_checkin_meters"] = 0;
+						}
+						if ($data["fin_distance_from_last_checkin_seconds"] == null){
+							$data["fin_distance_from_last_checkin_seconds"] = 0;
+						}
+
 						$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
 						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["text"];
 						$data["fin_duration_from_last_checkout"] = $diffSecFromLastCheckout;
