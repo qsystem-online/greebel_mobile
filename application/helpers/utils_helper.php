@@ -159,7 +159,9 @@
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$response_a = json_decode($response, true);
-
+		if (!isset($response_a['rows'][0]['elements'])){
+			return null;
+		}
 
 		//var_dump ($response_a['rows'][0]['elements'][0]);
 		return $response_a['rows'][0]['elements'][0];
