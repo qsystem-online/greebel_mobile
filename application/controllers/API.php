@@ -420,6 +420,7 @@ class API extends CI_Controller {
 				if ($mode == "insert"){
 
 					$rwLastRec = $this->trcheckinlog_model->getLastCheckin($salesCode,date("Y-m-d"));
+
 					if ($rwLastRec != null){
 						$strlastPos = $rwLastRec->fst_checkin_location;
 						$arrLastPos = [
@@ -432,14 +433,21 @@ class API extends CI_Controller {
 							"long"=>$loc_log
 						];
 
-						$distObj = getDistance($arrLastPos, $arrCurPos);
+						
 
 						$diffSecFromLastCheckout = strtotime($data["fdt_checkin_datetime"]) - strtotime($rwLastRec->fdt_checkout_datetime);
-						$data["fin_distance_from_last_checkin_meters"] = $distObj["distance"]["value"];
-						$data["fin_distance_from_last_checkin_seconds"] = $distObj["duration"]["value"];
-						$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
-						$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["text"];
 						$data["fin_duration_from_last_checkout"] = $diffSecFromLastCheckout;
+
+						$distObj = getDistance($arrLastPos, $arrCurPos);
+						if ($distObj == null){
+							$data["fin_distance_from_last_checkin_meters"] = 0;
+							$data["fin_distance_from_last_checkin_seconds"] = 0;
+						}else{
+							$data["fin_distance_from_last_checkin_meters"] = $distObj["distance"]["value"];
+							$data["fin_distance_from_last_checkin_seconds"] = $distObj["duration"]["value"];
+							$data["fst_distance_from_last_checkin_meters"] = $distObj["distance"]["text"];
+							$data["fst_distance_from_last_checkin_seconds"]= $distObj["duration"]["text"];							
+						}												
 					}else{
 						$data["fin_distance_from_last_checkin_meters"] = 0;
 						$data["fin_distance_from_last_checkin_seconds"] = 0;
@@ -739,4 +747,25 @@ class API extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($result);
 	}	
+
+
+	public function test2(){
+		//-6.9331997,107.596263
+		$arrLastPos = [
+			"lat"=>"-6.9331997",
+			"long"=>"107.596263"
+		];
+		
+		$arrCurPos = [
+			"lat"=>"-6.9332997",
+			"long"=>"107.597263"
+		];
+
+		$distObj = getDistance($arrLastPos, $arrCurPos);
+		var_dump($distObj);
+
+
+
+
+	}
 }
