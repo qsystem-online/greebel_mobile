@@ -90,12 +90,17 @@ class New_customer extends MY_Controller {
 		$this->load->model("msarea_model");		
         $isAllStatus = $this->input->get("optionIsAllStatus");
 
-
-        if($isAllStatus == 0){
-            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  where fst_status ='NEED APPROVAL') a ");
-        }else{
-            $this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code ) a ");
-        }
+		switch ($isAllStatus){
+			case 0:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  where a.fst_status ='NEED APPROVAL') a ");
+				break;
+			case 1:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  where a.fst_status ='APPROVED') a ");
+				break;
+			case 2:
+				$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbnewcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code ) a ");
+				break;
+		}
 		
 		$selectFields = "a.*";
 		$this->datatables->setSelectFields($selectFields);
@@ -331,8 +336,8 @@ class New_customer extends MY_Controller {
 
 		$qr = $this->db->query($ssql,[intval($offsetId),intval($rowLimit)]);
 
-		//var_dump($this->db->last_query());
-		//die();
+		var_dump($this->db->last_query());
+		die();
 		$rs = $qr->result();
 
 		$this->load->library('phpspreadsheet');		

@@ -300,8 +300,8 @@ class Espb extends MY_Controller {
 			fdt_order_datetime,fst_status,0 as fin_total,a.fst_active,
 			d.fst_message 
 			FROM tr_order a 
-			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
-			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			LEFT JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
+			LEFT JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
 			LEFT JOIN trverification d on a.fin_rec_id = d.fin_transaction_id 
 			WHERE DATE(fdt_order_datetime) >= '$dateStart' and DATE(fdt_order_datetime) <= '$dateEnd' 
 			) as a

@@ -323,8 +323,6 @@ class All_customer extends MY_Controller {
 		$this->parser->parse('pages/customer_pic',$this->data);
 		
 	}
-
-
 	public function toExcel(){
 		set_time_limit(0);   
 		ini_set('mysql.connect_timeout','0');
@@ -455,8 +453,23 @@ class All_customer extends MY_Controller {
 			}			
 			$sheet->setCellValue("O$iRow", $status);			
 			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_created_datetime)));
-			$sheet->setCellValue("Q$iRow", 'Photo');
-			$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);			
+
+			if ($rw->fst_unique_id !='' || $rw->fst_unique_id != null ) {
+				if (file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_front.jpg')
+					OR file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_inside.jpg') 
+					OR file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_other.jpg'))
+				{
+					$sheet->setCellValue("Q$iRow", 'Photo');
+					$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);	
+
+				}else {
+					$sheet->setCellValue("Q$iRow", '===');
+				}
+
+			}else{
+				$sheet->setCellValue("Q$iRow", '---');
+			}
+		
 
 			/*
 			$styleArray = [
@@ -478,5 +491,301 @@ class All_customer extends MY_Controller {
 		$this->phpspreadsheet->save("AllCustomer_list_" .$nouStart."-".$nouEnd ,$spreadsheet);
 		//$this->phpspreadsheet->save("test-coba");		
 		
+	}
+
+
+	public function toExcelXXX(){
+		set_time_limit(0);   
+		ini_set('mysql.connect_timeout','0');
+		ini_set('max_execution_time', '0'); 
+
+		$this->load->model("allcustomer_model");
+		$this->load->model("msarea_model");
+
+		$datecreated = $this->input->get("datecreated");
+		//var_dump($datecreated);
+		//die();
+		$arrDateCreate = explode("-",$datecreated);
+		$dateStart = dateFormat(trim($arrDateCreate[0]),"j/m/Y","Y-m-d");
+		$dateEnd = dateFormat(trim($arrDateCreate[1]),"j/m/Y","Y-m-d");
+		$status = $arrDateCreate[2];
+		$nouStart = $arrDateCreate[3];
+		$nouEnd = $arrDateCreate[4];
+
+		switch ($status){
+			case 0:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' ) a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+			case 1:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND  a.fbl_is_new = '1') a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd' AND  fbl_is_new = '1') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+			case 2:
+				//$this->datatables->setTableName(" (select a.*,b.fst_sales_name from tbcustomers a inner join tbsales b on a.fst_sales_code =b.fst_sales_code  WHERE DATE(a.fdt_created_datetime) >= '$dateStart' and DATE(a.fdt_created_datetime) <= '$dateEnd' AND a.fbl_is_new = '0') a ");
+				$ssql ="SELECT a.*,b.fst_sales_name 
+				FROM (SELECT *,ROW_NUMBER() OVER () AS Id FROM tbcustomers WHERE DATE(fdt_created_datetime) >= '$dateStart' AND DATE(fdt_created_datetime) <= '$dateEnd' AND  fbl_is_new = '0') a 
+				INNER JOIN tbsales b on a.fst_sales_code =b.fst_sales_code 
+				WHERE a.Id BETWEEN $nouStart AND $nouEnd ORDER BY a.Id";
+				break;
+		}
+		/*$ssql ="select a.*,ROW_NUMBER() OVER () AS Id,
+			b.fst_sales_name 
+			from tbcustomers a 
+			inner join tbsales b on a.fst_sales_code =b.fst_sales_code 
+			WHERE Id > ? order by Id limit ?";
+		*/
+
+		$qr = $this->db->query($ssql,[]);
+
+		//var_dump($this->db->last_query());
+		//die();
+		$rs = $qr->result();
+		$ttlRecord = count($rs);
+		$maxRecord = 100;
+		$loopTemplate = 0;
+		if ($ttlRecord > $maxRecord){
+			$loopTemplate = ROUND($ttlRecord / $maxRecord,0);
+		}else{
+			$loopTemplate = 1;
+		}
+		//var_dump($loopTemplate);
+		//die();
+		/*$this->load->library('phpspreadsheet');		
+		$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+		$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+		
+		
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);*/
+		for ($k = 0 ; $k < $loopTemplate; $k++){
+			if($k == 0){
+				$this->prepareExcel($k);
+			}
+			if($k == 1){
+				$this->prepareExcel1($k);
+			}
+			
+			/*$sheet->setCellValue("A$iRow", $rw->fst_cust_code); 
+			$sheet->setCellValue("B$iRow", $rw->fst_cust_name);
+			$sheet->setCellValue("C$iRow", $rw->fst_contact);
+			$sheet->setCellValue("D$iRow", $rw->fst_cust_phone);
+			$rental = "";
+			if ($rw->fbl_is_rent == 1){
+				$rental = "YES";
+			}else{
+				$rental = "NO";
+			}
+			$sheet->setCellValue("E$iRow", $rental);
+			$sheet->setCellValue("F$iRow", $rw->fst_cust_address);
+			$sheet->setCellValue("G$iRow", $rw->fdc_max_disc);
+			
+			$result = $this->msarea_model->getAreaDetail($rw->fst_area_code);
+			
+			$sheet->setCellValue("H$iRow", $result["provinsi"]["code"] ." - " . $result["provinsi"]["name"]);
+			$sheet->setCellValue("I$iRow", $result["kabupaten"]["code"] ." - " . $result["kabupaten"]["name"]);
+			$sheet->setCellValue("J$iRow", $result["kecamatan"]["code"] ." - " . $result["kecamatan"]["name"]);
+			$sheet->setCellValue("K$iRow", $result["kelurahan"]["code"] ." - " . $result["kelurahan"]["name"]);
+			$sheet->setCellValue("L$iRow", $rw->fst_area_code);
+			$sheet->setCellValue("M$iRow", $rw->fst_sales_name);
+			$priceGroup = "";
+			switch ($rw->fin_price_group_id){
+				case 1:
+					$priceGroup = "RETAIL";
+					break;
+				case 2:
+					$priceGroup = "HYPERMARKET";
+					break;
+				case 3:
+					$priceGroup = "GROSIR";
+					break;
+				case 4:
+					$priceGroup = "SEKOLAH/PO";
+					break;
+				case 5:
+					$priceGroup = "MT LOKAL";
+					break;
+				case 9:
+					$priceGroup = "GROUP SMM/INTERNAL";
+					break;
+				default:
+					$priceGroup = $rw->fin_price_group_id;
+			}
+			$sheet->setCellValue("N$iRow", $priceGroup);
+			$status = "";
+			switch ($rw->fbl_is_new){
+				case 0:
+					$status = "OLD";
+					break;
+				case 1:
+					$status = "NEW";
+					break;
+				default:
+					$status = $rw->fbl_is_new;
+			}			
+			$sheet->setCellValue("O$iRow", $status);			
+			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_created_datetime)));
+			if ($rwItem) {
+				if (file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_front.jpg')) {
+
+				} else {
+
+				}
+
+			}
+			$sheet->setCellValue("Q$iRow", 'Photo');
+			$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);
+			*/
+			/*if($k == 0){
+				$this->load->library('phpspreadsheet');		
+				$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+				$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+				
+				
+				$sheet = $spreadsheet->getActiveSheet();
+				$sheet->getPageSetup()->setFitToWidth(1);
+				$sheet->getPageSetup()->setFitToHeight(0);
+				$sheet->getPageMargins()->setTop(1);
+				$sheet->getPageMargins()->setRight(0.5);
+				$sheet->getPageMargins()->setLeft(0.5);
+				$sheet->getPageMargins()->setBottom(1);
+				$this->phpspreadsheet->save("AllCustomer_list_X" .$nouStart."-".$nouEnd ,$spreadsheet);
+			}
+			if($k == 1){
+				$this->load->library('phpspreadsheet');		
+				$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+				$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+				
+				
+				$sheet = $spreadsheet->getActiveSheet();
+				$sheet->getPageSetup()->setFitToWidth(1);
+				$sheet->getPageSetup()->setFitToHeight(0);
+				$sheet->getPageMargins()->setTop(1);
+				$sheet->getPageMargins()->setRight(0.5);
+				$sheet->getPageMargins()->setLeft(0.5);
+				$sheet->getPageMargins()->setBottom(1);
+				$this->phpspreadsheet->save("AllCustomer_list_1" .$nouStart."-".$nouEnd ,$spreadsheet);
+			}
+			if($k == 2){
+				$this->load->library('phpspreadsheet');		
+				$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+				$spreadsheet = $this->phpspreadsheet->load($template,"xls");		
+				
+				
+				$sheet = $spreadsheet->getActiveSheet();
+				$sheet->getPageSetup()->setFitToWidth(1);
+				$sheet->getPageSetup()->setFitToHeight(0);
+				$sheet->getPageMargins()->setTop(1);
+				$sheet->getPageMargins()->setRight(0.5);
+				$sheet->getPageMargins()->setLeft(0.5);
+				$sheet->getPageMargins()->setBottom(1);
+				$this->phpspreadsheet->save("AllCustomer_list_2" .$nouStart."-".$nouEnd ,$spreadsheet);
+			}*/
+			
+			/*
+			$styleArray = [
+				'font' => [
+					'bold' => true,
+				],			
+				'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+			];
+			$sheet->setCellValue("H$iRow", $summ->total_qty);
+			//$sheet->setCellValue("K$iRow", $summ->total_amount + ($summ->total_amount * 10/100));			
+			$sheet->setCellValue("K$iRow", $summ->total_amount);						
+			$sheet->getStyle("H$iRow:K$iRow")->applyFromArray($styleArray);
+			$sheet->getStyle("H$iRow:K$iRow")->getNumberFormat()->applyFromArray($styleArray);
+			*/
+
+			/*
+			$iRow++;
+			$nou++;
+			*/
+		}
+		
+		
+		//$sheet->setTitle('Coba Aja');
+		$iRow = 3;
+		$nou = 0;
+		/*foreach($rs as $rw){
+
+		}*/		
+		
+		//$this->phpspreadsheet->save("AllCustomer_list_" .$nouStart."-".$nouEnd ,$spreadsheet);
+		//$this->phpspreadsheet->save("test-coba");		
+		
+	}
+	public function prepareExcel($part){
+		if($part == 0){
+			$this->load->library('phpspreadsheet');		
+			$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+			$spreadsheet = $this->phpspreadsheet->load($template,"xls");
+			
+			
+			$sheet = $spreadsheet->getActiveSheet();
+			$sheet->getPageSetup()->setFitToWidth(1);
+			$sheet->getPageSetup()->setFitToHeight(0);
+			$sheet->getPageMargins()->setTop(1);
+			$sheet->getPageMargins()->setRight(0.5);
+			$sheet->getPageMargins()->setLeft(0.5);
+			$sheet->getPageMargins()->setBottom(1);
+			$this->phpspreadsheet->save("AllCustomer_list_X" .$part ,$spreadsheet);
+		}else{
+			$this->load->library('phpspreadsheet');		
+			$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+			$spreadsheet = $this->phpspreadsheet->load($template,"xls");
+			
+			
+			$sheet = $spreadsheet->getActiveSheet();
+			$sheet->getPageSetup()->setFitToWidth(1);
+			$sheet->getPageSetup()->setFitToHeight(0);
+			$sheet->getPageMargins()->setTop(1);
+			$sheet->getPageMargins()->setRight(0.5);
+			$sheet->getPageMargins()->setLeft(0.5);
+			$sheet->getPageMargins()->setBottom(1);
+			$this->phpspreadsheet->save("AllCustomer_list_XY" .$part ,$spreadsheet);
+		}
+	}
+
+	public function prepareExcel1($part){
+		if($part == 0){
+			$this->load->library('phpspreadsheet');		
+			$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+			$spreadsheet = $this->phpspreadsheet->load($template,"xls");
+			
+			
+			$sheet = $spreadsheet->getActiveSheet();
+			$sheet->getPageSetup()->setFitToWidth(1);
+			$sheet->getPageSetup()->setFitToHeight(0);
+			$sheet->getPageMargins()->setTop(1);
+			$sheet->getPageMargins()->setRight(0.5);
+			$sheet->getPageMargins()->setLeft(0.5);
+			$sheet->getPageMargins()->setBottom(1);
+			$this->phpspreadsheet->save("AllCustomer_list_Y" .$part ,$spreadsheet);
+		}else{
+			$this->load->library('phpspreadsheet');		
+			$template = FCPATH . "assets". DIRECTORY_SEPARATOR  ."templates" .DIRECTORY_SEPARATOR ."template_all_customers.xls";
+			$spreadsheet = $this->phpspreadsheet->load($template,"xls");
+			
+			
+			$sheet = $spreadsheet->getActiveSheet();
+			$sheet->getPageSetup()->setFitToWidth(1);
+			$sheet->getPageSetup()->setFitToHeight(0);
+			$sheet->getPageMargins()->setTop(1);
+			$sheet->getPageMargins()->setRight(0.5);
+			$sheet->getPageMargins()->setLeft(0.5);
+			$sheet->getPageMargins()->setBottom(1);
+			$this->phpspreadsheet->save("AllCustomer_list_Z" .$part ,$spreadsheet);
+		}
 	}
 }

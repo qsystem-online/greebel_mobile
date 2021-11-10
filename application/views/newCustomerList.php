@@ -40,7 +40,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div align="right" style="margin-bottom:10px">
 						<select id="filterAllStatus">
 							<option value="0">Need Approval</option>
-							<option value="1">ALL Status</option>
+							<option value="1">Approved</option>
+							<option value="2">ALL Status</option>
 						</select>
 					</div> 
 

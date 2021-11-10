@@ -8,7 +8,7 @@ class Datatables {
 
 	public $selectFields = "";
 	public $searchFields = [];
-	public $activeCondition = "fst_active != 'D'";
+	public $activeCondition = "fst_active != 'S'";
 	private $CI;
 	private $db;
 
