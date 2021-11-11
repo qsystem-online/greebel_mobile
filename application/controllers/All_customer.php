@@ -454,6 +454,11 @@ class All_customer extends MY_Controller {
 			$sheet->setCellValue("O$iRow", $status);			
 			$sheet->setCellValue("P$iRow", date("d-m-Y H:i:s",strtotime($rw->fdt_created_datetime)));
 
+			
+			//$sheet->setCellValue("Q$iRow", 'Photo');
+			//$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);	
+
+			
 			if ($rw->fst_unique_id !='' || $rw->fst_unique_id != null ) {
 				if (file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_front.jpg')
 					OR file_exists(FCPATH . 'uploads/customers/'.$rw->fst_unique_id . '_inside.jpg') 
@@ -463,13 +468,15 @@ class All_customer extends MY_Controller {
 					$sheet->getCell("Q$iRow")->getHyperlink()->setUrl(site_url() . "all_customer/show_link_pics/" .$rw->fst_unique_id);	
 
 				}else {
-					$sheet->setCellValue("Q$iRow", '===');
+					$sheet->setCellValue("Q$iRow", '---');
 				}
 
 			}else{
 				$sheet->setCellValue("Q$iRow", '---');
 			}
 		
+			
+
 
 			/*
 			$styleArray = [
@@ -487,9 +494,10 @@ class All_customer extends MY_Controller {
 
 			$iRow++;
 		}		
-		
+		//var_dump($spreadsheet);
 		$this->phpspreadsheet->save("AllCustomer_list_" .$nouStart."-".$nouEnd ,$spreadsheet);
-		//$this->phpspreadsheet->save("test-coba");		
+		//$this->phpspreadsheet->save("test-coba",$spreadsheet);		
+		//$this->phpspreadsheet->saveHTML("test-coba");		
 		
 	}
 
