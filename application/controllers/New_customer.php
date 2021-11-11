@@ -336,8 +336,8 @@ class New_customer extends MY_Controller {
 
 		$qr = $this->db->query($ssql,[intval($offsetId),intval($rowLimit)]);
 
-		var_dump($this->db->last_query());
-		die();
+		//var_dump($this->db->last_query());
+		//die();
 		$rs = $qr->result();
 
 		$this->load->library('phpspreadsheet');		
