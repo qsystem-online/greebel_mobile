@@ -514,10 +514,12 @@ class Sales extends MY_Controller {
 			a.fbl_on_schedule,
 			a.fst_checkin_location,
 			a.fst_distance_from_last_checkin_meters,
-			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed 
+			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed,
+			d.fst_reason 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
+			LEFT JOIN tbnoorederreason d ON a.fin_no_order_reason = d.fin_no_order_reason
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd'";
 	
 		$query = $this->db->query($ssql,[]);
@@ -580,10 +582,11 @@ class Sales extends MY_Controller {
 			$sheet->setCellValue("I$iRow", date("Y-m-d",$checkindate));
 			$sheet->setCellValue("J$iRow", $rw->fst_distance_from_last_checkin_meters);
 			$sheet->setCellValue("K$iRow", $rw->fin_distance_disputed);
-
+			$sheet->setCellValue("L$iRow", $rw->fst_reason);
+			
 			//$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
-			$sheet->setCellValue("L$iRow", 'Photo');
-			$sheet->getCell("L$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
+			$sheet->setCellValue("M$iRow", 'Photo');
+			$sheet->getCell("M$iRow")->getHyperlink()->setUrl(site_url() . "sales/show_link_pics/" .$rw->fin_id);
 			//$sheet->getCell("H$iRow")->getHyperlink()->setUrl("http://armex.qsystem-online.com/sales/show_link_pics/" .$rw->fin_id);
 			
 			//$sheet->getStyle("H$iRow")->applyFromArray($outOfScheduleStyle);
