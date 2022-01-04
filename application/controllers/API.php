@@ -190,6 +190,34 @@ class API extends CI_Controller {
         echo json_encode($result);
 	}
 
+	public function feed_reason($returnJson = 1){
+		//$this->load->model("company_model");
+		//$appId = $this->input->post("app_id");	
+		//$company = $this->company_model->getDataByAppId($appId);
+
+		$ssql ="SELECT * FROM tbnoorderreason";
+		$query = $this->db->query($ssql,[]);
+        $result = $query->result();
+        
+
+
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$result
+		];	
+        
+		if($returnJson === 0){
+			return $result;
+		}
+
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+
+
+
 	public function feed_all_data(){
 		$appid = $this->input->post("app_id");
 
@@ -226,6 +254,9 @@ class API extends CI_Controller {
 				$tmpResult =  $this->feed_order(0);
 				$arrOrderStatus = $tmpResult["data"];
 
+
+				$arrNoOrderReason =$this->feed_reason();
+
 				/*
 				$tmpResult =  $this->feed_newcustomer(0);
 				$arrNewCustomer = $tmpResult["data"];
@@ -239,6 +270,7 @@ class API extends CI_Controller {
 					//"arrPromo" => $arrPromo,
 					//"arrTarget" => $arrTarget,
 					"arrOrderStatus" => $arrOrderStatus,
+					"arrNoOrderReason"=> $arrNoOrderReason,
 					//"arrNewCustomer" => $arrNewCustomer,
 				];
 
