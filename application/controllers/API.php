@@ -222,7 +222,6 @@ class API extends CI_Controller {
 		$appid = $this->input->post("app_id");
 
 
-
 		if (!$this->appid_model->isValidAppid($appid)){
 			$result = [
 				"post" => $_POST,
@@ -255,7 +254,8 @@ class API extends CI_Controller {
 				$arrOrderStatus = $tmpResult["data"];
 
 
-				$arrNoOrderReason =$this->feed_reason();
+				$tmpResult =  $this->feed_reason(0);
+				$arrNoOrderReason = $tmpResult["data"];
 
 				/*
 				$tmpResult =  $this->feed_newcustomer(0);
@@ -410,6 +410,7 @@ class API extends CI_Controller {
 						"fin_id"=>$id,
 						"fst_checkin_location" => $this->input->post("fst_checkin_location"),
 						"fin_distance_meters" => $distance,
+						"fst_no_order_reason" => $this->input->post("fst_reason"),
 						"fdt_update_datetime" => date("Y-m-d H:i:s"),
 						"fin_update_id" => 1
 					];
@@ -437,6 +438,7 @@ class API extends CI_Controller {
 					"fdt_checkout_datetime" => $checkout,
 					"fst_checkin_location" => $this->input->post("fst_checkin_location"),
 					"fin_distance_meters" => distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M"),
+					"fst_no_order_reason" => $this->input->post("fst_reason"),
 					"fst_active" => 'A',
 					"fdt_insert_datetime" => date("Y-m-d H:i:s"),
 					"fin_insert_id" => 1,
