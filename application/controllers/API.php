@@ -190,9 +190,36 @@ class API extends CI_Controller {
         echo json_encode($result);
 	}
 
+	public function feed_reason($returnJson = 1){
+		//$this->load->model("company_model");
+		//$appId = $this->input->post("app_id");	
+		//$company = $this->company_model->getDataByAppId($appId);
+
+		$ssql ="SELECT * FROM tbnoorderreason";
+		$query = $this->db->query($ssql,[]);
+        $result = $query->result();
+        
+
+
+		$result = [
+            "post" => $_POST,
+            "status"=>"OK",
+            "message"=>"OK",
+            "data"=>$result
+		];	
+        
+		if($returnJson === 0){
+			return $result;
+		}
+
+		header("Content-Type: application/json");	
+        echo json_encode($result);
+	}
+
+
+
 	public function feed_all_data(){
 		$appid = $this->input->post("app_id");
-
 
 
 		if (!$this->appid_model->isValidAppid($appid)){
@@ -226,6 +253,10 @@ class API extends CI_Controller {
 				$tmpResult =  $this->feed_order(0);
 				$arrOrderStatus = $tmpResult["data"];
 
+
+				$tmpResult =  $this->feed_reason(0);
+				$arrNoOrderReason = $tmpResult["data"];
+
 				/*
 				$tmpResult =  $this->feed_newcustomer(0);
 				$arrNewCustomer = $tmpResult["data"];
@@ -239,6 +270,7 @@ class API extends CI_Controller {
 					//"arrPromo" => $arrPromo,
 					//"arrTarget" => $arrTarget,
 					"arrOrderStatus" => $arrOrderStatus,
+					"arrNoOrderReason"=> $arrNoOrderReason,
 					//"arrNewCustomer" => $arrNewCustomer,
 				];
 
@@ -378,6 +410,7 @@ class API extends CI_Controller {
 						"fin_id"=>$id,
 						"fst_checkin_location" => $this->input->post("fst_checkin_location"),
 						"fin_distance_meters" => $distance,
+						"fst_no_order_reason" => $this->input->post("fst_reason"),
 						"fdt_update_datetime" => date("Y-m-d H:i:s"),
 						"fin_update_id" => 1
 					];
@@ -405,6 +438,7 @@ class API extends CI_Controller {
 					"fdt_checkout_datetime" => $checkout,
 					"fst_checkin_location" => $this->input->post("fst_checkin_location"),
 					"fin_distance_meters" => distance($loc_lat, $loc_log, $loc2_lat, $loc2_log,"M"),
+					"fst_no_order_reason" => $this->input->post("fst_reason"),
 					"fst_active" => 'A',
 					"fdt_insert_datetime" => date("Y-m-d H:i:s"),
 					"fin_insert_id" => 1,
