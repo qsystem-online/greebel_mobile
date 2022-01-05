@@ -519,7 +519,7 @@ class Sales extends MY_Controller {
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
-			LEFT JOIN tbnoorederreason d ON a.fin_no_order_reason = d.fin_no_order_reason
+			LEFT JOIN tbnoorderreason d ON a.fst_no_order_reason = d.fin_no_order_reason
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd'";
 	
 		$query = $this->db->query($ssql,[]);
