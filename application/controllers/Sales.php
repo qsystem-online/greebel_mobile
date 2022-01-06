@@ -515,11 +515,10 @@ class Sales extends MY_Controller {
 			a.fst_checkin_location,
 			a.fst_distance_from_last_checkin_meters,
 			(a.fin_duration_from_last_checkout - a.fin_distance_from_last_checkin_seconds) as fin_distance_disputed,
-			d.fst_reason 
+			a.fst_no_order_reason 
 			FROM trcheckinlog a 
 			INNER JOIN tbsales b ON a. fst_sales_code = b.fst_sales_code
 			INNER JOIN tbcustomers c ON a.fst_cust_code = c.fst_cust_code
-			LEFT JOIN tbnoorderreason d ON a.fst_no_order_reason = d.fin_no_order_reason
 			WHERE DATE(fdt_checkin_datetime) >= '$dateStart' and DATE(fdt_checkin_datetime) <= '$dateEnd'";
 	
 		$query = $this->db->query($ssql,[]);
@@ -582,7 +581,7 @@ class Sales extends MY_Controller {
 			$sheet->setCellValue("I$iRow", date("Y-m-d",$checkindate));
 			$sheet->setCellValue("J$iRow", $rw->fst_distance_from_last_checkin_meters);
 			$sheet->setCellValue("K$iRow", $rw->fin_distance_disputed);
-			$sheet->setCellValue("L$iRow", $rw->fst_reason);
+			$sheet->setCellValue("L$iRow", $rw->fst_no_order_reason);
 			
 			//$sheet->setCellValue("I$iRow", visit_day_name($rw->fin_visit_day));
 			$sheet->setCellValue("M$iRow", 'Photo');
